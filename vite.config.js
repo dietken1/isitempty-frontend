@@ -6,13 +6,7 @@ export default defineConfig({
   plugins: [react()],
   build: {
     sourcemap: false,
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-      },
-    },
+    minify: 'esbuild',  // terser 대신 esbuild 사용
   },
   server: {
     proxy: {
