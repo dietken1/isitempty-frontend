@@ -1,10 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { getHello } from '../api/apiService';
-import './Home.css';
+import React, { useState, useEffect } from "react";
+import { getHello } from "../api/apiService";
+import { useNavigate } from "react-router-dom";
+import "./Home.css";
 
 function Home() {
-  const [message, setMessage] = useState('Loading...');
+  const [message, setMessage] = useState("Loading...");
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  const goToMap = () => {
+    navigate("/map");
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -12,9 +18,9 @@ function Home() {
         const data = await getHello();
         setMessage(data.message || JSON.stringify(data));
       } catch (err) {
-        console.error('Error fetching data:', err);
-        setError('Failed to load data from backend');
-        setMessage('Error occurred');
+        console.error("Error fetching data:", err);
+        setError("Failed to load data from backend");
+        setMessage("Error occurred");
       }
     };
 
@@ -25,7 +31,7 @@ function Home() {
     <div className="home-container">
       <h1>Welcome to IsItEmpty</h1>
       <p>Find available parking spaces in real-time</p>
-      
+
       <div className="card">
         <h2>Backend Connection Test</h2>
         {error ? (
@@ -34,7 +40,7 @@ function Home() {
           <p>Message from backend: {message}</p>
         )}
       </div>
-      
+
       <div className="features">
         <div className="feature">
           <h3>Real-time Updates</h3>
@@ -48,6 +54,10 @@ function Home() {
           <h3>Save Time</h3>
           <p>No more driving around looking for parking</p>
         </div>
+      </div>
+      <div className="maptest">
+        <h3>Map</h3>
+        <button onClick={goToMap}>Open Map</button>
       </div>
     </div>
   );
