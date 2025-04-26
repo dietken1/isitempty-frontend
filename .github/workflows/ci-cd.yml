@@ -37,8 +37,9 @@ jobs:
     - name: Build and push Docker image
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        VITE_KAKAO_MAP_API_KEY: ${{ secrets.VITE_KAKAO_MAP_API_KEY }}
       run: |
-        docker build -t ${DOCKER_USERNAME}/isitempty-front:latest .
+        docker build -t ${DOCKER_USERNAME}/isitempty-front:latest --build-arg VITE_KAKAO_MAP_API_KEY=${VITE_KAKAO_MAP_API_KEY} .
         docker push ${DOCKER_USERNAME}/isitempty-front:latest
         
     - name: Deploy to server

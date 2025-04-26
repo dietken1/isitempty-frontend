@@ -4,6 +4,11 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
+
+# 환경변수 설정
+ARG VITE_KAKAO_MAP_API_KEY
+ENV VITE_KAKAO_MAP_API_KEY=${VITE_KAKAO_MAP_API_KEY}
+
 RUN npm run build
 
 # 프로덕션 단계
