@@ -1,0 +1,52 @@
+.wrapper {
+  width: 480px;
+  height: 788px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.searchBar {
+  box-sizing: border-box;
+  width: 460px;
+  display: flex;
+  justify-content: center;
+  margin: 10px;
+  position: absolute;
+  gap: 5px;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.searchBar > input {
+  width: 380px;
+  height: 30px;
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+}
+
+.searchBar > input:focus {
+  outline: none;
+}
+
+.searchBar > button {
+  display: flex;
+  align-items: center;
+  height: 30px;
+  border-radius: 5px;
+  border: none;
+  background-color: #4caf50;
+  color: white;
+}
+
+.placeList {
+  list-style: none;
+  width: 400px;
+  position: absolute;
+  margin-left: 10px;
+  top: 30px;
+  left: 0;
+  z-index: 1;
+  background-color: rgba(255, 255, 255, 0.537);
+}

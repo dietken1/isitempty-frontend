@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useKakaoLoader } from "../hooks/useKakaoLoader";
 import SearchBar from "../components/SearchBar";
 import PlaceList from "../components/PlaceList";
+import styles from "./Map.module.css";
 
 const Map = () => {
   const loaded = useKakaoLoader();
@@ -52,15 +53,18 @@ const Map = () => {
 
   return (
     <>
-      <div id="map" style={{ width: "100%", height: "400px" }} />
+      <div className={styles.wrapper}>
+        <div id="map" style={{ width: "100%", height: "94%" }} />
 
-      <SearchBar
-        keyword={keyword}
-        setKeyword={setKeyword}
-        onSearch={searchPlaces}
-      />
+        <SearchBar
+          className={styles.searchBar}
+          keyword={keyword}
+          setKeyword={setKeyword}
+          onSearch={searchPlaces}
+        />
 
-      <PlaceList places={places} />
+        <PlaceList className={styles.placeList} places={places} />
+      </div>
     </>
   );
 };
