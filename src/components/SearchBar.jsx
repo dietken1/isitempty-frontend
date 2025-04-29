@@ -1,13 +1,13 @@
 import React from "react";
 
-const SearchBar = ({ keyword, setKeyword, onSearch }) => {
+const SearchBar = ({ keyword, setKeyword, onSearch, className }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     onSearch();
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className={className} onSubmit={handleSubmit}>
       <input
         type="text"
         value={keyword}

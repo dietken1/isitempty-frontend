@@ -1,10 +1,11 @@
 import React from "react";
 
-const PlaceList = ({ places }) => {
+const PlaceList = ({ className, places }) => {
   if (!places.length) return null;
 
   return (
     <ul
+      className={className}
       style={{
         padding: "1rem",
         border: "1px solid #ddd",
