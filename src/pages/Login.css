@@ -1,0 +1,130 @@
+.login-container {
+    width: 350px;
+    padding: 30px 50px;
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin: 0 auto;
+    margin-top: 50px;
+}
+
+.login_container {
+    display: flex;
+    flex-direction: column;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 2rem;
+}
+
+.login_elements {
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.login_elements div {
+    display: flex;
+    flex-direction: row; /* 아이디와 입력폼을 가로로 배치 */
+    justify-content: space-between; /* 아이디와 입력폼 사이에 공간을 넣기 위해 */
+}
+
+.login_elements label {
+    width: 30%; /* 레이블의 너비 설정 */
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.login_elements input {
+    width: 65%; /* 입력 필드가 가로 공간을 꽉 채우도록 설정 */
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+input:focus {
+    border-color: #646cff; /* 포커스 시 테두리 색상 */
+}
+
+/* 로그인 버튼 */
+.login_btn {
+    margin-block: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-btn {
+    padding: 10px;
+    font-size: 1rem;
+    background-color: #646cff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.login-btn:hover {
+    background-color: #464ed7;
+}
+
+/* 로그인 링크 및 회원가입 */
+.login-add {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.login-link {
+    font-size: 1rem;
+    color: #555;
+}
+
+.login-link a {
+    color: #646cff;
+    text-decoration: none;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+.social-login {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.social-login p {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+.social-login button {
+    border: none;
+    cursor: pointer;
+    background-color: transparent;
+}
+
+.social-login button img {
+    width: 30px;
+}
+
+.social-login button:hover {
+    opacity: 0.8;
+}
+
+/* 로그인 실패 메시지 */
+.invalid-credentials {
+    color: red;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-top: 15px;
+}

@@ -1,0 +1,75 @@
+.signup_container {
+    width: 400px;
+    padding: 30px 50px; /* 위 아래 30px, 좌우 50px로 padding 조정 */
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
+    margin-top: 50px;
+}
+
+.signup_elements {
+    display: flex;
+    flex-direction: column; /* 세로로 정렬 */
+    gap: 10px;
+}
+.signup_elements h1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.signup_elements div {
+    display: flex;
+    flex-direction: row; /* 아이디와 입력폼을 가로로 배치 */
+    justify-content: space-between; /* 아이디와 입력폼 사이에 공간을 넣기 위해 */
+    gap: 10px; /* 아이디와 입력폼 사이의 간격 */
+}
+
+.signup_elements input {
+    width: 65%; /* 입력 필드가 가로 공간을 꽉 채우도록 설정 */
+    padding: 8px;
+    margin-top: 5px;
+    box-sizing: border-box;
+}
+
+.signup_elements label {
+    width: 35%; /* 레이블의 너비 설정 */
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.signup-btn {
+    padding: 10px 15px;
+    background-color: #646cff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 25px;
+    font-size: 1rem;
+
+}
+.signup-button{
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.signup-btn:hover {
+    background-color: #5a5aee;
+}
+
+.signup-add {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.signup-add .signup-link {
+    font-size: 1rem;
+}
+
+hr {
+    margin: 20px 0;
+}
