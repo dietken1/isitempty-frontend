@@ -6,11 +6,11 @@ function Header() {
   return (
     <header className="header">
       <div className="logo">
-        <h1>IsItEmpty</h1>
+        <h1><Link to="/">IsItEmpty</Link></h1>
       </div>
       <nav className="nav">
         <ul>
-          <li><Link to="/">Home</Link></li>
+          <li><Link to="/login">Login</Link></li>
           <li><Link to="/about">About</Link></li>
           <li><Link to="/contact">Contact</Link></li>
         </ul>

@@ -24,13 +24,13 @@
   margin-left: 1.5rem;
 }
 
-.nav a {
+.nav a, .logo a {
   text-decoration: none;
   color: #333;
   font-weight: 500;
   transition: color 0.3s;
 }
 
-.nav a:hover {
+.nav a:hover, .logo a:hover {
   color: #646cff;
 }
