@@ -37,7 +37,7 @@ const Signup = () => {
                 <form onSubmit={handleSignup}>
                     
                     <div className="signup_elements">
-                        <h1>회원가입</h1>
+                        <h1>Signup</h1>
                         <div>
                             <label htmlFor="email">이메일</label>
                             <input

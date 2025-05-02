@@ -27,7 +27,7 @@ const Login = () => {
         <div className="login-container">
             <div className="login_container">
                 <form onSubmit={handleLogin}>
-                    <h1 className="form-title">로그인</h1>
+                    <h1 className="form-title">Login</h1>
                     <div className="login_elements">
                         <div className="input-group">
                             <label htmlFor="email" className="input-label">이메일</label>

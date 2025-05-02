@@ -1,0 +1,11 @@
+.mypage-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    padding: 2rem;
+}
+.mypage-container h1{
+    margin-block: 20px;
+}
