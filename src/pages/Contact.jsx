@@ -96,12 +96,6 @@ function Contact() {
         <div className="info-item">
           <strong>Email:</strong> info@isitempty.kr
         </div>
-        <div className="info-item">
-          <strong>Phone:</strong> +82 10-1234-5678
-        </div>
-        <div className="info-item">
-          <strong>Address:</strong> 123 Parking Street, Seoul, South Korea
-        </div>
       </div>
     </div>
   );

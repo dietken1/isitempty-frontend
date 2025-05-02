@@ -1,28 +1,25 @@
 import React, { useState } from 'react';
 import './Login.css';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // `history` -> `navigate`
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [invalidCreds, setInvalidCreds] = useState(false);
-    const navigate = useNavigate(); // `history` -> `navigate`로 수정
+    const navigate = useNavigate();
     
-    // 로그인 처리 함수
     const handleLogin = (e) => {
         e.preventDefault();
 
-        // 서버로 로그인 데이터 보내기 (예시: axios)
         axios.post('/api/login/', { email, password })
             .then((response) => {
-                // 로그인 성공 시 홈 페이지로 이동
-                console.log('Login Success:', response);  // 응답 로그
-                navigate('/');  // history.push('/') -> navigate('/')
+                console.log('Login Success:', response);
+                navigate('/');
             })
             .catch((error) => {
                 setInvalidCreds(true);
-                console.error("Login failed:", error);  // 에러 확인
+                console.error("Login failed:", error);
             });
     };
 
