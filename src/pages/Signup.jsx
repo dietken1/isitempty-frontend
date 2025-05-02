@@ -12,25 +12,22 @@ const Signup = () => {
     const [invalidCreds, setInvalidCreds] = useState(false);
     const navigate = useNavigate();
 
-    // 회원가입 처리 함수
     const handleSignup = (e) => {
         e.preventDefault();
 
-        // 비밀번호 확인
         if (password !== confirmPassword) {
             alert("비밀번호가 일치하지 않습니다.");
             return;
         }
 
-        // 서버로 회원가입 데이터 보내기 (예시: axios)
         axios.post('/api/signup/', { email, username, phone, password })
             .then((response) => {
-                console.log('Signup Success:', response);  // 응답 로그
-                navigate('/login');  // 회원가입 성공 후 로그인 페이지로 이동
+                console.log('Signup Success:', response);
+                navigate('/login');
             })
             .catch((error) => {
                 setInvalidCreds(true);
-                console.error("Signup failed:", error);  // 에러 확인
+                console.error("Signup failed:", error);
             });
     };
 

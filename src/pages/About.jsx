@@ -6,36 +6,11 @@ function About() {
     <div className="about-container">
       <h1>About IsItEmpty</h1>
       <p className="intro">
-        IsItEmpty is a modern solution for finding available parking spaces in real-time.
-        Our mission is to make parking easier and more efficient for everyone.
+        IsItEmpty는 전국 운전자들의 주차 스트레스를 해소함과 동시에 불법 주정차와 같은 사회적인 문제를 해결하기 위해서 만들어진 서비스입니다.
+        <br />
+        현재 시범적으로 서울시 내 시영주차장만을 대상으로 실시간 서비스를 제공중입니다. 앞으로 더 많은 지역에 해당 추가할 예정입니다.
       </p>
       
-      <div className="about-section">
-        <h2>Our Story</h2>
-        <p>
-          IsItEmpty was founded in 2025 with a simple goal: to eliminate the frustration of finding parking.
-          We've all been there - driving around in circles, wasting time and fuel, just to find a parking spot.
-          Our team decided to solve this problem using modern technology.
-        </p>
-      </div>
-      
-      <div className="about-section">
-        <h2>How It Works</h2>
-        <p>
-          IsItEmpty uses a network of sensors and cameras to monitor parking lots and provide real-time data
-          about available spaces. Our advanced algorithms process this data and present it in an easy-to-use
-          interface, helping you find parking quickly and efficiently.
-        </p>
-      </div>
-      
-      <div className="about-section">
-        <h2>Our Team</h2>
-        <p>
-          We are a dedicated team of engineers, designers, and parking enthusiasts committed to making
-          parking easier for everyone. Our diverse backgrounds and expertise allow us to approach the
-          parking problem from multiple angles.
-        </p>
-      </div>
     </div>
   );
 }

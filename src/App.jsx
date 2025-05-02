@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import Mypage from "./pages/Mypage";
 import Map from "./pages/Map";
 import "./App.css";
 
@@ -21,6 +22,7 @@ function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/contact" element={<Mypage />} />
             <Route path="/map" element={<Map />} />
           </Routes>
         </main>
