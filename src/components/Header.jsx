@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './Header.css';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./Header.css";
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -21,7 +21,9 @@ function Header() {
   return (
     <header className="header">
       <div className="logo">
-        <h1><a href="/">IsItEmpty</a></h1>
+        <h1>
+          <a href="/">IsItEmpty</a>
+        </h1>
       </div>
 
       <div className="hamburger-menu" onClick={toggleMenu}>
@@ -30,12 +32,20 @@ function Header() {
         <div className="bar"></div>
       </div>
 
-      <nav className={`nav ${isMenuOpen ? 'open' : ''}`}>
+      <nav className={`nav ${isMenuOpen ? "open" : ""}`}>
         <ul>
-          <li onClick={() => handleMenuClick('/login')}><a href="/login">Login</a></li>
-          <li onClick={() => handleMenuClick('/mypage')}><a href="/mypage">Mypage</a></li>
-          <li onClick={() => handleMenuClick('/about')}><a href="/about">About</a></li>
-          <li onClick={() => handleMenuClick('/contact')}><a href="/contact">Contact</a></li>
+          <li onClick={() => handleMenuClick("/login")}>
+            <a href="/login">Login</a>
+          </li>
+          <li onClick={() => handleMenuClick("/mypage")}>
+            <a href="/mypage">Mypage</a>
+          </li>
+          <li onClick={() => handleMenuClick("/about")}>
+            <a href="/about">About</a>
+          </li>
+          <li onClick={() => handleMenuClick("/contact")}>
+            <a href="/contact">Contact</a>
+          </li>
         </ul>
       </nav>
     </header>
