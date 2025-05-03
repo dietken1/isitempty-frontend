@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useKakaoLoader } from "../hooks/useKakaoLoader";
 import SearchBar from "../components/SearchBar";
-import KakaoMap from "../components/KakaoMap";
+import KakaoMap from "../components/Kakaomap";
 import styles from "./Map.module.css";
 
 const Map = () => {
