@@ -1,12 +1,12 @@
 .app {
   display: flex;
+  justify-content: center;
   flex-direction: column;
   min-height: 100vh;
 }
 
 .main-content {
   flex: 1;
-  padding-bottom: 2rem;
   margin: 0 auto;
 }
 

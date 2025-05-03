@@ -54,7 +54,7 @@ const Map = () => {
   return (
     <>
       <div className={styles.wrapper}>
-        <div id="map" style={{ width: "100%", height: "94%" }} />
+        <div id="map" style={{ width: "100%", height: "100%" }} />
 
         <SearchBar
           className={styles.searchBar}
