@@ -39,7 +39,7 @@ const Map = () => {
       alert("주소나 장소를 입력해주세요!");
       return;
     }
-
+    setSelectedPlace(null);
     const ps = new window.kakao.maps.services.Places();
 
     const placesSearchCB = (data, status) => {
@@ -147,21 +147,19 @@ const Map = () => {
 
   // 지도 드래그 후 주차장 마커 렌더링
   useEffect(() => {
-    if (!mapRef.current) return;
-
+    if (!loaded || !mapRef.current || !selectedPlace) return;
     const map = mapRef.current;
 
     const handleDragEnd = () => {
+      if (!selectedPlace) return;
+
       const center = map.getCenter();
       const lat = center.getLat();
       const lng = center.getLng();
-
       console.log("지도 중심 이동됨:", lat, lng);
 
       fetchNearbyParkingLots(lat, lng)
         .then((parkingLots) => {
-          console.log("이동 후 주차장:", parkingLots);
-
           parkingLotMarkersRef.current.forEach((m) => m.setMap(null));
           parkingLotMarkersRef.current = [];
 
@@ -170,12 +168,10 @@ const Map = () => {
               lot.latitude,
               lot.longitude
             );
-
             const marker = new window.kakao.maps.Marker({
               map,
               position,
             });
-
             return marker;
           });
 
@@ -186,14 +182,12 @@ const Map = () => {
         });
     };
 
-    // 중심 좌표 변경 감지 (드래그, 줌 등)
     window.kakao.maps.event.addListener(map, "idle", handleDragEnd);
 
-    // 정리 함수 (컴포넌트 언마운트 시)
     return () => {
       window.kakao.maps.event.removeListener(map, "idle", handleDragEnd);
     };
-  }, [loaded]);
+  }, [loaded, selectedPlace]);
 
   return (
     <div className={styles.wrapper}>
