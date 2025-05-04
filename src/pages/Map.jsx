@@ -3,6 +3,7 @@ import { useKakaoLoader } from "../hooks/useKakaoLoader";
 import SearchBar from "../components/SearchBar";
 import KakaoMap from "../components/Kakaomap";
 import styles from "./Map.module.css";
+import { fetchNearbyParkingLots } from "../api/apiService"; // API 호출 함수
 
 const Map = () => {
   const loaded = useKakaoLoader();
@@ -121,6 +122,19 @@ const Map = () => {
         selectedPlace.getLat(),
         selectedPlace.getLng()
       );
+    }
+  }, [selectedPlace]);
+
+  useEffect(() => {
+    if (selectedPlace) {
+      fetchNearbyParkingLots(selectedPlace.getLat(), selectedPlace.getLng())
+        .then((parkingLots) => {
+          console.log("근처 주차장:", parkingLots);
+          // 마커 생성
+        })
+        .catch((err) => {
+          console.error("API 호출 실패:", err);
+        });
     }
   }, [selectedPlace]);
 
