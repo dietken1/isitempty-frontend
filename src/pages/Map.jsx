@@ -159,23 +159,23 @@ const Map = () => {
   });
 
   const handleToggleParkingList = async () => {
-    if (!searchCenter) {
-      alert("먼저 장소를 검색하거나 클릭해주세요!");
+    if (!mapRef.current) {
+      alert("지도가 로드되지 않았습니다.");
       return;
     }
 
-    if (!showParkingList) {
-      try {
-        const data = await fetchNearbyParkingLots(
-          searchCenter.getLat(),
-          searchCenter.getLng()
-        );
-        setParkingLots(data);
-      } catch (error) {
-        console.error("주차장 목록 불러오기 실패:", error);
-      }
+    const center = mapRef.current.getCenter();
+
+    try {
+      const data = await fetchNearbyParkingLots(
+        center.getLat(),
+        center.getLng()
+      );
+      setParkingLots(data);
+      setShowParkingList((prev) => !prev);
+    } catch (error) {
+      console.error("주차장 목록 불러오기 실패:", error);
     }
-    setShowParkingList((prev) => !prev);
   };
   useEffect(() => {
     if (!loaded || !mapRef.current || !selectedParkingLot) return;
@@ -268,8 +268,20 @@ const Map = () => {
         <ParkingDetail
           lot={selectedParkingLot}
           onClose={() => setSelectedParkingLot(null)}
-          onBackToList={() => {
+          onBackToList={async () => {
             setSelectedParkingLot(null);
+            if (mapRef.current) {
+              const center = mapRef.current.getCenter();
+              try {
+                const data = await fetchNearbyParkingLots(
+                  center.getLat(),
+                  center.getLng()
+                );
+                setParkingLots(data);
+              } catch (error) {
+                console.error("뒤로가기 시 주차장 목록 불러오기 실패:", error);
+              }
+            }
             setShowParkingList(true);
           }}
         />
