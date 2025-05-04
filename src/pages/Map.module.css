@@ -1,5 +1,5 @@
 .wrapper {
-  height: 788px;
+  height: 86dvh;
   margin: 0 auto;
   position: relative;
 }
@@ -49,4 +49,17 @@
   left: 0;
   z-index: 1;
   background-color: rgba(255, 255, 255, 0.537);
+}
+.checkboxContainer {
+  position: absolute;
+  width: 17%;
+  top: 50px;
+  right: 10px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 8px 6px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
