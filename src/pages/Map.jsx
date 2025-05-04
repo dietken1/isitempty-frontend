@@ -3,7 +3,7 @@ import { useKakaoLoader } from "../hooks/useKakaoLoader";
 import SearchBar from "../components/SearchBar";
 import KakaoMap from "../components/Kakaomap";
 import styles from "./Map.module.css";
-import { fetchNearbyParkingLots } from "../api/apiService"; // API 호출 함수
+import { fetchNearbyParkingLots } from "../api/apiService";
 
 const Map = () => {
   const loaded = useKakaoLoader();
@@ -12,7 +12,9 @@ const Map = () => {
   const [selectedPlace, setSelectedPlace] = useState(null);
   const [showPlaceList, setShowPlaceList] = useState(true);
   const mapRef = useRef(null);
-  const markerRef = useRef([]);
+
+  const placeMarkerRef = useRef([]); // 장소 검색 마커
+  const parkingLotMarkersRef = useRef([]); // 주차장 마커
 
   useEffect(() => {
     if (!loaded) return;
@@ -48,6 +50,10 @@ const Map = () => {
 
         if (data.length > 0 && mapRef.current) {
           const first = data[0];
+          placeMarkerRef.current.forEach((marker) => marker.setMap(null));
+          placeMarkerRef.current = [];
+          parkingLotMarkersRef.current.forEach((marker) => marker.setMap(null));
+          parkingLotMarkersRef.current = [];
           const latlng = new window.kakao.maps.LatLng(first.y, first.x);
           mapRef.current.setCenter(latlng);
         }
@@ -59,11 +65,9 @@ const Map = () => {
     ps.keywordSearch(keyword, placesSearchCB);
   };
 
+  // 검색 결과 마커 렌더링
   useEffect(() => {
     if (!mapRef.current || !places.length) return;
-
-    markerRef.current.forEach((marker) => marker.setMap(null));
-    markerRef.current = [];
 
     const newMarkers = [];
 
@@ -91,46 +95,62 @@ const Map = () => {
       });
 
       window.kakao.maps.event.addListener(marker, "click", () => {
-        if (!mapRef.current) return;
-
-        markerRef.current.forEach((m) => m.setMap(null));
-        markerRef.current = [];
-
-        marker.setMap(mapRef.current);
-        markerRef.current.push(marker);
-
         mapRef.current.setCenter(position);
         mapRef.current.setLevel(5);
         setSelectedPlace(position);
         setShowPlaceList(false);
+        placeMarkerRef.current.forEach((m) => {
+          if (m !== marker) m.setMap(null);
+        });
+
+        placeMarkerRef.current = [marker];
       });
 
       newMarkers.push(marker);
     });
 
-    markerRef.current = newMarkers;
+    placeMarkerRef.current = newMarkers;
   }, [places]);
 
-  useEffect(() => {
-    if (
-      selectedPlace &&
-      typeof selectedPlace.getLat === "function" &&
-      typeof selectedPlace.getLng === "function"
-    ) {
-      console.log(
-        "선택된 장소 좌표:",
-        selectedPlace.getLat(),
-        selectedPlace.getLng()
-      );
-    }
-  }, [selectedPlace]);
-
+  // 주변 주차장 마커 렌더링
   useEffect(() => {
     if (selectedPlace) {
       fetchNearbyParkingLots(selectedPlace.getLat(), selectedPlace.getLng())
         .then((parkingLots) => {
           console.log("근처 주차장:", parkingLots);
-          // 마커 생성
+
+          // 기존 주차장 마커 제거
+          parkingLotMarkersRef.current.forEach((marker) => marker.setMap(null));
+          parkingLotMarkersRef.current = [];
+
+          const newMarkers = parkingLots.map((lot) => {
+            const position = new window.kakao.maps.LatLng(
+              lot.latitude,
+              lot.longitude
+            );
+
+            const marker = new window.kakao.maps.Marker({
+              map: mapRef.current,
+              position,
+              title: lot.name,
+            });
+
+            const infowindow = new window.kakao.maps.InfoWindow({
+              content: `<div style="padding:5px; font-size:13px;"><b>${lot.name}</b><br/>${lot.address}<br/>총 ${lot.slotCount}면</div>`,
+            });
+
+            window.kakao.maps.event.addListener(marker, "mouseover", () => {
+              infowindow.open(mapRef.current, marker);
+            });
+
+            window.kakao.maps.event.addListener(marker, "mouseout", () => {
+              infowindow.close();
+            });
+
+            return marker;
+          });
+
+          parkingLotMarkersRef.current = newMarkers;
         })
         .catch((err) => {
           console.error("API 호출 실패:", err);
@@ -155,7 +175,7 @@ const Map = () => {
           setSelectedPlace={setSelectedPlace}
           setShowPlaceList={setShowPlaceList}
           mapRef={mapRef}
-          markerRef={markerRef}
+          markerRef={placeMarkerRef}
           className={styles.placeList}
         />
       )}
