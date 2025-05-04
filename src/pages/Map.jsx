@@ -147,12 +147,17 @@ const Map = () => {
 
   useMarkerLayer({
     selectedPlace,
-    show: showCamera,
-    fetchFn: fetchNearbyCameras,
-    markerRef: cameraMarkersRef,
+    show: showParking,
+    fetchFn: fetchNearbyParkingLots,
+    markerRef: parkingLotMarkersRef,
     mapRef,
     loaded,
-    enableClickCentering: false,
+    enableClickCentering: true,
+    onMarkerClick: (parkingLot) => {
+      setParkingLots([parkingLot]);
+      setShowParkingList(false);
+      setSelectedParkingLot(parkingLot);
+    },
   });
 
   useMarkerLayer({
@@ -252,6 +257,10 @@ const Map = () => {
         <ParkingDetail
           lot={selectedParkingLot}
           onClose={() => setSelectedParkingLot(null)}
+          onBackToList={() => {
+            setSelectedParkingLot(null);
+            setShowParkingList(true);
+          }}
         />
       )}
     </div>
