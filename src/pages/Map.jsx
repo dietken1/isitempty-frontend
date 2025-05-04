@@ -133,7 +133,6 @@ const Map = () => {
     loaded,
     enableClickCentering: true,
     onMarkerClick: (parkingLot) => {
-      setParkingLots([parkingLot]);
       setShowParkingList(false);
       setSelectedParkingLot(parkingLot);
     },
@@ -178,6 +177,30 @@ const Map = () => {
     }
     setShowParkingList((prev) => !prev);
   };
+  useEffect(() => {
+    if (!loaded || !mapRef.current || !selectedParkingLot) return;
+
+    const map = mapRef.current;
+
+    const handleIdle = async () => {
+      const center = map.getCenter();
+      try {
+        const data = await fetchNearbyParkingLots(
+          center.getLat(),
+          center.getLng()
+        );
+        setParkingLots(data);
+      } catch (error) {
+        console.error("맵 이동 시 주차장 목록 불러오기 실패:", error);
+      }
+    };
+
+    window.kakao.maps.event.addListener(map, "idle", handleIdle);
+
+    return () => {
+      window.kakao.maps.event.removeListener(map, "idle", handleIdle);
+    };
+  }, [loaded, mapRef, showParking]);
 
   return (
     <div className={styles.wrapper}>

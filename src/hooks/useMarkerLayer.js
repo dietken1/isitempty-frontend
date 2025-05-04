@@ -10,12 +10,11 @@ export function useMarkerLayer({
   enableClickCentering = false,
   onMarkerClick,
 }) {
-  // ✅ 마커 렌더링 (selectedPlace 바뀌거나, show 토글될 때)
+  // 마커 렌더링
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
 
-    // ⛔ 마커 끄기 조건
     if (!show || !selectedPlace) {
       markerRef.current.forEach((m) => m.setMap(null));
       markerRef.current = [];
@@ -44,7 +43,6 @@ export function useMarkerLayer({
                 map.setLevel(5);
               }
               if (onMarkerClick) {
-                console.log("클릭한 마커 데이터:", item);
                 onMarkerClick(item);
               }
             });
@@ -54,7 +52,9 @@ export function useMarkerLayer({
 
           markerRef.current = newMarkers;
         })
-        .catch((err) => console.error("마커 렌더링 실패:", err));
+        .catch((err) => {
+          console.error("마커를 가져오는 중 오류:", err);
+        });
     }
   }, [
     show,
@@ -65,7 +65,7 @@ export function useMarkerLayer({
     onMarkerClick,
   ]);
 
-  // ✅ idle 이벤트로 새로고침
+  //지도 이동후 마커 렌더링
   useEffect(() => {
     const map = mapRef.current;
     if (!loaded || !map || !selectedPlace) return;
@@ -96,7 +96,6 @@ export function useMarkerLayer({
                 map.setLevel(5);
               }
               if (onMarkerClick) {
-                console.log("idle 중 클릭한 마커:", item);
                 onMarkerClick(item);
               }
             });
@@ -106,7 +105,9 @@ export function useMarkerLayer({
 
           markerRef.current = newMarkers;
         })
-        .catch((err) => console.error("idle 시 마커 렌더링 실패:", err));
+        .catch((err) => {
+          console.error("마커를 가져오는 중 오류:", err);
+        });
     };
 
     window.kakao.maps.event.addListener(map, "idle", handleIdle);
