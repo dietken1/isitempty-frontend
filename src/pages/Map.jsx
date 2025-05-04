@@ -19,12 +19,13 @@ const Map = () => {
   const [parkingLots, setParkingLots] = useState([]);
   const [showParkingList, setShowParkingList] = useState(false);
   const [selectedParkingLot, setSelectedParkingLot] = useState(null);
+  const [searchCenter, setSearchCenter] = useState(null);
 
   const mapRef = useRef(null);
-  const placeMarkerRef = useRef([]); // 장소 검색 마커
-  const parkingLotMarkersRef = useRef([]); // 주차장 마커
-  const cameraMarkersRef = useRef([]); // CCTV 마커
-  const toiletMarkersRef = useRef([]); // 화장실 마커
+  const placeMarkerRef = useRef([]);
+  const parkingLotMarkersRef = useRef([]);
+  const cameraMarkersRef = useRef([]);
+  const toiletMarkersRef = useRef([]);
 
   const [showParking, setShowParking] = useState(true);
   const [showCamera, setShowCamera] = useState(false);
@@ -32,23 +33,19 @@ const Map = () => {
 
   useEffect(() => {
     if (!loaded) return;
-
     window.kakao.maps.load(() => {
       const container = document.getElementById("map");
       if (!container) return;
-
       const options = {
         center: new window.kakao.maps.LatLng(37.5665, 126.978),
         level: 3,
       };
-
       mapRef.current = new window.kakao.maps.Map(container, options);
     });
   }, [loaded]);
 
   const searchPlaces = () => {
     if (!window.kakao || !window.kakao.maps) return;
-
     if (!keyword.trim()) {
       alert("주소나 장소를 입력해주세요!");
       return;
@@ -63,15 +60,18 @@ const Map = () => {
         mapRef.current.setLevel(5);
         setPlaces(data);
         setShowPlaceList(true);
+        placeMarkerRef.current.forEach((m) => m.setMap(null));
+        placeMarkerRef.current = [];
+        toiletMarkersRef.current.forEach((m) => m.setMap(null));
+        toiletMarkersRef.current = [];
+        cameraMarkersRef.current.forEach((m) => m.setMap(null));
+        cameraMarkersRef.current = [];
 
         if (data.length > 0 && mapRef.current) {
           const first = data[0];
-          placeMarkerRef.current.forEach((marker) => marker.setMap(null));
-          placeMarkerRef.current = [];
-          parkingLotMarkersRef.current.forEach((marker) => marker.setMap(null));
-          parkingLotMarkersRef.current = [];
           const latlng = new window.kakao.maps.LatLng(first.y, first.x);
           mapRef.current.setCenter(latlng);
+          setSearchCenter(latlng);
         }
       } else {
         alert("검색 결과가 존재하지 않거나 오류가 발생했습니다.");
@@ -81,12 +81,9 @@ const Map = () => {
     ps.keywordSearch(keyword, placesSearchCB);
   };
 
-  // 검색 결과 장소 마커 렌더링
   useEffect(() => {
     if (!mapRef.current || !places.length) return;
-
     const newMarkers = [];
-
     places.forEach((place, idx) => {
       const position = new window.kakao.maps.LatLng(place.y, place.x);
       const imageSrc =
@@ -118,7 +115,6 @@ const Map = () => {
         placeMarkerRef.current.forEach((m) => {
           if (m !== marker) m.setMap(null);
         });
-
         placeMarkerRef.current = [marker];
       });
 
@@ -129,7 +125,7 @@ const Map = () => {
   }, [places]);
 
   useMarkerLayer({
-    selectedPlace,
+    selectedPlace: selectedPlace,
     show: showParking,
     fetchFn: fetchNearbyParkingLots,
     markerRef: parkingLotMarkersRef,
@@ -137,31 +133,23 @@ const Map = () => {
     loaded,
     enableClickCentering: true,
     onMarkerClick: (parkingLot) => {
-      setSelectedParkingLot(null);
-      setShowParkingList(false);
-      setTimeout(() => {
-        setSelectedParkingLot(parkingLot);
-      }, 0);
-    },
-  });
-
-  useMarkerLayer({
-    selectedPlace,
-    show: showParking,
-    fetchFn: fetchNearbyParkingLots,
-    markerRef: parkingLotMarkersRef,
-    mapRef,
-    loaded,
-    enableClickCentering: true,
-    onMarkerClick: (parkingLot) => {
-      setParkingLots([parkingLot]);
       setShowParkingList(false);
       setSelectedParkingLot(parkingLot);
     },
   });
 
   useMarkerLayer({
-    selectedPlace,
+    selectedPlace: selectedPlace,
+    show: showCamera,
+    fetchFn: fetchNearbyCameras,
+    markerRef: cameraMarkersRef,
+    mapRef,
+    loaded,
+    enableClickCentering: false,
+  });
+
+  useMarkerLayer({
+    selectedPlace: selectedPlace,
     show: showToilet,
     fetchFn: fetchNearbyToilets,
     markerRef: toiletMarkersRef,
@@ -171,25 +159,48 @@ const Map = () => {
   });
 
   const handleToggleParkingList = async () => {
-    if (!selectedPlace) {
-      alert("먼저 장소를 검색하거나 클릭해주세요!");
+    if (!mapRef.current) {
+      alert("지도가 로드되지 않았습니다.");
       return;
     }
 
-    if (!showParkingList) {
+    const center = mapRef.current.getCenter();
+
+    try {
+      const data = await fetchNearbyParkingLots(
+        center.getLat(),
+        center.getLng()
+      );
+      setParkingLots(data);
+      setShowParkingList((prev) => !prev);
+    } catch (error) {
+      console.error("주차장 목록 불러오기 실패:", error);
+    }
+  };
+  useEffect(() => {
+    if (!loaded || !mapRef.current || !selectedParkingLot) return;
+
+    const map = mapRef.current;
+
+    const handleIdle = async () => {
+      const center = map.getCenter();
       try {
         const data = await fetchNearbyParkingLots(
-          selectedPlace.getLat(),
-          selectedPlace.getLng()
+          center.getLat(),
+          center.getLng()
         );
         setParkingLots(data);
       } catch (error) {
-        console.error("주차장 목록 불러오기 실패:", error);
+        console.error("맵 이동 시 주차장 목록 불러오기 실패:", error);
       }
-    }
+    };
 
-    setShowParkingList((prev) => !prev);
-  };
+    window.kakao.maps.event.addListener(map, "idle", handleIdle);
+
+    return () => {
+      window.kakao.maps.event.removeListener(map, "idle", handleIdle);
+    };
+  }, [loaded, mapRef, showParking]);
 
   return (
     <div className={styles.wrapper}>
@@ -257,8 +268,20 @@ const Map = () => {
         <ParkingDetail
           lot={selectedParkingLot}
           onClose={() => setSelectedParkingLot(null)}
-          onBackToList={() => {
+          onBackToList={async () => {
             setSelectedParkingLot(null);
+            if (mapRef.current) {
+              const center = mapRef.current.getCenter();
+              try {
+                const data = await fetchNearbyParkingLots(
+                  center.getLat(),
+                  center.getLng()
+                );
+                setParkingLots(data);
+              } catch (error) {
+                console.error("뒤로가기 시 주차장 목록 불러오기 실패:", error);
+              }
+            }
             setShowParkingList(true);
           }}
         />
