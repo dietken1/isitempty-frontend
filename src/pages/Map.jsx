@@ -7,6 +7,7 @@ import { useMarkerLayer } from "../hooks/useMarkerLayer";
 import { fetchNearbyParkingLots, fetchNearbyToilets } from "../api/apiService";
 import { fetchNearbyCameras } from "../api/apiService";
 import CheckBox from "../components/CheckBox";
+import ParkingList from "../components/ParkingList";
 
 const Map = () => {
   const loaded = useKakaoLoader();
@@ -14,6 +15,8 @@ const Map = () => {
   const [places, setPlaces] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null);
   const [showPlaceList, setShowPlaceList] = useState(true);
+  const [parkingLots, setParkingLots] = useState([]);
+  const [showParkingList, setShowParkingList] = useState(false);
 
   const mapRef = useRef(null);
   const placeMarkerRef = useRef([]); // 장소 검색 마커
@@ -148,6 +151,28 @@ const Map = () => {
     loaded,
   });
 
+  const handleToggleParkingList = async () => {
+    if (!selectedPlace) {
+      alert("먼저 장소를 검색하거나 클릭해주세요!");
+      return;
+    }
+
+    if (!showParkingList) {
+      // 리스트를 열기 전 데이터 불러오기
+      try {
+        const data = await fetchNearbyParkingLots(
+          selectedPlace.getLat(),
+          selectedPlace.getLng()
+        );
+        setParkingLots(data);
+      } catch (error) {
+        console.error("주차장 목록 불러오기 실패:", error);
+      }
+    }
+
+    setShowParkingList((prev) => !prev);
+  };
+
   return (
     <div className={styles.wrapper}>
       <div id="map" style={{ width: "100%", height: "100%" }} />
@@ -186,6 +211,18 @@ const Map = () => {
           onChange={() => setShowToilet((prev) => !prev)}
         />
       </div>
+      <button
+        onClick={handleToggleParkingList}
+        className={styles.toggleListBtn}
+      >
+        {showParkingList ? null : "주차장 리스트"}
+      </button>
+
+      <ParkingList
+        parkingLots={parkingLots}
+        visible={showParkingList}
+        mapRef={mapRef}
+      />
     </div>
   );
 };
