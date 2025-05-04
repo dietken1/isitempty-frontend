@@ -3,6 +3,7 @@ import { useKakaoLoader } from "../hooks/useKakaoLoader";
 import SearchBar from "../components/SearchBar";
 import KakaoMap from "../components/Kakaomap";
 import styles from "./Map.module.css";
+import { useMarkerLayer } from "../hooks/useMarkerLayer";
 import { fetchNearbyParkingLots } from "../api/apiService";
 import { fetchNearbyCameras } from "../api/apiService";
 import CheckBox from "../components/CheckBox";
@@ -120,89 +121,23 @@ const Map = () => {
     placeMarkerRef.current = newMarkers;
   }, [places]);
 
-  // 최초 주변 주차장 마커 렌더링
-  useEffect(() => {
-    if (selectedPlace && showParking) {
-      const map = mapRef.current;
-      const center = map.getCenter();
-      fetchNearbyParkingLots(center.getLat(), center.getLng())
-        .then((parkingLots) => {
-          console.log("근처 주차장:", parkingLots);
+  useMarkerLayer({
+    selectedPlace,
+    show: showParking,
+    fetchFn: fetchNearbyParkingLots,
+    markerRef: parkingLotMarkersRef,
+    mapRef,
+    loaded,
+  });
 
-          parkingLotMarkersRef.current.forEach((marker) => marker.setMap(null));
-          parkingLotMarkersRef.current = [];
-
-          const newMarkers = parkingLots.map((lot) => {
-            const position = new window.kakao.maps.LatLng(
-              lot.latitude,
-              lot.longitude
-            );
-
-            const marker = new window.kakao.maps.Marker({
-              map: mapRef.current,
-              position,
-            });
-
-            return marker;
-          });
-
-          parkingLotMarkersRef.current = newMarkers;
-        })
-        .catch((err) => {
-          console.error("API 호출 실패:", err);
-        });
-    } else {
-      // 체크 해제 시 마커 제거
-      parkingLotMarkersRef.current.forEach((marker) => marker.setMap(null));
-      parkingLotMarkersRef.current = [];
-    }
-  }, [selectedPlace, showParking]);
-
-  // 지도 드래그 후 주차장 마커 렌더링
-  useEffect(() => {
-    if (!loaded || !mapRef.current || !selectedPlace) return;
-    const map = mapRef.current;
-
-    const handleDragEnd = () => {
-      if (!selectedPlace) return;
-
-      const center = map.getCenter();
-
-      if (showParking) {
-        fetchNearbyParkingLots(center.getLat(), center.getLng())
-          .then((parkingLots) => {
-            parkingLotMarkersRef.current.forEach((m) => m.setMap(null));
-            parkingLotMarkersRef.current = [];
-
-            const newMarkers = parkingLots.map((lot) => {
-              const position = new window.kakao.maps.LatLng(
-                lot.latitude,
-                lot.longitude
-              );
-              const marker = new window.kakao.maps.Marker({
-                map,
-                position,
-              });
-              return marker;
-            });
-
-            parkingLotMarkersRef.current = newMarkers;
-          })
-          .catch((err) => {
-            console.error("지도 이동 시 API 실패:", err);
-          });
-      } else {
-        parkingLotMarkersRef.current.forEach((m) => m.setMap(null));
-        parkingLotMarkersRef.current = [];
-      }
-    };
-
-    window.kakao.maps.event.addListener(map, "idle", handleDragEnd);
-
-    return () => {
-      window.kakao.maps.event.removeListener(map, "idle", handleDragEnd);
-    };
-  }, [loaded, selectedPlace, showParking]);
+  useMarkerLayer({
+    selectedPlace,
+    show: showCamera,
+    fetchFn: fetchNearbyCameras,
+    markerRef: cameraMarkersRef,
+    mapRef,
+    loaded,
+  });
 
   return (
     <div className={styles.wrapper}>
