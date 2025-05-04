@@ -8,6 +8,7 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Mypage from "./pages/Mypage";
 import Map from "./pages/Map";
+import "remixicon/fonts/remixicon.css";
 import "./App.css";
 
 function App() {
