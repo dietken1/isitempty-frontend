@@ -132,19 +132,6 @@ const Map = () => {
             const marker = new window.kakao.maps.Marker({
               map: mapRef.current,
               position,
-              title: lot.name,
-            });
-
-            const infowindow = new window.kakao.maps.InfoWindow({
-              content: `<div style="padding:5px; font-size:13px;"><b>${lot.name}</b><br/>${lot.address}<br/>총 ${lot.slotCount}면</div>`,
-            });
-
-            window.kakao.maps.event.addListener(marker, "mouseover", () => {
-              infowindow.open(mapRef.current, marker);
-            });
-
-            window.kakao.maps.event.addListener(marker, "mouseout", () => {
-              infowindow.close();
             });
 
             return marker;
