@@ -54,3 +54,16 @@ export const fetchNearbyParkingLots = async (lat, lng) => {
     throw err;
   }
 };
+
+export const fetchNearbyCameras = async (latitude, longitude) => {
+  const response = await fetch("/api/camera/nearby", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ latitude, longitude }),
+  });
+
+  if (!response.ok) throw new Error("Failed to fetch nearby cameras");
+  return response.json();
+};

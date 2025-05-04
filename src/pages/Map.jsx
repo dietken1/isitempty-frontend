@@ -4,6 +4,8 @@ import SearchBar from "../components/SearchBar";
 import KakaoMap from "../components/Kakaomap";
 import styles from "./Map.module.css";
 import { fetchNearbyParkingLots } from "../api/apiService";
+import { fetchNearbyCameras } from "../api/apiService";
+import CheckBox from "../components/CheckBox";
 
 const Map = () => {
   const loaded = useKakaoLoader();
@@ -11,10 +13,16 @@ const Map = () => {
   const [places, setPlaces] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null);
   const [showPlaceList, setShowPlaceList] = useState(true);
-  const mapRef = useRef(null);
 
+  const mapRef = useRef(null);
   const placeMarkerRef = useRef([]); // 장소 검색 마커
   const parkingLotMarkersRef = useRef([]); // 주차장 마커
+  const cameraMarkersRef = useRef([]); // CCTV 마커
+  const toiletMarkersRef = useRef([]); // 화장실 마커
+
+  const [showParking, setShowParking] = useState(true);
+  const [showCamera, setShowCamera] = useState(false);
+  const [showToilet, setShowToilet] = useState(false);
 
   useEffect(() => {
     if (!loaded) return;
@@ -210,6 +218,23 @@ const Map = () => {
           className={styles.placeList}
         />
       )}
+      <div className={styles.checkboxContainer}>
+        <CheckBox
+          label="주차장"
+          checked={showParking}
+          onChange={() => setShowParking((prev) => !prev)}
+        />
+        <CheckBox
+          label="카메라"
+          checked={showCamera}
+          onChange={() => setShowCamera((prev) => !prev)}
+        />
+        <CheckBox
+          label="화장실"
+          checked={showToilet}
+          onChange={() => setShowToilet((prev) => !prev)}
+        />
+      </div>
     </div>
   );
 };
