@@ -8,6 +8,7 @@ import { fetchNearbyParkingLots, fetchNearbyToilets } from "../api/apiService";
 import { fetchNearbyCameras } from "../api/apiService";
 import CheckBox from "../components/CheckBox";
 import ParkingList from "../components/ParkingList";
+import ParkingDetail from "../components/ParkingDetail";
 
 const Map = () => {
   const loaded = useKakaoLoader();
@@ -17,6 +18,7 @@ const Map = () => {
   const [showPlaceList, setShowPlaceList] = useState(true);
   const [parkingLots, setParkingLots] = useState([]);
   const [showParkingList, setShowParkingList] = useState(false);
+  const [selectedParkingLot, setSelectedParkingLot] = useState(null);
 
   const mapRef = useRef(null);
   const placeMarkerRef = useRef([]); // 장소 검색 마커
@@ -52,6 +54,8 @@ const Map = () => {
       return;
     }
     setSelectedPlace(null);
+    setSelectedParkingLot(null);
+    setShowParkingList(false);
     const ps = new window.kakao.maps.services.Places();
 
     const placesSearchCB = (data, status) => {
@@ -131,6 +135,14 @@ const Map = () => {
     markerRef: parkingLotMarkersRef,
     mapRef,
     loaded,
+    enableClickCentering: true,
+    onMarkerClick: (parkingLot) => {
+      setSelectedParkingLot(null);
+      setShowParkingList(false);
+      setTimeout(() => {
+        setSelectedParkingLot(parkingLot);
+      }, 0);
+    },
   });
 
   useMarkerLayer({
@@ -140,6 +152,7 @@ const Map = () => {
     markerRef: cameraMarkersRef,
     mapRef,
     loaded,
+    enableClickCentering: false,
   });
 
   useMarkerLayer({
@@ -149,6 +162,7 @@ const Map = () => {
     markerRef: toiletMarkersRef,
     mapRef,
     loaded,
+    enableClickCentering: false,
   });
 
   const handleToggleParkingList = async () => {
@@ -158,7 +172,6 @@ const Map = () => {
     }
 
     if (!showParkingList) {
-      // 리스트를 열기 전 데이터 불러오기
       try {
         const data = await fetchNearbyParkingLots(
           selectedPlace.getLat(),
@@ -194,6 +207,7 @@ const Map = () => {
           className={styles.placeList}
         />
       )}
+
       <div className={styles.checkboxContainer}>
         <CheckBox
           label="주차장"
@@ -211,18 +225,35 @@ const Map = () => {
           onChange={() => setShowToilet((prev) => !prev)}
         />
       </div>
-      <button
-        onClick={handleToggleParkingList}
-        className={styles.toggleListBtn}
-      >
-        {showParkingList ? null : "주차장 리스트"}
-      </button>
+
+      {!showParkingList && (
+        <button
+          onClick={handleToggleParkingList}
+          className={styles.toggleListBtn}
+        >
+          주차장 리스트
+        </button>
+      )}
 
       <ParkingList
         parkingLots={parkingLots}
         visible={showParkingList}
+        onClose={() => setShowParkingList(false)}
         mapRef={mapRef}
+        onSelectLot={(lot) => {
+          setSelectedParkingLot(null);
+          setTimeout(() => {
+            setSelectedParkingLot(lot);
+          }, 0);
+        }}
       />
+
+      {selectedParkingLot && (
+        <ParkingDetail
+          lot={selectedParkingLot}
+          onClose={() => setSelectedParkingLot(null)}
+        />
+      )}
     </div>
   );
 };
