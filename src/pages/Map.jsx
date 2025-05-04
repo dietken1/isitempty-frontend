@@ -4,7 +4,7 @@ import SearchBar from "../components/SearchBar";
 import KakaoMap from "../components/Kakaomap";
 import styles from "./Map.module.css";
 import { useMarkerLayer } from "../hooks/useMarkerLayer";
-import { fetchNearbyParkingLots } from "../api/apiService";
+import { fetchNearbyParkingLots, fetchNearbyToilets } from "../api/apiService";
 import { fetchNearbyCameras } from "../api/apiService";
 import CheckBox from "../components/CheckBox";
 
@@ -135,6 +135,15 @@ const Map = () => {
     show: showCamera,
     fetchFn: fetchNearbyCameras,
     markerRef: cameraMarkersRef,
+    mapRef,
+    loaded,
+  });
+
+  useMarkerLayer({
+    selectedPlace,
+    show: showToilet,
+    fetchFn: fetchNearbyToilets,
+    markerRef: toiletMarkersRef,
     mapRef,
     loaded,
   });

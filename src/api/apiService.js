@@ -30,7 +30,6 @@ export const getHello = async () => {
 export default {
   getHello,
 };
-
 // 위도 경도 넘겨서 주변 주차장 불러오기
 export const fetchNearbyParkingLots = async (lat, lng) => {
   try {
@@ -54,7 +53,7 @@ export const fetchNearbyParkingLots = async (lat, lng) => {
     throw err;
   }
 };
-
+// 위도 경도 넘겨서 주변 카메라 불러오기
 export const fetchNearbyCameras = async (latitude, longitude) => {
   const response = await fetch("/api/camera/nearby", {
     method: "POST",
@@ -66,4 +65,24 @@ export const fetchNearbyCameras = async (latitude, longitude) => {
 
   if (!response.ok) throw new Error("Failed to fetch nearby cameras");
   return response.json();
+};
+// 위도 경도 넘겨서 주변 화장실 불러오기
+export const fetchNearbyToilets = async (latitude, longitude) => {
+  try {
+    const response = await fetch("/api/toilet/nearby", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ latitude, longitude }),
+    });
+
+    if (!response.ok) throw new Error("Failed to fetch nearby toilets");
+
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    console.error("화장실 조회 중 오류 발생:", err);
+    throw err;
+  }
 };
