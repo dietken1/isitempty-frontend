@@ -1,12 +1,17 @@
 import React from "react";
 import styles from "./ParkingDetail.module.css";
 
-const ParkingDetail = ({ lot, onClose }) => {
+const ParkingDetail = ({ lot, onClose, onBackToList }) => {
   if (!lot) return null;
 
   return (
     <div className={styles.detailContainer}>
       <div className={styles.header}>
+        <i
+          className="ri-arrow-go-back-line"
+          onClick={onBackToList}
+          style={{ cursor: "pointer", fontSize: "16px", marginRight: "10px" }}
+        ></i>
         <i
           className="ri-close-line"
           onClick={onClose}
