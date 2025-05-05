@@ -4,11 +4,15 @@ import SearchBar from "../components/SearchBar";
 import KakaoMap from "../components/Kakaomap";
 import styles from "./Map.module.css";
 import { useMarkerLayer } from "../hooks/useMarkerLayer";
-import { fetchNearbyParkingLots, fetchNearbyToilets } from "../api/apiService";
-import { fetchNearbyCameras } from "../api/apiService";
+import {
+  fetchNearbyParkingLots,
+  fetchNearbyToilets,
+  fetchNearbyCameras,
+} from "../api/apiService";
 import CheckBox from "../components/CheckBox";
 import ParkingList from "../components/ParkingList";
 import ParkingDetail from "../components/ParkingDetail";
+import { useOverlayLayer } from "../hooks/useOverlayLayer";
 
 const Map = () => {
   const loaded = useKakaoLoader();
@@ -19,7 +23,6 @@ const Map = () => {
   const [parkingLots, setParkingLots] = useState([]);
   const [showParkingList, setShowParkingList] = useState(false);
   const [selectedParkingLot, setSelectedParkingLot] = useState(null);
-  const [searchCenter, setSearchCenter] = useState(null);
 
   const mapRef = useRef(null);
   const placeMarkerRef = useRef([]);
@@ -71,7 +74,6 @@ const Map = () => {
           const first = data[0];
           const latlng = new window.kakao.maps.LatLng(first.y, first.x);
           mapRef.current.setCenter(latlng);
-          setSearchCenter(latlng);
         }
       } else {
         alert("검색 결과가 존재하지 않거나 오류가 발생했습니다.");
@@ -124,8 +126,8 @@ const Map = () => {
     placeMarkerRef.current = newMarkers;
   }, [places]);
 
-  useMarkerLayer({
-    selectedPlace: selectedPlace,
+  useOverlayLayer({
+    selectedPlace,
     show: showParking,
     fetchFn: fetchNearbyParkingLots,
     markerRef: parkingLotMarkersRef,
@@ -135,6 +137,30 @@ const Map = () => {
     onMarkerClick: (parkingLot) => {
       setShowParkingList(false);
       setSelectedParkingLot(parkingLot);
+    },
+    getOverlayContent: (item) => {
+      const div = document.createElement("div");
+
+      div.style.cssText = `
+       background: white;
+    color: black;
+    border-radius: 50%;
+    display: flex;
+    font-size: 12px;
+    justify-content: center;
+    align-items: center;
+    width: 22px;
+    height: 22px;
+    white-space: nowrap;
+    transform: translate(3%, -68%);
+      `;
+
+      div.innerText =
+        item.availableSpots !== null && item.availableSpots !== undefined
+          ? item.availableSpots
+          : "x";
+
+      return div;
     },
   });
 
