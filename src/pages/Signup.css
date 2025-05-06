@@ -1,132 +1,132 @@
 .signup_container {
-    width: 380px;
-    padding: 30px 40px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin: 0 auto;
-    margin-top: 50px;
+  width: 380px;
+  padding: 30px 40px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+  margin-top: 50px;
 }
 
 .signup_elements {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .signup_elements h1 {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
 .signup_elements div {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    gap: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 .signup_elements label {
-    width: 30%;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
+  width: 32%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
 }
 
 .signup_elements input {
-    width: 70%;
-    padding: 8px;
-    margin-top: 5px;
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+  width: 70%;
+  padding: 8px;
+  margin-top: 5px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 .signup-btn {
-    padding: 10px 15px;
-    background-color: #646cff;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-top: 25px;
-    font-size: 1rem;
+  padding: 10px 15px;
+  background-color: #646cff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 25px;
+  font-size: 1rem;
 }
 
 .signup-button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .signup-btn:hover {
-    background-color: #5a5aee;
+  background-color: #5a5aee;
 }
 
 .signup-add {
-    text-align: center;
-    margin-top: 20px;
+  text-align: center;
+  margin-top: 20px;
 }
 
 .signup-add .signup-link {
-    font-size: 1rem;
+  font-size: 1rem;
 }
-.signup-link a{
-    color: #646cff;
-    text-decoration: none;
+.signup-link a {
+  color: #646cff;
+  text-decoration: none;
 }
 
 .signup-link a:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 hr {
-    margin: 20px 0;
+  margin: 20px 0;
 }
 @media (max-width: 500px) {
-    .signup-container {
-        width: 70%;
-        font-size: 0.9rem;
-    }
+  .signup-container {
+    width: 70%;
+    font-size: 0.9rem;
+  }
 
-    .signup-btn {
-        font-size: 1rem;
-        padding: 8px 12px;
-    }
+  .signup-btn {
+    font-size: 1rem;
+    padding: 8px 12px;
+  }
 }
 
 @media (min-width: 768px) {
-    .signup-container {
-        width: 70%;
-    }
+  .signup-container {
+    width: 70%;
+  }
 
-    .signup_elements div {
-        flex-direction: row;
-        justify-content: space-between;
-        gap: 15px;
-    }
+  .signup_elements div {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 15px;
+  }
 
-    label {
-        width: 30%;
-    }
+  label {
+    width: 30%;
+  }
 
-    input {
-        width: 65%;
-    }
+  input {
+    width: 65%;
+  }
 }
 
 @media (min-width: 1024px) {
-    .signup-container {
-        width: 50%;
-    }
+  .signup-container {
+    width: 50%;
+  }
 
-    h1 {
-        font-size: 2.5rem;
-    }
+  h1 {
+    font-size: 2.5rem;
+  }
 
-    .signup-elements {
-        gap: 20px;
-    }
+  .signup-elements {
+    gap: 20px;
+  }
 }
