@@ -21,6 +21,7 @@ const Login = () => {
     try {
       const res = await loginUser(userId, password);
       setToken({ token: res.data.token });
+      window.dispatchEvent(new Event("login"));
       navigate("/");
     } catch (err) {
       console.error("Login failed:", err);

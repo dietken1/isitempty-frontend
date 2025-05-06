@@ -10,8 +10,20 @@ function Header() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = TokenLocalStorageRepository.getToken();
-    setIsLoggedIn(!!token);
+    const checkLoginStatus = () => {
+      const token = TokenLocalStorageRepository.getToken();
+      setIsLoggedIn(!!token);
+    };
+
+    checkLoginStatus();
+
+    window.addEventListener("login", checkLoginStatus);
+    window.addEventListener("logout", checkLoginStatus);
+
+    return () => {
+      window.removeEventListener("login", checkLoginStatus);
+      window.removeEventListener("logout", checkLoginStatus);
+    };
   }, []);
 
   const toggleMenu = () => {
@@ -20,7 +32,6 @@ function Header() {
 
   const handleMenuClick = (page) => {
     setIsMenuOpen(false);
-
     setTimeout(() => {
       navigate(page);
     }, 1000);
@@ -28,7 +39,7 @@ function Header() {
 
   const handleLogout = () => {
     TokenLocalStorageRepository.removeToken();
-    setIsLoggedIn(false);
+    window.dispatchEvent(new Event("logout"));
     navigate("/login");
   };
 
