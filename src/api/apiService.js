@@ -3,6 +3,7 @@
  * 백엔드 API와의 통신을 담당합니다.
  */
 import axios from "axios";
+import axiosInstance from "./axiosInstance";
 
 // axios 인스턴스 생성
 const api = axios.create({
@@ -86,3 +87,8 @@ export const fetchNearbyToilets = async (latitude, longitude) => {
     throw err;
   }
 };
+
+export const loginUser = (userId, password) =>
+  axiosInstance.post("/auth/login", { id: userId, password });
+
+export const getUserMe = () => axiosInstance.get("/users/me");
