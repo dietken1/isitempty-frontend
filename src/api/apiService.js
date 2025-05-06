@@ -86,3 +86,21 @@ export const fetchNearbyToilets = async (latitude, longitude) => {
     throw err;
   }
 };
+export const loginApi = async ({ path, method, body }) => {
+  const response = await fetch(`/api/v1/${path}`, {
+    method,
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  return {
+    type: response.ok ? "success" : "error",
+    status: response.status,
+    message: data?.message || "",
+    data,
+  };
+};
