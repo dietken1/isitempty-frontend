@@ -5,7 +5,7 @@
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     margin: 0 auto;
-    margin-top: 50px;
+    margin-block: 50px;
 }
 
 .signup_elements {
@@ -29,14 +29,14 @@
 }
 
 .signup_elements label {
-    width: 30%;
+    width: 35%;
     display: flex;
     justify-content: flex-start;
     align-items: center;
 }
 
 .signup_elements input {
-    width: 70%;
+    width: 65%;
     padding: 8px;
     margin-top: 5px;
     box-sizing: border-box;
@@ -84,6 +84,12 @@
 
 hr {
     margin: 20px 0;
+}
+.error {
+    color: red;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 @media (max-width: 500px) {
     .signup-container {

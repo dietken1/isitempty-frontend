@@ -1,64 +1,39 @@
-import React, { useState, useEffect } from "react";
-import { getHello } from "../api/apiService";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
 
 function Home() {
-  const [message, setMessage] = useState("Loading...");
-  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const goToMap = () => {
     navigate("/map");
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await getHello();
-        setMessage(data.message || JSON.stringify(data));
-      } catch (err) {
-        console.error("Error fetching data:", err);
-        setError("Failed to load data from backend");
-        setMessage("Error occurred");
-      }
-    };
-
-    fetchData();
-  }, []);
-
   return (
     <div className="home-container">
       <h1>Welcome to IsItEmpty</h1>
-      <p>Find available parking spaces in real-time</p>
+      <div className="maptest">
+        <button onClick={goToMap} className="map-button">
+          🗺️ Open Map
+        </button>
+      </div>
+      <div className="card">
+        <h4><i className="ri-parking-box-fill"></i>실시간 정보</h4>
+        <p>실시간으로 주차장에 빈자리가 있는지 확인하세요!</p>
+      </div>
 
       <div className="card">
-        <h2>Backend Connection Test</h2>
-        {error ? (
-          <p className="error">{error}</p>
-        ) : (
-          <p>Message from backend: {message}</p>
-        )}
+        <h4><i className="ri-camera-fill"></i>단속 카메라</h4>
+        <p>주차 단속 카메라가 어디있는지 확인하세요!</p>
       </div>
 
-      <div className="features">
-        <div className="feature">
-          <h3>Real-time Updates</h3>
-          <p>Get up-to-date information about parking availability</p>
-        </div>
-        <div className="feature">
-          <h3>Easy Navigation</h3>
-          <p>Find the best parking spot with our intuitive interface</p>
-        </div>
-        <div className="feature">
-          <h3>Save Time</h3>
-          <p>No more driving around looking for parking</p>
-        </div>
+      <div className="card">
+        <h4><i className="ri-men-line"></i>
+        <i className="ri-women-line"></i>화장실</h4>
+        <p>운전중 급하다면? 화장실이 어디있는지 확인하세요!</p>
       </div>
-      <div className="maptest">
-        <h3>Map</h3>
-        <button onClick={goToMap}>Open Map</button>
-      </div>
+
+      
     </div>
   );
 }

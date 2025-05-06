@@ -108,7 +108,7 @@ const Signup = () => {
                             <img src="/images/kakao.png" alt="Kakao Login" />
                         </button>
                     </div>
-                    {invalidCreds && <p>다시 시도해주세요</p>}
+                    {invalidCreds && <p class="error">다시 시도해주세요</p>}
                 </form>
             </div>
         </div>
