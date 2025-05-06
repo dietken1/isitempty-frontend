@@ -40,7 +40,7 @@ function Header() {
   const handleLogout = () => {
     TokenLocalStorageRepository.removeToken();
     window.dispatchEvent(new Event("logout"));
-    navigate("/login");
+    navigate("/");
   };
 
   return (
@@ -61,11 +61,11 @@ function Header() {
         <ul>
           {isLoggedIn ? (
             <li onClick={handleLogout}>
-              <span>Logout</span>
+              <a>Logout</a>
             </li>
           ) : (
             <li onClick={() => handleMenuClick("/login")}>
-              <span>Login</span>
+              <a>Login</a>
             </li>
           )}
           <li onClick={() => handleMenuClick("/mypage")}>
