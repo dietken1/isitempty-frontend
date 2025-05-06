@@ -1,14 +1,10 @@
 import React, { useState } from "react";
 import "./Signup.css";
 import { useNavigate } from "react-router-dom";
-import { loginApi } from "../api/apiService";
+import axiosInstance from "../api/axiosInstance";
 
 const signupUser = (formData) => {
-  return loginApi({
-    path: "users/signup",
-    method: "POST",
-    body: formData,
-  });
+  return axiosInstance.post("/users/signup", formData);
 };
 
 const Signup = () => {
@@ -46,16 +42,14 @@ const Signup = () => {
     };
 
     signupUser(formData)
-      .then((response) => {
-        if (response.type === "error") {
-          setResponseMessage(response.message);
-          return;
-        }
+      .then(() => {
         navigate("/login");
       })
       .catch((error) => {
         console.error(error);
-        setResponseMessage("오류가 발생했습니다.");
+        setResponseMessage(
+          error.response?.data?.message || "오류가 발생했습니다."
+        );
       })
       .finally(() => {
         setLoading(false);
