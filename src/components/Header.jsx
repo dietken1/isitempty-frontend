@@ -1,10 +1,18 @@
 import React, { useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Header.css";
+import { TokenLocalStorageRepository } from "../repository/localstorages";
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = TokenLocalStorageRepository.getToken();
+    setIsLoggedIn(!!token);
+  }, []);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -16,6 +24,12 @@ function Header() {
     setTimeout(() => {
       navigate(page);
     }, 1000);
+  };
+
+  const handleLogout = () => {
+    TokenLocalStorageRepository.removeToken();
+    setIsLoggedIn(false);
+    navigate("/login");
   };
 
   return (
@@ -34,9 +48,15 @@ function Header() {
 
       <nav className={`nav ${isMenuOpen ? "open" : ""}`}>
         <ul>
-          <li onClick={() => handleMenuClick("/login")}>
-            <a href="/login">Login</a>
-          </li>
+          {isLoggedIn ? (
+            <li onClick={handleLogout}>
+              <span>Logout</span>
+            </li>
+          ) : (
+            <li onClick={() => handleMenuClick("/login")}>
+              <span>Login</span>
+            </li>
+          )}
           <li onClick={() => handleMenuClick("/mypage")}>
             <a href="/mypage">Mypage</a>
           </li>
