@@ -1,47 +1,90 @@
 .home-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
 }
 
+.home-container > h1 {
+  font-size: 2.3rem;
+  font-weight: bold;
+  color: #333;
+  margin-block: 20px;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: #777;
+  margin-bottom: 40px;
+}
+
+/* 카드 스타일 */
 .card {
-  padding: 2rem;
-  margin: 2rem 0;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  border-radius: 12px;
+  padding: 20px;
+  width: 300px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+.ri-parking-box-fill, .ri-camera-fill, .ri-women-line{
+  margin-right: 10px;
+}
+.card h4 {
+  font-size: 1.3rem;
+  color: #333;
+  margin-bottom: 15px;
 }
 
 .error {
-  color: #dc3545;
+  color: red;
+  font-weight: bold;
 }
 
-.features {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  margin-top: 3rem;
+/* 맵 버튼 */
+.maptest {
+  margin-block: 30px;
 }
 
-.feature {
-  padding: 1.5rem;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
+.map-button {
+  background: linear-gradient(90deg, #597aff, #7bc1fe);
+  border: none;
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: white;
+  border-radius: 50px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
-.feature:hover {
-  transform: translateY(-5px);
+.map-button:hover {
+  transform: scale(1.1);
+  background-color: #ff6f43;
 }
 
-.feature h3 {
-  color: #333;
-  margin-top: 0;
-}
-
+/* 반응형 스타일 */
 @media (max-width: 768px) {
-  .features {
-    grid-template-columns: 1fr;
+  .home-container {
+    padding: 20px;
+  }
+
+  .card {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .map-button {
+    width: 100%;
+    padding: 15px;
+    font-size: 1rem;
   }
 }
