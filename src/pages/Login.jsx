@@ -3,7 +3,7 @@ import "./Login.css";
 import { useNavigate } from "react-router-dom";
 import { loginUser, getUserMe } from "../api/apiService";
 import { TokenLocalStorageRepository } from "../repository/localstorages";
-import { GoogleLogin } from "@react-oauth/google";
+import { useGoogleLogin } from "@react-oauth/google";
 
 const Login = () => {
   const [userId, setUserId] = useState("");
@@ -43,6 +43,37 @@ const Login = () => {
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
+
+  const login = useGoogleLogin({
+    flow: "auth-code",
+    onSuccess: async (tokenResponse) => {
+      // tokenResponse.code === 인증 코드
+      try {
+        const res = await fetch("/api/auth/google", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            code: tokenResponse.code,
+          }),
+        });
+
+        if (!res.ok) throw new Error("Google login failed");
+        const data = await res.json();
+
+        setToken({ token: data.accessToken });
+        window.dispatchEvent(new Event("login"));
+        navigate("/");
+      } catch (err) {
+        console.error("Google login error:", err);
+      }
+    },
+    onError: () => {
+      console.log("Google login failed");
+    },
+    redirect_uri: "http://localhost:5173/login/oauth2/code/google",
+  });
 
   return (
     <div className="login-container">
@@ -104,36 +135,11 @@ const Login = () => {
             >
               <img src="/images/naver.png" alt="Naver Login" />
             </button>
-            <div className="google">
-              <GoogleLogin
-                onSuccess={async (credentialResponse) => {
-                  const credential = credentialResponse.credential;
 
-                  try {
-                    const res = await fetch("/api/auth/google", {
-                      method: "POST",
-                      headers: {
-                        "Content-Type": "application/json",
-                      },
-                      body: JSON.stringify({ token: credential }),
-                    });
+            <button type="button" className="google" onClick={() => login()}>
+              <img src="/images/google.png" alt="구글 로그인" />
+            </button>
 
-                    if (!res.ok) throw new Error("Google login failed");
-                    const data = await res.json();
-
-                    setToken({ token: data.accessToken });
-                    window.dispatchEvent(new Event("login"));
-                    navigate("/");
-                  } catch (err) {
-                    console.error("Google login error:", err);
-                    setResponseMessage("구글 로그인에 실패했습니다.");
-                  }
-                }}
-                onError={() => {
-                  setResponseMessage("구글 로그인 중 오류가 발생했습니다.");
-                }}
-              />
-            </div>
             <button
               type="button"
               className="kakao"
