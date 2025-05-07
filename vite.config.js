@@ -9,7 +9,6 @@ export default defineConfig({
     minify: "esbuild", // terser 대신 esbuild 사용
   },
   server: {
-    port: 8080,
     proxy: {
       "/api": {
         target: "http://localhost:8080",
