@@ -153,23 +153,44 @@ const Map = () => {
     getOverlayContent: (item) => {
       const div = document.createElement("div");
 
+      const { availableSpots, slotCount } = item;
+      let color = "gray"; // 기본값
+
+      if (
+        availableSpots !== null &&
+        availableSpots !== undefined &&
+        typeof slotCount === "number" &&
+        slotCount > 0
+      ) {
+        const ratio = availableSpots / slotCount;
+        if (ratio >= 0.5) {
+          color = "green";
+        } else if (ratio >= 0.2) {
+          color = "orange";
+        } else {
+          color = "red";
+        }
+      }
+
       div.style.cssText = `
-       background: white;
-    color: black;
-    border-radius: 50%;
-    display: flex;
-    font-size: 12px;
-    justify-content: center;
-    align-items: center;
-    width: 22px;
-    height: 22px;
-    white-space: nowrap;
-    transform: translate(3%, -68%);
+        background: white;
+        color: ${color};
+        border-radius: 50%;
+        display: flex;
+        font-size: 12px;
+        justify-content: center;
+        align-items: center;
+        width: 22px;
+        height: 22px;
+        white-space: nowrap;
+        transform: translate(3%, -68%);
+        border: 1px solid #ccc;
+        font-weight: 700;
       `;
 
       div.innerText =
-        item.availableSpots !== null && item.availableSpots !== undefined
-          ? item.availableSpots
+        availableSpots !== null && availableSpots !== undefined
+          ? availableSpots
           : "x";
 
       return div;
