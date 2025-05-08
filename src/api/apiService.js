@@ -95,71 +95,91 @@ export const getUserMe = () => axiosInstance.get("/users/me");
 
 export const getMyReviews = async () => {
   try {
-    const response = await fetch('/api/myreviews');
+    const response = await fetch("/api/myreviews");
     if (!response.ok) {
-      throw new Error('Failed to fetch reviews');
+      throw new Error("Failed to fetch reviews");
     }
     return await response.json();
   } catch (error) {
-    console.error('Error fetching reviews:', error);
+    console.error("Error fetching reviews:", error);
     throw error;
   }
 };
 
 export const getFavoriteParking = async () => {
   try {
-    const response = await fetch('/api/favorites');
+    const response = await fetch("/api/favorites");
     if (!response.ok) {
-      throw new Error('Failed to fetch favorites');
+      throw new Error("Failed to fetch favorites");
     }
     return await response.json();
   } catch (error) {
-    console.error('Error fetching favorite parking:', error);
+    console.error("Error fetching favorite parking:", error);
     throw error;
   }
 };
 
 export const getUserDetails = (token) => {
-  return fetch('/api/v1/users/me', {
-    method: 'GET',
+  return fetch("/api/v1/users/me", {
+    method: "GET",
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`, 
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
   })
     .then((response) => {
       if (!response.ok) {
-        throw new Error('Failed to fetch user details');
+        throw new Error("Failed to fetch user details");
       }
       return response.json();
     })
     .catch((error) => {
-      console.error('Error fetching user details:', error);
+      console.error("Error fetching user details:", error);
     });
 };
 
-
 export const updateUserDetails = (token, user) => {
-  return fetch('/api/v1/users/update', {
-    method: 'PUT',
+  return fetch("/api/v1/users/update", {
+    method: "PUT",
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({
       email: user.email,
       password: user.password,
     }),
   })
-    .then(response => {
+    .then((response) => {
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: 사용자 정보 수정 실패`);
       }
       return response.json();
     })
-    .then(data => data)
-    .catch(error => {
-      console.error('Error updating user details:', error);
+    .then((data) => data)
+    .catch((error) => {
+      console.error("Error updating user details:", error);
       throw error;
     });
+};
+// 위도 경도 넘겨서 거리 포함 모든 주차장 불러오기 (거리 기준 정렬용)
+export const fetchParkingLotsWithDistance = async (latitude, longitude) => {
+  try {
+    const response = await fetch("/api/parking-lots/all-with-distance", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ latitude, longitude }),
+    });
+
+    if (!response.ok) {
+      throw new Error("주차장 거리 정보 불러오기 실패");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching parking lots with distance:", error);
+    throw error;
+  }
 };
