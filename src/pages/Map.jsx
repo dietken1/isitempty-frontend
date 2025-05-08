@@ -30,6 +30,7 @@ const Map = () => {
   const parkingLotMarkersRef = useRef([]);
   const cameraMarkersRef = useRef([]);
   const toiletMarkersRef = useRef([]);
+  const myLocationMarkerRef = useRef(null);
 
   const [showParking, setShowParking] = useState(true);
   const [showCamera, setShowCamera] = useState(false);
@@ -60,6 +61,11 @@ const Map = () => {
     setShowParkingList(false);
     setPlaces([]);
     setPagination(null);
+
+    if (myLocationMarkerRef.current) {
+      myLocationMarkerRef.current.setMap(null);
+      myLocationMarkerRef.current = null;
+    }
 
     const ps = new window.kakao.maps.services.Places();
     ps.keywordSearch(keyword, placesSearchCB);
@@ -258,6 +264,17 @@ const Map = () => {
                 mapRef.current.setCenter(latlng);
                 mapRef.current.setLevel(5);
               }
+              if (myLocationMarkerRef.current) {
+                myLocationMarkerRef.current.setMap(null);
+              }
+
+              const marker = new window.kakao.maps.Marker({
+                map: mapRef.current,
+                position: latlng,
+                title: "내 위치",
+              });
+
+              myLocationMarkerRef.current = marker;
             },
             (error) => {
               console.error("위치 가져오기 실패:", error);
