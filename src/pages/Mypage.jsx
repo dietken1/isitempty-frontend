@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { getMyReviews, getFavoriteParking, getUserDetails } from "../api/apiService"; 
 import { TokenLocalStorageRepository } from "../repository/localstorages";
 
-import './MyPage.css';
+import './Mypage.css';
 
 const MyPage = () => {
   const [user, setUser] = useState(null);
