@@ -45,7 +45,11 @@ jobs:
         VITE_KAKAO_CLIENT_ID: ${{ secrets.VITE_KAKAO_CLIENT_ID }}
         VITE_NAVER_CLIENT_ID: ${{ secrets.VITE_NAVER_CLIENT_ID }}
       run: |
-        docker build --no-cache -t ${DOCKER_USERNAME}/isitempty-front:latest --build-arg VITE_KAKAO_MAP_API_KEY=${VITE_KAKAO_MAP_API_KEY} .
+        docker build --no-cache -t ${DOCKER_USERNAME}/isitempty-front:latest \
+      --build-arg VITE_KAKAO_MAP_API_KEY=${VITE_KAKAO_MAP_API_KEY} \
+      --build-arg VITE_GOOGLE_CLIENT_ID=${VITE_GOOGLE_CLIENT_ID} \
+      --build-arg VITE_KAKAO_CLIENT_ID=${VITE_KAKAO_CLIENT_ID} \
+      --build-arg VITE_NAVER_CLIENT_ID=${VITE_NAVER_CLIENT_ID} .
         docker push ${DOCKER_USERNAME}/isitempty-front:latest
         
     - name: Deploy to server
