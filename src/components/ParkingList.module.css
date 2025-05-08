@@ -27,7 +27,7 @@
   transform: translateX(-50%);
   padding: 8px 18px 15px 32px;
   width: 41dvh;
-  background-color: #ffffffc9;
+  background-color: rgb(255 255 255 / 84%);
   border-radius: 5%;
 }
 .header {
