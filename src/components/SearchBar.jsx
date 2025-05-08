@@ -15,6 +15,10 @@ const SearchBar = ({ keyword, setKeyword, onSearch, className }) => {
         placeholder="장소를 입력하세요"
       />
       <button type="submit">검색</button>
+      <i
+        style={{ fontSize: "22px", cursor: "pointer" }}
+        class="ri-crosshair-line"
+      ></i>
     </form>
   );
 };

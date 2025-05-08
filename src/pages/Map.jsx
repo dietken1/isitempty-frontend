@@ -59,7 +59,7 @@ const Map = () => {
     setSelectedParkingLot(null);
     setShowParkingList(false);
     setPlaces([]);
-    setPagination(null); // 초기화
+    setPagination(null);
 
     const ps = new window.kakao.maps.services.Places();
     ps.keywordSearch(keyword, placesSearchCB);
