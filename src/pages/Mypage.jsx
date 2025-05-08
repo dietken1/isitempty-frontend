@@ -23,10 +23,15 @@ const MyPage = () => {
   }, []);
 
   const loadUserDetails = (token) => {
+    console.log(token);
     getUserDetails(token) // 토큰을 API에 보내서 유저 정보 불러오기
-      .then((data) => setUser(data))
+      .then((data) => {
+        setUser(data); // 상태 업데이트
+        console.log(data); // 데이터 콘솔 출력
+      })
       .catch((error) => console.error("Error loading user data:", error));
   };
+  
 
   const loadReviews = (token) => {
     getMyReviews(token) // 토큰을 API에 보내서 리뷰 목록 불러오기
