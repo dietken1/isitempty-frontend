@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 
 const PlaceList = ({
   className,
@@ -8,12 +8,13 @@ const PlaceList = ({
   mapRef,
   markerRef,
   setShowPlaceList,
+  pagination,
 }) => {
+  const listRef = useRef(null);
   if (!places.length) return null;
 
   const handleClick = (place, index) => {
     const position = new window.kakao.maps.LatLng(place.y, place.x);
-
     if (!mapRef.current) return;
 
     markerRef.current.forEach((m) => m.setMap(null));
@@ -44,7 +45,7 @@ const PlaceList = ({
 
     mapRef.current.setCenter(position);
     mapRef.current.setLevel(5);
-    setSelectedPlace(position); // 좌표 저장
+    setSelectedPlace(position);
     setShowPlaceList(false);
   };
 
@@ -55,6 +56,7 @@ const PlaceList = ({
 
   return (
     <ul
+      ref={listRef}
       className={className}
       style={{
         padding: "1rem",
@@ -62,6 +64,7 @@ const PlaceList = ({
         maxHeight: 300,
         overflowY: "auto",
         marginTop: "1rem",
+        listStyle: "none",
       }}
     >
       {places.map((place, index) => (
@@ -80,6 +83,39 @@ const PlaceList = ({
           </span>
         </li>
       ))}
+
+      {pagination && (
+        <li style={{ marginTop: "10px" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              gap: "6px",
+              flexWrap: "wrap",
+            }}
+          >
+            {Array.from({ length: pagination.last }, (_, i) => (
+              <button
+                key={i + 1}
+                onClick={() => {
+                  pagination.gotoPage(i + 1);
+                  if (listRef.current) listRef.current.scrollTop = 0;
+                }}
+                style={{
+                  padding: "4px 8px",
+                  fontSize: "14px",
+                  border: "1px solid #ccc",
+                  backgroundColor: "white",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                }}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+        </li>
+      )}
     </ul>
   );
 };

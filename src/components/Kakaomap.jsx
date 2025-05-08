@@ -8,6 +8,7 @@ const KakaoMap = ({
   className,
   markerRef,
   mapRef,
+  pagination,
 }) => {
   return (
     <PlaceList
@@ -18,6 +19,7 @@ const KakaoMap = ({
       mapRef={mapRef}
       markerRef={markerRef}
       map={mapRef.current}
+      pagination={pagination}
     />
   );
 };
