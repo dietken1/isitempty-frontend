@@ -42,24 +42,24 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
       </div>
       <div className={styles.detail_info}>
         <p>
-          <i style={{ marginRight: "5px" }} class="ri-map-pin-2-fill"></i>주소:{" "}
-          <span>{address}</span>
+          <i style={{ marginRight: "5px" }} className="ri-map-pin-2-fill"></i>
+          주소: <span>{address}</span>
         </p>
         <p>
-          <i style={{ marginRight: "5px" }} class="ri-car-fill"></i>주차장 유형:{" "}
-          <span>{type || "정보 없음"}</span>
+          <i style={{ marginRight: "5px" }} className="ri-car-fill"></i>주차장
+          유형: <span>{type || "정보 없음"}</span>
         </p>
         <p>
-          <i style={{ marginRight: "5px" }} class="ri-time-line"></i>영업일:{" "}
+          <i style={{ marginRight: "5px" }} className="ri-time-line"></i>영업일:{" "}
           <span>{openDays || "정보 없음"}</span>
         </p>
         <p>
-          <i style={{ marginRight: "5px" }} class="ri-parking-box-fill"></i>
+          <i style={{ marginRight: "5px" }} className="ri-parking-box-fill"></i>
           <span>{availableText}</span>
         </p>
         <p>
-          <i style={{ marginRight: "5px" }} class="ri-phone-fill"></i>전화번호:{" "}
-          <span>{phone || "정보 없음"}</span>
+          <i style={{ marginRight: "5px" }} className="ri-phone-fill"></i>
+          전화번호: <span>{phone || "정보 없음"}</span>
         </p>
       </div>
     </div>

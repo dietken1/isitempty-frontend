@@ -243,6 +243,30 @@ const Map = () => {
         keyword={keyword}
         setKeyword={setKeyword}
         onSearch={searchPlaces}
+        onGpsClick={() => {
+          if (!navigator.geolocation) {
+            alert("이 브라우저는 위치 정보를 지원하지 않습니다.");
+            return;
+          }
+
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const { latitude, longitude } = position.coords;
+              const latlng = new window.kakao.maps.LatLng(latitude, longitude);
+              setSelectedPlace(latlng);
+              if (mapRef.current) {
+                mapRef.current.setCenter(latlng);
+                mapRef.current.setLevel(5);
+              }
+            },
+            (error) => {
+              console.error("위치 가져오기 실패:", error);
+              alert(
+                "위치 정보를 가져올 수 없습니다. Wi-Fi 또는 GPS를 켜고 다시 시도해 주세요."
+              );
+            }
+          );
+        }}
       />
 
       {showPlaceList && (
