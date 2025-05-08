@@ -30,6 +30,7 @@ const Map = () => {
   const parkingLotMarkersRef = useRef([]);
   const cameraMarkersRef = useRef([]);
   const toiletMarkersRef = useRef([]);
+  const myLocationMarkerRef = useRef(null);
 
   const [showParking, setShowParking] = useState(true);
   const [showCamera, setShowCamera] = useState(false);
@@ -60,6 +61,11 @@ const Map = () => {
     setShowParkingList(false);
     setPlaces([]);
     setPagination(null);
+
+    if (myLocationMarkerRef.current) {
+      myLocationMarkerRef.current.setMap(null);
+      myLocationMarkerRef.current = null;
+    }
 
     const ps = new window.kakao.maps.services.Places();
     ps.keywordSearch(keyword, placesSearchCB);
@@ -147,23 +153,44 @@ const Map = () => {
     getOverlayContent: (item) => {
       const div = document.createElement("div");
 
+      const { availableSpots, slotCount } = item;
+      let color = "gray"; // 기본값
+
+      if (
+        availableSpots !== null &&
+        availableSpots !== undefined &&
+        typeof slotCount === "number" &&
+        slotCount > 0
+      ) {
+        const ratio = availableSpots / slotCount;
+        if (ratio >= 0.5) {
+          color = "green";
+        } else if (ratio >= 0.2) {
+          color = "orange";
+        } else {
+          color = "red";
+        }
+      }
+
       div.style.cssText = `
-       background: white;
-    color: black;
-    border-radius: 50%;
-    display: flex;
-    font-size: 12px;
-    justify-content: center;
-    align-items: center;
-    width: 22px;
-    height: 22px;
-    white-space: nowrap;
-    transform: translate(3%, -68%);
+        background: white;
+        color: ${color};
+        border-radius: 50%;
+        display: flex;
+        font-size: 12px;
+        justify-content: center;
+        align-items: center;
+        width: 22px;
+        height: 22px;
+        white-space: nowrap;
+        transform: translate(3%, -68%);
+        border: 1px solid #ccc;
+        font-weight: 700;
       `;
 
       div.innerText =
-        item.availableSpots !== null && item.availableSpots !== undefined
-          ? item.availableSpots
+        availableSpots !== null && availableSpots !== undefined
+          ? availableSpots
           : "x";
 
       return div;
@@ -258,6 +285,17 @@ const Map = () => {
                 mapRef.current.setCenter(latlng);
                 mapRef.current.setLevel(5);
               }
+              if (myLocationMarkerRef.current) {
+                myLocationMarkerRef.current.setMap(null);
+              }
+
+              const marker = new window.kakao.maps.Marker({
+                map: mapRef.current,
+                position: latlng,
+                title: "내 위치",
+              });
+
+              myLocationMarkerRef.current = marker;
             },
             (error) => {
               console.error("위치 가져오기 실패:", error);
