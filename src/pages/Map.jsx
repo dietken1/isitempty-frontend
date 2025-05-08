@@ -23,6 +23,7 @@ const Map = () => {
   const [parkingLots, setParkingLots] = useState([]);
   const [showParkingList, setShowParkingList] = useState(false);
   const [selectedParkingLot, setSelectedParkingLot] = useState(null);
+  const [pagination, setPagination] = useState(null);
 
   const mapRef = useRef(null);
   const placeMarkerRef = useRef([]);
@@ -53,34 +54,39 @@ const Map = () => {
       alert("주소나 장소를 입력해주세요!");
       return;
     }
+
     setSelectedPlace(null);
     setSelectedParkingLot(null);
     setShowParkingList(false);
+    setPlaces([]);
+    setPagination(null); // 초기화
+
     const ps = new window.kakao.maps.services.Places();
-
-    const placesSearchCB = (data, status) => {
-      if (status === window.kakao.maps.services.Status.OK) {
-        mapRef.current.setLevel(5);
-        setPlaces(data);
-        setShowPlaceList(true);
-        placeMarkerRef.current.forEach((m) => m.setMap(null));
-        placeMarkerRef.current = [];
-        toiletMarkersRef.current.forEach((m) => m.setMap(null));
-        toiletMarkersRef.current = [];
-        cameraMarkersRef.current.forEach((m) => m.setMap(null));
-        cameraMarkersRef.current = [];
-
-        if (data.length > 0 && mapRef.current) {
-          const first = data[0];
-          const latlng = new window.kakao.maps.LatLng(first.y, first.x);
-          mapRef.current.setCenter(latlng);
-        }
-      } else {
-        alert("검색 결과가 존재하지 않거나 오류가 발생했습니다.");
-      }
-    };
-
     ps.keywordSearch(keyword, placesSearchCB);
+  };
+
+  const placesSearchCB = (data, status, paginationObj) => {
+    if (status === window.kakao.maps.services.Status.OK) {
+      mapRef.current.setLevel(5);
+      setPlaces(data);
+      setShowPlaceList(true);
+      setPagination(paginationObj); // 페이지네이션 객체 저장
+
+      placeMarkerRef.current.forEach((m) => m.setMap(null));
+      placeMarkerRef.current = [];
+      toiletMarkersRef.current.forEach((m) => m.setMap(null));
+      toiletMarkersRef.current = [];
+      cameraMarkersRef.current.forEach((m) => m.setMap(null));
+      cameraMarkersRef.current = [];
+
+      if (data.length > 0 && mapRef.current) {
+        const first = data[0];
+        const latlng = new window.kakao.maps.LatLng(first.y, first.x);
+        mapRef.current.setCenter(latlng);
+      }
+    } else {
+      alert("검색 결과가 존재하지 않거나 오류가 발생했습니다.");
+    }
   };
 
   useEffect(() => {
@@ -247,9 +253,9 @@ const Map = () => {
           mapRef={mapRef}
           markerRef={placeMarkerRef}
           className={styles.placeList}
+          pagination={pagination}
         />
       )}
-
       <div className={styles.checkboxContainer}>
         <CheckBox
           label="주차장"
