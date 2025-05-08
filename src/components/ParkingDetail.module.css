@@ -9,7 +9,7 @@
   transform: translateX(-50%);
   padding: 8px 18px 15px 32px;
   width: 41dvh;
-  background-color: #ffffffc9;
+  background-color: rgb(255 255 255 / 84%);
   border-radius: 5%;
 }
 .header {
@@ -17,4 +17,32 @@
   justify-content: flex-end;
   align-items: center;
   padding-bottom: 8px;
+}
+.detail_header {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+}
+.detail_header h3 {
+  margin: 0;
+}
+.detail_header {
+  margin-bottom: 5px;
+}
+.detail_header span {
+  color: #656565c9;
+  font-weight: 500;
+}
+.detail_info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.detail_info p {
+  font-weight: 600;
+  margin: 0;
+}
+.detail_info p span {
+  color: #4269cc;
 }
