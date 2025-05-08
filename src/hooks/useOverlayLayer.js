@@ -60,8 +60,7 @@ export function useOverlayLayer({
               onMarkerClick(item);
             }
           });
-
-          return { marker, overlay };
+          return { marker, overlay, id: item.id };
         });
 
         markerRef.current = newMarkers;
@@ -120,7 +119,7 @@ export function useOverlayLayer({
               }
             });
 
-            return { marker, overlay };
+            return { marker, overlay, id: item.id };
           });
 
           markerRef.current = newMarkers;
