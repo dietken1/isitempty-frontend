@@ -46,7 +46,9 @@ function Header() {
     <header className="header">
       <div className="logo">
         <h1>
-          <a href="/">IsItEmpty</a>
+          <a href="/" className="logo-wrapper">
+            <img src="/images/logo.png" alt="IsItEmpty" className="logo" />
+          </a>
         </h1>
       </div>
 

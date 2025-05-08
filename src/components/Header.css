@@ -91,3 +91,10 @@
     display: flex;
   }
 }
+.logo {
+  width: 156px;
+}
+.logo-wrapper {
+  display: flex;
+  justify-content: center;
+}
