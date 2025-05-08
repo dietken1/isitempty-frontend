@@ -7,6 +7,7 @@ import Signup from "./pages/Signup";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Mypage from "./pages/Mypage";
+import EditUserPage from './pages/EditUserPage'; 
 import Map from "./pages/Map";
 import "remixicon/fonts/remixicon.css";
 import "./App.css";
@@ -24,6 +25,7 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/mypage" element={<Mypage />} />
+            <Route path="/mypage/:id/edit" element={<EditUserPage />} />
             <Route path="/map" element={<Map />} />
           </Routes>
         </main>

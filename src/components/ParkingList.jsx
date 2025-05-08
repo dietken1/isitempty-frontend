@@ -14,8 +14,8 @@ const ParkingList = ({
     const position = new window.kakao.maps.LatLng(lot.latitude, lot.longitude);
     mapRef.current.setCenter(position);
     mapRef.current.setLevel(5);
-    onClose(); // 리스트 닫기
-    onSelectLot(lot); // 디테일 페이지 열기
+    onClose();
+    onSelectLot(lot);
   };
 
   return (

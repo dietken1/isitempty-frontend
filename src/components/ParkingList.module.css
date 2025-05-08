@@ -27,12 +27,11 @@
   transform: translateX(-50%);
   padding: 8px 18px 15px 32px;
   width: 41dvh;
-  background-color: rgb(255 255 255 / 84%);
+  background-color: rgb(255 255 255 / 90%);
   border-radius: 5%;
 }
 .header {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  padding-bottom: 8px;
 }

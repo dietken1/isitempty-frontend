@@ -92,3 +92,65 @@ export const loginUser = (userId, password) =>
   axiosInstance.post("/auth/login", { id: userId, password });
 
 export const getUserMe = () => axiosInstance.get("/users/me");
+
+export const getMyReviews = async () => {
+  try {
+    const response = await fetch('/api/myreviews');
+    if (!response.ok) {
+      throw new Error('Failed to fetch reviews');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    throw error;
+  }
+};
+
+export const getFavoriteParking = async () => {
+  try {
+    const response = await fetch('/api/favorites');
+    if (!response.ok) {
+      throw new Error('Failed to fetch favorites');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching favorite parking:', error);
+    throw error;
+  }
+};
+
+export const getUserDetails = (token) => {
+  return fetch('/api/user', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`, // 토큰을 Authorization 헤더에 포함
+    },
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to fetch user details');
+      }
+      return response.json();
+    })
+    .catch((error) => {
+      console.error('Error fetching user details:', error);
+    });
+};
+
+
+export const updateUserDetails = (userId, user) => {
+  return fetch(`/api/user/${userId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(user),
+  })
+    .then(response => response.json())
+    .then(data => data)
+    .catch(error => {
+      console.error("Error updating user details:", error);
+      throw error;
+    });
+};

@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Header.css";
 import { TokenLocalStorageRepository } from "../repository/localstorages";
@@ -60,9 +59,14 @@ function Header() {
       <nav className={`nav ${isMenuOpen ? "open" : ""}`}>
         <ul>
           {isLoggedIn ? (
-            <li onClick={handleLogout}>
-              <a>Logout</a>
-            </li>
+            <>
+              <li onClick={handleLogout}>
+                <a>Logout</a>
+              </li>
+              <li onClick={() => handleMenuClick("/mypage")}>
+                <a href="/mypage">Mypage</a>
+              </li>
+            </>
           ) : (
             <li
               onClick={() => {
@@ -72,9 +76,6 @@ function Header() {
               <a>Login</a>
             </li>
           )}
-          <li onClick={() => handleMenuClick("/mypage")}>
-            <a href="/mypage">Mypage</a>
-          </li>
           <li onClick={() => handleMenuClick("/about")}>
             <a href="/about">About</a>
           </li>
