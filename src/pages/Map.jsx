@@ -184,6 +184,7 @@ const Map = () => {
         height: 22px;
         white-space: nowrap;
         transform: translate(3%, -68%);
+        pointer-events: none;
         border: 1px solid #ccc;
         font-weight: 700;
       `;
