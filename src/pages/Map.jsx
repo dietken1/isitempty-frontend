@@ -200,7 +200,10 @@ const Map = () => {
   useMarkerLayer({
     selectedPlace: selectedPlace,
     show: showCamera,
-    fetchFn: fetchNearbyCameras,
+    fetchFn: async (lat, lng) => {
+      const data = await fetchNearbyCameras(lat, lng);
+      return data.map((item) => ({ ...item, type: "camera" }));
+    },
     markerRef: cameraMarkersRef,
     mapRef,
     loaded,
@@ -210,7 +213,10 @@ const Map = () => {
   useMarkerLayer({
     selectedPlace: selectedPlace,
     show: showToilet,
-    fetchFn: fetchNearbyToilets,
+    fetchFn: async (lat, lng) => {
+      const data = await fetchNearbyToilets(lat, lng);
+      return data.map((item) => ({ ...item, type: "toilet" }));
+    },
     markerRef: toiletMarkersRef,
     mapRef,
     loaded,
