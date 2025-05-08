@@ -1,6 +1,12 @@
 import React from "react";
 
-const SearchBar = ({ keyword, setKeyword, onSearch, className }) => {
+const SearchBar = ({
+  keyword,
+  setKeyword,
+  onSearch,
+  className,
+  onGpsClick,
+}) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     onSearch();
@@ -15,6 +21,19 @@ const SearchBar = ({ keyword, setKeyword, onSearch, className }) => {
         placeholder="장소를 입력하세요"
       />
       <button type="submit">검색</button>
+      <i
+        style={{
+          fontSize: "22px",
+          cursor: "pointer",
+          backgroundColor: "white",
+          height: "22px",
+          width: "22px",
+          borderRadius: "50%",
+          lineHeight: "22px",
+        }}
+        onClick={onGpsClick}
+        className="ri-crosshair-line"
+      ></i>
     </form>
   );
 };
