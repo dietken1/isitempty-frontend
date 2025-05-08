@@ -224,6 +224,52 @@ const Map = () => {
     enableClickCentering: false,
   });
 
+  //주차장 남은자리 갱신
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const center = mapRef.current.getCenter();
+      try {
+        const updatedLots = await fetchNearbyParkingLots(
+          center.getLat(),
+          center.getLng()
+        );
+
+        parkingLotMarkersRef.current.forEach(({ overlay, id }) => {
+          const updated = updatedLots.find((lot) => lot.id === id);
+          if (!updated) return;
+
+          const { availableSpots, slotCount } = updated;
+
+          let color = "gray";
+          if (
+            availableSpots !== null &&
+            availableSpots !== undefined &&
+            typeof slotCount === "number" &&
+            slotCount > 0
+          ) {
+            const ratio = availableSpots / slotCount;
+            if (ratio >= 0.5) color = "green";
+            else if (ratio >= 0.2) color = "orange";
+            else color = "red";
+          }
+
+          const content = overlay.getContent();
+          if (content instanceof HTMLElement) {
+            content.innerText =
+              availableSpots !== null && availableSpots !== undefined
+                ? availableSpots
+                : "x";
+            content.style.color = color;
+          }
+        });
+      } catch (e) {
+        console.error("실시간 주차장 정보 갱신 실패:", e);
+      }
+    }, 30000); // 30초마다
+
+    return () => clearInterval(interval);
+  }, [loaded]);
+
   const handleToggleParkingList = async () => {
     if (!mapRef.current) {
       alert("지도가 로드되지 않았습니다.");
