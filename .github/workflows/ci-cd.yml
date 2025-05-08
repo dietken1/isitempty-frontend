@@ -27,7 +27,10 @@ jobs:
       env:
         NODE_OPTIONS: --openssl-legacy-provider  # OpenSSL 레거시 공급자 활성화
         VITE_KAKAO_MAP_API_KEY: ${{ secrets.VITE_KAKAO_MAP_API_KEY }}
-        
+        VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+        VITE_KAKAO_CLIENT_ID: ${{ secrets.VITE_KAKAO_CLIENT_ID }}
+        VITE_NAVER_CLIENT_ID: ${{ secrets.VITE_NAVER_CLIENT_ID }}
+
     - name: Login to Docker Hub
       uses: docker/login-action@v2
       with:
@@ -38,6 +41,9 @@ jobs:
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         VITE_KAKAO_MAP_API_KEY: ${{ secrets.VITE_KAKAO_MAP_API_KEY }}
+        VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+        VITE_KAKAO_CLIENT_ID: ${{ secrets.VITE_KAKAO_CLIENT_ID }}
+        VITE_NAVER_CLIENT_ID: ${{ secrets.VITE_NAVER_CLIENT_ID }}
       run: |
         docker build --no-cache -t ${DOCKER_USERNAME}/isitempty-front:latest --build-arg VITE_KAKAO_MAP_API_KEY=${VITE_KAKAO_MAP_API_KEY} .
         docker push ${DOCKER_USERNAME}/isitempty-front:latest
