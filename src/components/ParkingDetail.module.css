@@ -52,10 +52,17 @@
 
 .ratingContainer {
   margin-top: 20px;
+  display:flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .reviewContainer {
   margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
 .reviewTextarea {
@@ -67,11 +74,19 @@
 }
 
 .reviewBtn {
-  background-color: #4caf50;
+  background-color: #4663d1;
   color: white;
   padding: 10px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   margin-top: 10px;
+  
+}
+.ri-star-fill {
+  color: #ffe200;
+}
+
+.ri-star-line {
+  color: black;
 }
