@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import styles from "./ParkingDetail.module.css";
 
 const ParkingDetail = ({ lot, onClose, onBackToList }) => {
-  
   const [isFavorite, setIsFavorite] = useState(false);
   const [selectedRating, setSelectedRating] = useState(0);
   const [reviewContent, setReviewContent] = useState("");
@@ -21,6 +20,7 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
     slotCount,
     availableSpots,
   } = lot;
+
   const availableText =
     availableSpots === null || availableSpots === undefined
       ? `전체자리: ${slotCount}`
@@ -95,18 +95,20 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
       </div>
 
       <div className={styles.ratingContainer}>
-        <p>별점:</p>
         <div className={styles.starRating}>
           {[1, 2, 3, 4, 5].map((star) => (
             <i
               key={star}
               className={`ri-star-line ${star <= selectedRating ? "ri-star-fill" : ""}`}
               onClick={() => handleRatingClick(star)}
-              style={{ cursor: "pointer", fontSize: "24px" }}
+              style={{
+                cursor: "pointer",
+                fontSize: "24px",
+                color: star <= selectedRating ? " #ffe200" : "black", // 채워진 별은 yellow로 표시
+              }}
             ></i>
           ))}
         </div>
-        <p>{selectedRating}점</p>
       </div>
 
       <div className={styles.reviewContainer}>

@@ -7,7 +7,7 @@ import axiosInstance from "./axiosInstance";
 
 // axios 인스턴스 생성
 const api = axios.create({
-  baseURL: "/api",
+  baseURL: "/api/v1",
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
@@ -120,11 +120,11 @@ export const getFavoriteParking = async () => {
 };
 
 export const getUserDetails = (token) => {
-  return fetch('/api/user', {
+  return fetch('/api/v1/users/me', {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`, // 토큰을 Authorization 헤더에 포함
+      'Authorization': `Bearer ${token}`, 
     },
   })
     .then((response) => {
@@ -139,18 +139,27 @@ export const getUserDetails = (token) => {
 };
 
 
-export const updateUserDetails = (userId, user) => {
-  return fetch(`/api/user/${userId}`, {
-    method: "PUT",
+export const updateUserDetails = (token, user) => {
+  return fetch('/api/v1/users/update', {
+    method: 'PUT',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
     },
-    body: JSON.stringify(user),
+    body: JSON.stringify({
+      email: user.email,
+      password: user.password,
+    }),
   })
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: 사용자 정보 수정 실패`);
+      }
+      return response.json();
+    })
     .then(data => data)
     .catch(error => {
-      console.error("Error updating user details:", error);
+      console.error('Error updating user details:', error);
       throw error;
     });
 };
