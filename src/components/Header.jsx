@@ -68,11 +68,7 @@ function Header() {
               </li>
             </>
           ) : (
-            <li
-              onClick={() => {
-                navigate("/login");
-              }}
-            >
+            <li onClick={() => handleMenuClick("/mypage")}>
               <a>Login</a>
             </li>
           )}
