@@ -1,10 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./ParkingDetail.module.css";
 
 const ParkingDetail = ({ lot, onClose, onBackToList }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [selectedRating, setSelectedRating] = useState(0);
   const [reviewContent, setReviewContent] = useState("");
+  const [distance, setDistance] = useState(null);
+
+  useEffect(() => {
+    if (!lot) return;
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const userLat = position.coords.latitude;
+        const userLon = position.coords.longitude;
+
+        const dist = getDistanceFromLatLonInKm(
+          userLat,
+          userLon,
+          lot.latitude,
+          lot.longitude
+        );
+
+        setDistance(dist.toFixed(2)); // km 단위, 소수점 둘째자리까지
+      },
+      (err) => {
+        console.error("위치 정보 가져오기 실패:", err);
+        setDistance("위치 정보 없음");
+      }
+    );
+  }, [lot]);
 
   if (!lot) return null;
 
@@ -12,14 +37,30 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
     name,
     feeInfo,
     address,
-    latitude,
-    longitude,
     phone,
     type,
     openDays,
     slotCount,
     availableSpots,
   } = lot;
+
+  function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = deg2rad(lat2 - lat1);
+    const dLon = deg2rad(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(deg2rad(lat1)) *
+        Math.cos(deg2rad(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }
+
+  function deg2rad(deg) {
+    return deg * (Math.PI / 180);
+  }
 
   const availableText =
     availableSpots === null || availableSpots === undefined
@@ -47,16 +88,22 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
   return (
     <div className={styles.detailContainer}>
       <div className={styles.header}>
-        <i
-          className="ri-arrow-go-back-line"
-          onClick={onBackToList}
-          style={{ cursor: "pointer", fontSize: "16px", marginRight: "10px" }}
-        ></i>
-        <i
-          className="ri-close-line"
-          onClick={onClose}
-          style={{ cursor: "pointer", fontSize: "20px" }}
-        ></i>
+        <p>
+          <i className="ri-road-map-line"></i> 현재 위치로부터{" "}
+          <span>{distance ?? "계산 중..."}km</span>
+        </p>
+        <div>
+          <i
+            className="ri-arrow-go-back-line"
+            onClick={onBackToList}
+            style={{ cursor: "pointer", fontSize: "16px", marginRight: "10px" }}
+          ></i>
+          <i
+            className="ri-close-line"
+            onClick={onClose}
+            style={{ cursor: "pointer", fontSize: "20px" }}
+          ></i>
+        </div>
       </div>
       <div className={styles.detail_header}>
         <h3>{name}</h3>
@@ -99,7 +146,9 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
           {[1, 2, 3, 4, 5].map((star) => (
             <i
               key={star}
-              className={`ri-star-line ${star <= selectedRating ? "ri-star-fill" : ""}`}
+              className={`ri-star-line ${
+                star <= selectedRating ? "ri-star-fill" : ""
+              }`}
               onClick={() => handleRatingClick(star)}
               style={{
                 cursor: "pointer",

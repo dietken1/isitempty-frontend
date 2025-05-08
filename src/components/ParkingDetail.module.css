@@ -14,9 +14,17 @@
 }
 .header {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
-  padding-bottom: 8px;
+  padding: 5px 5px 5px 0;
+}
+.header div {
+  display: flex;
+  align-items: center;
+}
+.header p {
+  color: #656565c9;
+  margin: 0;
 }
 .detail_header {
   display: flex;
@@ -52,7 +60,7 @@
 
 .ratingContainer {
   margin-top: 20px;
-  display:flex;
+  display: flex;
   justify-content: center;
   align-items: center;
 }
@@ -81,7 +89,6 @@
   border-radius: 5px;
   cursor: pointer;
   margin-top: 10px;
-  
 }
 .ri-star-fill {
   color: #ffe200;
