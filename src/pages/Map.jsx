@@ -322,8 +322,7 @@ const Map = () => {
 
       try {
         const parkingLots = await fetchParkingLotsWithDistance(lat, lng);
-        const sorted = parkingLots.sort((a, b) => a.distance - b.distance);
-        setParkingLots(sorted);
+        setParkingLots(parkingLots);
       } catch (err) {
         console.error("거리순 정렬 실패:", err);
       }
