@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { getUserDetails, updateUserDetails } from "../api/apiService"; 
 import { TokenLocalStorageRepository } from "../repository/localstorages";
 
 import './EditUserPage.css';
 
 const EditUserPage = () => {
-  const { id } = useParams(); // URL 파라미터로 id 가져오기
-  console.log("User ID from URL:", id); 
   const navigate = useNavigate(); 
   const [user, setUser] = useState(null); // 사용자 정보 상태
   const [updatedUser, setUpdatedUser] = useState({ email: "", password: "" }); // 수정된 사용자 정보 상태
@@ -20,7 +18,6 @@ const EditUserPage = () => {
       loadUserDetails(token); // 사용자 정보 불러오기
     }
   }, []); 
-  
 
   const loadUserDetails = (token) => {
     console.log("Requesting user details with token:", token);  
@@ -55,7 +52,7 @@ const EditUserPage = () => {
     updateUserDetails(token, userUpdateData) // 수정된 사용자 정보 API 호출
       .then((data) => {
         console.log("User information updated:", data);
-        navigate(`/mypage/${user.id}`); // 수정 후 마이페이지로 리다이렉트
+        navigate(`/mypage`); // 수정 후 마이페이지로 리다이렉트
       })
       .catch((error) => {
         console.error("Error updating user information:", error);
