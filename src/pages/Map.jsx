@@ -298,6 +298,7 @@ const Map = () => {
     const map = mapRef.current;
 
     const handleIdle = async () => {
+      if (showParkingList) return;
       const center = map.getCenter();
       try {
         const data = await fetchNearbyParkingLots(
