@@ -60,17 +60,15 @@ const MyPage = () => {
       <div className="mypage_container">
         <div className="mypage-h1">
           <h1>MY PAGE</h1>
-        </div>
-
         {user && (
           <Link to={`/mypage/${user.id}/edit`}>
             <i className="ri-user-settings-line"></i>
           </Link>
         )}
-
+</div>
         <div className="profile">
           <div className="profile_img">
-            <img src="/public/images/profile.png" alt="Profile" />
+            <img src="/images/profile.png" alt="Profile" />
           </div>
           <div className="profile_name">
             {user ? (
