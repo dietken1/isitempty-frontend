@@ -178,7 +178,7 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
                 <div key={review.id} className={styles.reviewItem}>
                   <p>
                     <strong>{review.user}</strong>
-                    <span> - {review.rating} stars</span>
+                    <span> - {review.rating}<i className={ri-star-fill}></i></span>
                   </p>
                   <p>{review.content}</p>
                   <hr />

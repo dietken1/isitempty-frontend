@@ -4,49 +4,57 @@
     margin: 0 auto;
     padding: 20px;
     font-family: Arial, sans-serif;
-}
-
-.edit-user-container h1 {
+  }
+  
+  .edit-user-container h1 {
     text-align: center;
-    margin-block: 20px;
-}
-
-.user-details {
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.user-info {
-    margin-bottom: 20px;
-}
-
-.user-info p {
+    margin-bottom: 30px;
+  }
+  
+  .edit-user-container form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .edit-user-container .input-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  
+  .edit-user-container label {
     font-size: 16px;
     color: #333;
-    margin: 10px 0;
-}
-
-button.save-btn {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    margin-right: 10px; 
+    width: 100px; 
+  }
+  
+  .edit-user-container input {
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
     width: 100%;
-    padding: 12px;
+  }
+  
+  .edit-user-container button {
+    padding: 10px;
     font-size: 16px;
-    background-color: #4CAF50;
+    background-color: #434dca;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-button.save-btn:hover {
-    background-color: #454ba0;
-}
-
-button.save-btn:focus {
+  }
+  
+  .edit-user-container button:hover {
+    background-color: #4a43ca;
+  }
+  
+  .edit-user-container button:focus {
     outline: none;
-}
+  }
+  .savebtn {
+    display: flex;
+    justify-content: center;
+  }

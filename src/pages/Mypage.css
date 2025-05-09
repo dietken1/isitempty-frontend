@@ -16,8 +16,7 @@
   
   .mypage-h1 {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: space-between;
   }
   
   .mypage-h1 h1 {
