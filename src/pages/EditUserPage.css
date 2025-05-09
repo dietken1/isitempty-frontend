@@ -4,32 +4,34 @@
     margin: 0 auto;
     padding: 20px;
     font-family: Arial, sans-serif;
-  }
-  
+}
+
 .edit-user-container h1 {
     text-align: center;
     margin-block: 20px;
-  }
-  
-  .user-details {
+}
+
+.user-details {
     background-color: #f9f9f9;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .user-info {
+}
+
+.user-info {
     margin-bottom: 20px;
-  }
-  
-  .user-info p {
+}
+
+.user-info p {
     font-size: 16px;
     color: #333;
     margin: 10px 0;
-  }
-  
-  button.save-btn {
-    display: block;
+}
+
+button.save-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 100%;
     padding: 12px;
     font-size: 16px;
@@ -39,13 +41,12 @@
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-  }
-  
-  button.save-btn:hover {
+}
+
+button.save-btn:hover {
     background-color: #454ba0;
-  }
-  
-  button.save-btn:focus {
+}
+
+button.save-btn:focus {
     outline: none;
-  }
-  
+}

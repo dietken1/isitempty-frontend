@@ -133,8 +133,10 @@ export const getUserDetails = (token) => {
       }
       return response.json();
     })
+    .then((data) => data)
     .catch((error) => {
       console.error("Error fetching user details:", error);
+      throw error;
     });
 };
 
@@ -162,6 +164,7 @@ export const updateUserDetails = (token, user) => {
       throw error;
     });
 };
+
 // 위도 경도 넘겨서 거리 포함 모든 주차장 불러오기 (거리 기준 정렬용)
 export const fetchParkingLotsWithDistance = async (latitude, longitude) => {
   try {

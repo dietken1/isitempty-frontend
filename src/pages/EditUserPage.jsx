@@ -1,38 +1,100 @@
-// src/pages/EditUserPage.jsx
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { getUserDetails } from "../api/apiService";  // 유저 정보를 가져오는 API
+import { useParams, useNavigate } from "react-router-dom";
+import { getUserDetails, updateUserDetails } from "../api/apiService"; 
+import { TokenLocalStorageRepository } from "../repository/localstorages";
+
+import './EditUserPage.css';
 
 const EditUserPage = () => {
-  const { id } = useParams();  // URL에서 user ID 가져오기
-  const [user, setUser] = useState(null);
+  const { id } = useParams();
+  console.log("User ID from URL:", id); 
+  const navigate = useNavigate(); 
+  const [user, setUser] = useState(null); 
+  const [updatedUser, setUpdatedUser] = useState({ email: "", password: "" }); 
 
   useEffect(() => {
-    // user 정보 불러오기
-    getUserDetails(id)
-      .then((data) => setUser(data))
-      .catch((error) => console.error("Error fetching user data:", error));
-  }, [id]);
+    const token = TokenLocalStorageRepository.getToken(); 
+    if (!token) {
+      navigate("/login"); 
+    } else {
+      loadUserDetails(token); 
+    }
+  }, []); 
+  
+
+  const loadUserDetails = (token) => {
+    console.log("Requesting user details with token:", token);  
+  
+    getUserDetails(token) 
+      .then((data) => {
+        console.log("Fetched user data:", data);
+        setUser(data);
+        setUpdatedUser({
+          email: data.email,
+          password: data.password,
+        });
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
+  };
+  
 
   const handleSave = () => {
-    // 유저 정보를 수정 후 저장하는 로직 (예시)
-    console.log("User information saved!");
+    const token = TokenLocalStorageRepository.getToken();
+    if (!token) {
+      navigate("/login"); 
+      return;
+    }
+
+    updateUserDetails(token, updatedUser)
+      .then((data) => {
+        console.log("User information updated:", data);
+        navigate(`/mypage/${id}`); 
+      })
+      .catch((error) => {
+        console.error("Error updating user information:", error);
+      });
   };
 
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUpdatedUser((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  if (!user) {
+    return <p>Loading...</p>; 
+  }
+
   return (
-    <div>
+    <div className="edit-user-container">
       <h1>Edit User Info</h1>
-      {user ? (
-        <div>
-          <p>Email: {user.email}</p>
-          <p>Username: {user.username}</p>
-          <p>Phone: {user.userphone}</p>
-          <p>Password: {user.userpassword}</p>
-          <button onClick={handleSave}>Save</button>
-        </div>
-      ) : (
-        <p>Loading...</p>
-      )}
+      <div>
+        <form>
+          <label>Email:</label>
+          <input
+            type="email"
+            name="email"
+            value={updatedUser.email}
+            onChange={handleChange}
+          />
+          <br />
+          <label>Password:</label>
+          <input
+            type="password"
+            name="password"
+            value={updatedUser.password}
+            onChange={handleChange}
+          />
+          <br />
+
+          <button type="button" onClick={handleSave}>Save</button>
+        </form>
+      </div>
     </div>
   );
 };

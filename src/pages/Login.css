@@ -128,3 +128,7 @@ input:focus {
     text-align: center;
     margin-top: 15px;
 }
+
+.social-login span {
+    color: red;
+}
