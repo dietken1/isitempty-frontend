@@ -51,7 +51,7 @@ const Login = () => {
     onSuccess: async (tokenResponse) => {
       // tokenResponse.code === 인증 코드
       try {
-        const res = await fetch("/api/auth/google", {
+        const res = await fetch("/oauth2/google", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
