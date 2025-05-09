@@ -26,7 +26,7 @@
   overflow-y: scroll;
   transform: translateX(-50%);
   padding: 8px 18px 15px 32px;
-  width: 41dvh;
+  width: 98%;
   background-color: rgb(255 255 255 / 90%);
   border-radius: 5%;
 }
