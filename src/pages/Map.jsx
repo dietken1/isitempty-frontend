@@ -79,6 +79,8 @@ const Map = () => {
       setShowPlaceList(true);
       setPagination(paginationObj); // 페이지네이션 객체 저장
 
+      placeMarkerRef.current.forEach((m) => m.setMap(null));
+      placeMarkerRef.current = [];
       toiletMarkersRef.current.forEach((m) => m.setMap(null));
       toiletMarkersRef.current = [];
       cameraMarkersRef.current.forEach((m) => m.setMap(null));
