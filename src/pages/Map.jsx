@@ -8,7 +8,6 @@ import {
   fetchNearbyParkingLots,
   fetchNearbyToilets,
   fetchNearbyCameras,
-  fetchParkingLotsWithDistance,
 } from "../api/apiService";
 import CheckBox from "../components/CheckBox";
 import ParkingList from "../components/ParkingList";
@@ -318,24 +317,6 @@ const Map = () => {
     };
   }, [loaded, mapRef, showParking]);
 
-  useEffect(() => {
-    if (!selectedPlace) return;
-
-    const fetchSortedParkingLots = async () => {
-      const lat = selectedPlace.getLat();
-      const lng = selectedPlace.getLng();
-
-      try {
-        const parkingLots = await fetchParkingLotsWithDistance(lat, lng);
-        setParkingLots(parkingLots);
-      } catch (err) {
-        console.error("거리순 정렬 실패:", err);
-      }
-    };
-
-    fetchSortedParkingLots();
-  }, [selectedPlace]);
-
   return (
     <div className={styles.wrapper}>
       <div id="map" style={{ width: "100%", height: "100%" }} />
@@ -437,6 +418,7 @@ const Map = () => {
       {selectedParkingLot && (
         <ParkingDetail
           lot={selectedParkingLot}
+          selectedPlace={selectedPlace}
           onClose={() => setSelectedParkingLot(null)}
           onBackToList={async () => {
             setSelectedParkingLot(null);

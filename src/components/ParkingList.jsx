@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import styles from "./ParkingList.module.css";
 import { calculateFee } from "../utils/parkingUtils";
+import { getDistanceFromLatLonInKm } from "../utils/geo.js";
 
 const ParkingList = ({
+  selectedPlace,
   parkingLots,
   visible,
   mapRef,
@@ -16,9 +18,20 @@ const ParkingList = ({
   const [minuteInput, setMinuteInput] = useState("");
 
   useEffect(() => {
-    if (!parkingLots) return;
+    if (!parkingLots || !selectedPlace) return;
+
+    const userLat = selectedPlace.getLat();
+    const userLng = selectedPlace.getLng();
 
     const sorted = [...parkingLots].map((lot) => {
+      // 거리 계산
+      const dist = getDistanceFromLatLonInKm(
+        userLat,
+        userLng,
+        lot.latitude,
+        lot.longitude
+      );
+
       const totalFee =
         parkingTime !== null ? calculateFee(lot, parkingTime) : null;
       const numericFee =
@@ -26,7 +39,7 @@ const ParkingList = ({
           ? 0
           : parseInt(totalFee?.replace("원", ""), 10) || Infinity;
 
-      return { ...lot, totalFee, numericFee };
+      return { ...lot, totalFee, numericFee, distance: dist };
     });
 
     if (sortType === "distance") {
@@ -42,7 +55,7 @@ const ParkingList = ({
     }
 
     setSortedLots(sorted);
-  }, [parkingLots, sortType, parkingTime]);
+  }, [parkingLots, sortType, parkingTime, selectedPlace]);
 
   const handleApplyTime = () => {
     const hours = parseInt(hourInput, 10) || 0;
@@ -129,7 +142,9 @@ const ParkingList = ({
           >
             <strong>{lot.name}</strong>
             &nbsp;-{" "}
-            <i style={{ color: "#FFCA00" }} className="ri-star-fill"></i>
+            <i style={{ color: "#FFCA00" }} className="ri-star-fill">
+              ㅌ
+            </i>
             {lot.rating ?? "0.0"}
             {lot.totalFee && <> - 요금: {lot.totalFee}</>}
           </li>
