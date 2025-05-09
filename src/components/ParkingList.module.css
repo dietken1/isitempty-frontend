@@ -57,14 +57,14 @@
   width: 13%;
 }
 .header_left button {
-  font-size: 14px;
+  font-size: 15px;
   padding: 0.1em 0.4em;
 }
 .header_left {
   display: flex;
   flex-direction: row;
   align-items: center;
-  font-size: 14px;
+  font-size: 15px;
   gap: 2px;
   justify-content: flex-start;
 }

@@ -62,11 +62,6 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
     return deg * (Math.PI / 180);
   }
 
-  const availableText =
-    availableSpots === null || availableSpots === undefined
-      ? `전체자리: ${slotCount}`
-      : `남은자리/전체자리: ${availableSpots}/${slotCount}`;
-
   const handleHeartClick = () => {
     setIsFavorite(!isFavorite);
   };
@@ -133,7 +128,19 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
         </p>
         <p>
           <i style={{ marginRight: "5px" }} className="ri-parking-box-fill"></i>
-          <span>{availableText}</span>
+          {availableSpots === null || availableSpots === undefined ? (
+            <>
+              <span className={styles.spot}>전체자리: </span>
+              <span>{slotCount}</span>
+            </>
+          ) : (
+            <>
+              <span className={styles.spot}>남은자리/전체자리: </span>
+              <span>
+                {availableSpots}/{slotCount}
+              </span>
+            </>
+          )}
         </p>
         <p>
           <i style={{ marginRight: "5px" }} className="ri-phone-fill"></i>
