@@ -24,6 +24,8 @@ const MyPage = () => {
 
   const loadUserDetails = (token) => {
     console.log(token);
+    console.log("API URL:", "http://localhost:8080/api/v1/users/me");
+
     getUserDetails(token)
       .then((data) => {
         setUser(data);

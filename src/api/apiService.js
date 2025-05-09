@@ -120,7 +120,7 @@ export const getFavoriteParking = async () => {
 };
 
 export const getUserDetails = (token) => {
-  return fetch("/api/v1/users/update", {
+  return fetch("/api/v1/users/me", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
