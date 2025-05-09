@@ -21,6 +21,17 @@ const ParkingList = ({
   return (
     <div className={styles.listContainer}>
       <div className={styles.header}>
+        <div className={styles.header_left}>
+          <input></input>
+          <span>시간</span>
+          <input></input>
+          <span>분</span>
+          <button>적용</button>
+        </div>
+        <div className={styles.header_right}>
+          <button>거리순</button>|<button>요금순</button>|
+          <button>별점순</button>
+        </div>
         <i
           className="ri-close-line"
           onClick={onClose}

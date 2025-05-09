@@ -35,3 +35,36 @@
   justify-content: flex-end;
   align-items: center;
 }
+.header_right {
+  color: #656565c9;
+  white-space: nowrap;
+  margin-right: 15px;
+}
+.header_right button {
+  color: #656565c9;
+  background-color: transparent;
+  font-size: 14px;
+  white-space: nowrap;
+  border: none;
+  padding: 0.1em 0.4em;
+}
+.header_right button:focus,
+.header_right button:hover {
+  outline: none;
+  border: none;
+}
+.header_left input {
+  width: 13%;
+}
+.header_left button {
+  font-size: 14px;
+  padding: 0.1em 0.4em;
+}
+.header_left {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 14px;
+  gap: 2px;
+  justify-content: flex-start;
+}
