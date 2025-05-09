@@ -74,10 +74,7 @@ const Login = () => {
     onError: () => {
       console.log("Google login failed");
     },
-    redirect_uri:
-      window.location.hostname === "localhost"
-        ? "http://localhost:5173/login/oauth2/code/google"
-        : "https://isitempty.kr/login/oauth2/code/google",
+    redirect_uri: "https://isitempty.kr/login/oauth2/code/google",
   });
 
   return (
