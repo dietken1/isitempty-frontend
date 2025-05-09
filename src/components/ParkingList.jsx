@@ -95,7 +95,13 @@ const ParkingList = ({
           |
           <button
             className={sortType === "fee" ? styles.active : ""}
-            onClick={() => setSortType("fee")}
+            onClick={() => {
+              if (!parkingTime) {
+                alert("요금을 계산하려면 주차 시간을 입력해주세요.");
+                return;
+              }
+              setSortType("fee");
+            }}
           >
             요금순
           </button>
