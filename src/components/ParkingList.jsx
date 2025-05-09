@@ -73,14 +73,12 @@ const ParkingList = ({
         <div className={styles.header_left}>
           <input
             type="number"
-            placeholder="시간"
             value={hourInput}
             onChange={(e) => setHourInput(e.target.value)}
           />
           <span>시간</span>
           <input
             type="number"
-            placeholder="분"
             value={minuteInput}
             onChange={(e) => setMinuteInput(e.target.value)}
           />
