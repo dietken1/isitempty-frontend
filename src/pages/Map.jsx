@@ -270,6 +270,10 @@ const Map = () => {
   }, [loaded]);
 
   const handleToggleParkingList = async () => {
+    if (!selectedPlace) {
+      alert("장소를 먼저 검색해 주세요.");
+      return;
+    }
     if (!mapRef.current) {
       alert("지도가 로드되지 않았습니다.");
       return;
