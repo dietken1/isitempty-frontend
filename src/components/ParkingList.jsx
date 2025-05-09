@@ -128,6 +128,9 @@ const ParkingList = ({
             onClick={() => handleClick(lot)}
           >
             <strong>{lot.name}</strong>
+            &nbsp;-{" "}
+            <i style={{ color: "#FFCA00" }} className="ri-star-fill"></i>
+            {lot.rating ?? "0.0"}
             {lot.totalFee && <> - 요금: {lot.totalFee}</>}
           </li>
         ))}
