@@ -20,9 +20,9 @@ const EditUserPage = () => {
   }, []); 
 
   const loadUserDetails = (token) => {
-    console.log("Requesting user details with token:", token);  
-  
-    getUserDetails(token) 
+    console.log("Requesting user details with token:", token);
+
+    getUserDetails(token)
       .then((data) => {
         console.log("Fetched user data:", data);
         setUser(data); // 사용자 정보 상태에 저장
@@ -34,21 +34,22 @@ const EditUserPage = () => {
       .catch((error) => {
         console.error("Error fetching user data:", error);
       });
-  };
+};
 
-  const handleSave = () => {
+const handleSave = () => {
     const token = TokenLocalStorageRepository.getToken(); // 로컬 스토리지에서 토큰 가져오기
     if (!token || !user) {
       navigate("/login"); // 로그인 안 되어 있으면 로그인 페이지로 리다이렉트
       return;
     }
-  
+
     // 이메일과 패스워드를 포함한 사용자 정보를 업데이트하는 API 호출
     const userUpdateData = {
       email: updatedUser.email,
       password: updatedUser.password,
     };
 
+    // 여기서 `user.id`는 사용하지 않고, `token`만으로 인증 처리
     updateUserDetails(token, userUpdateData) // 수정된 사용자 정보 API 호출
       .then((data) => {
         console.log("User information updated:", data);
@@ -57,7 +58,7 @@ const EditUserPage = () => {
       .catch((error) => {
         console.error("Error updating user information:", error);
       });
-  };
+};
 
   const handleChange = (e) => {
     const { name, value } = e.target;
