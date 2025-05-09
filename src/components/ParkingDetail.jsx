@@ -7,6 +7,7 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
   const [selectedRating, setSelectedRating] = useState(0);
   const [reviewContent, setReviewContent] = useState("");
   const [distance, setDistance] = useState(null);
+  const [reviews, setReviews] = useState([]); // 리뷰 목록 상태 추가
 
   useEffect(() => {
     if (!lot) return;
@@ -30,6 +31,12 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
         setDistance("위치 정보 없음");
       }
     );
+
+    // 주차장에 대한 리뷰 불러오기 (예시)
+    setReviews([
+      { id: 1, user: "testuser", rating: 4, content: "좋은 주차장입니다!" },
+      { id: 2, user: "exampleuser", rating: 5, content: "위치가 편리하고 주차공간도 넉넉해요!" },
+    ]);
   }, [lot]);
 
   if (!lot) return null;
@@ -143,7 +150,7 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
               style={{
                 cursor: "pointer",
                 fontSize: "24px",
-                color: star <= selectedRating ? " #ffe200" : "black", // 채워진 별은 yellow로 표시
+                color: star <= selectedRating ? " #ffe200" : "black",
               }}
             ></i>
           ))}
@@ -160,6 +167,28 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
         <button className={styles.reviewBtn} onClick={handleReviewSubmit}>
           리뷰 등록
         </button>
+      </div>
+
+      <div className={styles.reviewsList}>
+        <details>
+          <summary>리뷰 보기</summary>
+          <div className={styles.reviews}>
+            {reviews.length > 0 ? (
+              reviews.map((review) => (
+                <div key={review.id} className={styles.reviewItem}>
+                  <p>
+                    <strong>{review.user}</strong>
+                    <span> - {review.rating} stars</span>
+                  </p>
+                  <p>{review.content}</p>
+                  <hr />
+                </div>
+              ))
+            ) : (
+              <p>리뷰가 없습니다.</p>
+            )}
+          </div>
+        </details>
       </div>
     </div>
   );
