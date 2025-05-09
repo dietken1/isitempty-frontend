@@ -11,7 +11,7 @@ export function calculateFee(parking, time) {
 
   // 요금 정보가 전혀 없을 경우
   const allFeesMissing = !basicFee && !unitFee && !dailyFee;
-  if (allFeesMissing) return "0원";
+  if (allFeesMissing) return "요금정보 없음";
 
   // 24시간 이상이면 일일 요금 적용
   if (time >= 1440 && dailyFee !== 0) return `${dailyFee}원`;

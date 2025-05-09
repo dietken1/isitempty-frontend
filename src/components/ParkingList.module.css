@@ -54,7 +54,8 @@
   border: none;
 }
 .header_left input {
-  width: 13%;
+  width: 14%;
+  height: 19px;
 }
 .header_left button {
   font-size: 15px;
