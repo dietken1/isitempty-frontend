@@ -35,8 +35,24 @@ export function useMarkerLayer({
               item.longitude
             );
 
-            const marker = new window.kakao.maps.Marker({ map, position });
+            let markerImage = null;
+            if (item.type === "camera") {
+              markerImage = new window.kakao.maps.MarkerImage(
+                "/images/camera.svg",
+                new window.kakao.maps.Size(32, 32)
+              );
+            } else if (item.type === "toilet") {
+              markerImage = new window.kakao.maps.MarkerImage(
+                "/images/toilet.svg",
+                new window.kakao.maps.Size(32, 32)
+              );
+            }
 
+            const marker = new window.kakao.maps.Marker({
+              map,
+              position,
+              ...(markerImage && { image: markerImage }),
+            });
             window.kakao.maps.event.addListener(marker, "click", () => {
               if (enableClickCentering) {
                 map.setCenter(position);
@@ -88,8 +104,24 @@ export function useMarkerLayer({
               item.latitude,
               item.longitude
             );
-            const marker = new window.kakao.maps.Marker({ map, position });
+            let markerImage = null;
+            if (item.type === "camera") {
+              markerImage = new window.kakao.maps.MarkerImage(
+                "/images/camera.svg",
+                new window.kakao.maps.Size(32, 32)
+              );
+            } else if (item.type === "toilet") {
+              markerImage = new window.kakao.maps.MarkerImage(
+                "/images/toilet.svg",
+                new window.kakao.maps.Size(32, 32)
+              );
+            }
 
+            const marker = new window.kakao.maps.Marker({
+              map,
+              position,
+              ...(markerImage && { image: markerImage }), // 이미지 있을 때만 적용
+            });
             window.kakao.maps.event.addListener(marker, "click", () => {
               if (enableClickCentering) {
                 map.setCenter(position);
