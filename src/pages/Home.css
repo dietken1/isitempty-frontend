@@ -40,7 +40,9 @@
   color: #333;
   margin-bottom: 15px;
 }
-
+.card p {
+  font-size: 0.8rem;
+}
 .error {
   color: red;
   font-weight: bold;
