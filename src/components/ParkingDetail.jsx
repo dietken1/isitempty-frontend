@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import styles from "./ParkingDetail.module.css";
 import { getDistanceFromLatLonInKm } from "../utils/geo.js";
 import { getParkingReviews, createReview } from "../api/apiService";
+import { TokenLocalStorageRepository } from "../repository/localstorages";
 
 const ParkingDetail = ({ lot, onClose, onBackToList }) => {
   const [isFavorite, setIsFavorite] = useState(false);
@@ -14,8 +15,18 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    setIsLoggedIn(!!token);
+    const checkLoginStatus = () => {
+      const token = TokenLocalStorageRepository.getToken();
+      setIsLoggedIn(!!token);
+    };
+
+    checkLoginStatus();
+    // 토큰이 변경될 때마다 로그인 상태를 다시 확인
+    window.addEventListener('storage', checkLoginStatus);
+    
+    return () => {
+      window.removeEventListener('storage', checkLoginStatus);
+    };
   }, []);
 
   useEffect(() => {
@@ -53,7 +64,11 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
         setReviews(reviewsData);
       } catch (error) {
         console.error("리뷰 불러오기 실패:", error);
-        setReviewError("리뷰를 불러오는데 실패했습니다.");
+        if (error.message.includes('401')) {
+          setReviewError("리뷰를 보려면 로그인이 필요합니다.");
+        } else {
+          setReviewError("리뷰를 불러오는데 실패했습니다.");
+        }
       } finally {
         setIsLoadingReviews(false);
       }

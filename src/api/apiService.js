@@ -4,6 +4,7 @@
  */
 import axios from "axios";
 import axiosInstance from "./axiosInstance";
+import { TokenLocalStorageRepository } from "../repository/localstorages";
 
 // axios 인스턴스 생성
 const api = axios.create({
@@ -95,7 +96,12 @@ export const getUserMe = () => axiosInstance.get("/users/me");
 
 export const getMyReviews = async () => {
   try {
-    const response = await fetch("/api/myreviews");
+    const token = TokenLocalStorageRepository.getToken();
+    const response = await fetch("/api/myreviews", {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
     if (!response.ok) {
       throw new Error("Failed to fetch reviews");
     }
@@ -108,7 +114,12 @@ export const getMyReviews = async () => {
 
 export const getFavoriteParking = async () => {
   try {
-    const response = await fetch("/api/favorites");
+    const token = TokenLocalStorageRepository.getToken();
+    const response = await fetch("/api/favorites", {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
     if (!response.ok) {
       throw new Error("Failed to fetch favorites");
     }
@@ -119,49 +130,59 @@ export const getFavoriteParking = async () => {
   }
 };
 
-export const getUserDetails = (token) => {
-  return fetch("/api/v1/users/me", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Failed to fetch user details");
-      }
-      return response.json();
-    })
-    .then((data) => data)
-    .catch((error) => {
-      console.error("Error fetching user details:", error);
-      throw error;
+export const getUserDetails = async () => {
+  try {
+    const token = TokenLocalStorageRepository.getToken();
+    if (!token) {
+      throw new Error("No token found");
+    }
+
+    const response = await fetch("/api/v1/users/me", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
     });
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch user details");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error in getUserDetails:", error);
+    throw error;
+  }
 };
 
-export const updateUserDetails = (token, user) => {
-  return fetch("/api/v1/users/update", {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(user),
-  })
-  .then((response) => {
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: 사용자 정보 수정 실패`);
+export const updateUserDetails = async (userData) => {
+  try {
+    const token = TokenLocalStorageRepository.getToken();
+    if (!token) {
+      throw new Error("No token found");
     }
-    return response.text();
-  })
-  .then((message) => {
-    return message;
-  })
-  .catch((error) => {
-    console.error("Error updating user details:", error);
+
+    const response = await fetch("/api/v1/users/update", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(userData),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update user details");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error in updateUserDetails:", error);
     throw error;
-  });
+  }
 };
 
 // 위도 경도 넘겨서 거리 포함 모든 주차장 불러오기 (거리 기준 정렬용)
@@ -203,7 +224,7 @@ export const sendContactMessage = (formData) => {
 
 export const getParkingReviews = async (parkingLotId) => {
   try {
-    const token = localStorage.getItem('token');
+    const token = TokenLocalStorageRepository.getToken();
     const response = await fetch(`/api/reviews/parkingLot/${parkingLotId}`, {
       headers: {
         'Authorization': `Bearer ${token}`
@@ -221,7 +242,7 @@ export const getParkingReviews = async (parkingLotId) => {
 
 export const createReview = async (parkingLotId, content, rating) => {
   try {
-    const token = localStorage.getItem('token');
+    const token = TokenLocalStorageRepository.getToken();
     const response = await fetch("/api/reviews", {
       method: "POST",
       headers: {
@@ -247,7 +268,7 @@ export const createReview = async (parkingLotId, content, rating) => {
 
 export const updateReview = async (reviewId, content, rating) => {
   try {
-    const token = localStorage.getItem('token');
+    const token = TokenLocalStorageRepository.getToken();
     const response = await fetch(`/api/reviews/${reviewId}`, {
       method: "PATCH",
       headers: {
@@ -272,7 +293,7 @@ export const updateReview = async (reviewId, content, rating) => {
 
 export const deleteReview = async (reviewId) => {
   try {
-    const token = localStorage.getItem('token');
+    const token = TokenLocalStorageRepository.getToken();
     const response = await fetch(`/api/reviews/${reviewId}`, {
       method: "DELETE",
       headers: {
