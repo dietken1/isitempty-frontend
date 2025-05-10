@@ -15,6 +15,7 @@ function Header() {
     };
 
     checkLoginStatus();
+
     window.addEventListener("login", checkLoginStatus);
     window.addEventListener("logout", checkLoginStatus);
 
@@ -25,14 +26,14 @@ function Header() {
   }, []);
 
   const toggleMenu = () => {
-    setIsMenuOpen(prev => !prev);
+    setIsMenuOpen(!isMenuOpen);
   };
 
   const handleMenuClick = (page) => {
     setIsMenuOpen(false);
     setTimeout(() => {
       navigate(page);
-    }, 300);
+    }, 1000);
   };
 
   const handleLogout = () => {
@@ -52,42 +53,32 @@ function Header() {
       </div>
 
       <div className="hamburger-menu" onClick={toggleMenu}>
-        <div className="bar" />
-        <div className="bar" />
-        <div className="bar" />
+        <div className="bar"></div>
+        <div className="bar"></div>
+        <div className="bar"></div>
       </div>
 
       <nav className={`nav ${isMenuOpen ? "open" : ""}`}>
         <ul>
           {isLoggedIn ? (
             <>
-              <li>
-                <button type="button" onClick={handleLogout}>
-                  Logout
-                </button>
+              <li onClick={handleLogout}>
+                <a>Logout</a>
               </li>
-              <li>
-                <button type="button" onClick={() => handleMenuClick("/mypage")}>
-                  Mypage
-                </button>
+              <li onClick={() => handleMenuClick("/mypage")}>
+                <a href="/mypage">Mypage</a>
               </li>
             </>
           ) : (
-            <li>
-              <button type="button" onClick={() => handleMenuClick("/login")}>
-                Login
-              </button>
+            <li onClick={() => handleMenuClick("/mypage")}>
+              <a>Login</a>
             </li>
           )}
-          <li>
-            <button type="button" onClick={() => handleMenuClick("/about")}>
-              About
-            </button>
+          <li onClick={() => handleMenuClick("/about")}>
+            <a href="/about">About</a>
           </li>
-          <li>
-            <button type="button" onClick={() => handleMenuClick("/contact")}>
-              Contact
-            </button>
+          <li onClick={() => handleMenuClick("/contact")}>
+            <a href="/contact">Contact</a>
           </li>
         </ul>
       </nav>
