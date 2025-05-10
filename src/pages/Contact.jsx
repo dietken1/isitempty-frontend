@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './Contact.css';
+import { sendContactMessage } from '../api/apiService';
 
 function Contact() {
   const [formData, setFormData] = useState({
@@ -17,25 +18,23 @@ function Contact() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here you would typically send the form data to your backend
-    console.log('Form submitted:', formData);
-    
-    // Simulate form submission
-    setFormStatus('success');
-    
-    // Reset form after submission
-    setFormData({
-      name: '',
-      email: '',
-      message: ''
-    });
-    
-    // Clear success message after 5 seconds
-    setTimeout(() => {
-      setFormStatus(null);
-    }, 5000);
+  
+    try {
+      const createdQuestion = await sendContactMessage(formData);
+      // 반환된 객체에 id(또는 다른 PK 필드)가 있으면 성공 처리
+      if (createdQuestion && createdQuestion.id) {
+        setFormStatus('success');
+        setFormData({ name: '', email: '', message: '' });
+        setTimeout(() => setFormStatus(null), 5000);
+      } else {
+        setFormStatus('error');
+      }
+    } catch (error) {
+      console.error(error);
+      setFormStatus('error');
+    }
   };
 
   return (
@@ -90,13 +89,6 @@ function Contact() {
         
         <button type="submit" className="submit-button">Send Message</button>
       </form>
-      
-      <div className="contact-info">
-        <h2>Other Ways to Reach Us</h2>
-        <div className="info-item">
-          <strong>Email:</strong> info@isitempty.kr
-        </div>
-      </div>
     </div>
   );
 }

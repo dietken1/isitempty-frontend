@@ -147,22 +147,21 @@ export const updateUserDetails = (token, user) => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({
-      email: user.email,
-      password: user.password,
-    }),
+    body: JSON.stringify(user),
   })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: 사용자 정보 수정 실패`);
-      }
-      return response.json();
-    })
-    .then((data) => data)
-    .catch((error) => {
-      console.error("Error updating user details:", error);
-      throw error;
-    });
+  .then((response) => {
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: 사용자 정보 수정 실패`);
+    }
+    return response.text();
+  })
+  .then((message) => {
+    return message;
+  })
+  .catch((error) => {
+    console.error("Error updating user details:", error);
+    throw error;
+  });
 };
 
 // 위도 경도 넘겨서 거리 포함 모든 주차장 불러오기 (거리 기준 정렬용)
@@ -185,4 +184,19 @@ export const fetchParkingLotsWithDistance = async (latitude, longitude) => {
     console.error("Error fetching parking lots with distance:", error);
     throw error;
   }
+};
+
+export const sendContactMessage = (formData) => {
+  return fetch("/api/question", {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(formData),
+  })
+    .then((response) => response.json())
+    .catch((error) => {
+      console.error('Error submitting form:', error);
+      throw error;
+    });
 };
