@@ -67,25 +67,34 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
         console.log("토큰 존재 여부:", !!token);
         
         const reviewsData = await getParkingReviews(lot.id);
-        // reviewsData가 비어있으면 빈 배열로 초기화
-        setReviews(Array.isArray(reviewsData) ? reviewsData : []);
+        console.log('받은 리뷰 데이터:', reviewsData);
         
-        // 리뷰가 없으면 메시지 표시
-        if (Array.isArray(reviewsData) && reviewsData.length === 0) {
-          setReviewError("이 주차장에 대한 리뷰가 아직 없습니다. 첫 리뷰를 작성해보세요!");
+        // 백엔드에서 반환된 데이터를 확인하고 적절히 처리
+        if (Array.isArray(reviewsData)) {
+          // 리뷰 데이터 구조 정규화
+          const normalizedReviews = reviewsData.map(review => {
+            // 각 리뷰 객체에서 필요한 데이터 추출
+            return {
+              id: review.id || review.reviewId || `review-${Math.random()}`,
+              content: review.content || '',
+              rating: review.rating || 0,
+              user: review.user?.username || review.username || '익명',
+              createdAt: review.createdAt || new Date().toISOString()
+            };
+          });
+          setReviews(normalizedReviews);
+        } else {
+          setReviews([]);
+          setReviewError("리뷰 데이터 형식이 올바르지 않습니다.");
         }
       } catch (error) {
         console.error("리뷰 불러오기 실패:", error);
-        if (error && error.message) {
-          if (error.message.includes('401')) {
-            setReviewError("리뷰를 보려면 로그인이 필요합니다.");
-          } else if (error.message.includes('404')) {
-            setReviewError("해당 주차장의 리뷰 정보를 찾을 수 없습니다.");
-          } else {
-            setReviewError("리뷰를 불러오는데 실패했습니다. 잠시 후 다시 시도해주세요.");
-          }
+        if (error.message.includes('401')) {
+          setReviewError("리뷰를 보려면 로그인이 필요합니다.");
+        } else if (error.message.includes('404')) {
+          setReviewError("이 주차장에 대한 리뷰가 아직 없습니다.");
         } else {
-          setReviewError("알 수 없는 오류가 발생했습니다.");
+          setReviewError(`리뷰를 불러오는데 실패했습니다: ${error.message}`);
         }
       } finally {
         setIsLoadingReviews(false);
@@ -282,7 +291,7 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
                 </div>
               ))
             ) : (
-              <p>리뷰가 없습니다.</p>
+              <p>리뷰가 없습니다. 첫 리뷰를 작성해보세요!</p>
             )}
           </div>
         </details>
