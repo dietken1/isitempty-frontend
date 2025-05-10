@@ -38,10 +38,10 @@
 .header_right {
   color: #656565c9;
   white-space: nowrap;
-  margin-right: 15px;
 }
 .header_right button {
   color: #656565c9;
+  margin: 0;
   background-color: transparent;
   font-size: 14px;
   white-space: nowrap;
@@ -55,10 +55,13 @@
 }
 .header_left input {
   text-align: center;
+  padding: 0;
+  font-size: 16px;
   width: 14%;
   height: 19px;
 }
 .header_left button {
+  background-color: #1976d2;
   font-size: 15px;
   padding: 0.1em 0.4em;
 }
@@ -66,7 +69,7 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  font-size: 15px;
+  font-size: 16px;
   gap: 2px;
   justify-content: flex-start;
 }
