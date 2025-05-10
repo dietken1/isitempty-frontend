@@ -16,33 +16,28 @@ const MyPage = () => {
     if (!token) {
       navigate("/login");
     } else {
-      loadUserDetails(token);
-      loadReviews(token);
-      loadLikedParking(token);
+      loadUserDetails();
+      loadReviews();
+      loadLikedParking();
     }
   }, []);
 
-  const loadUserDetails = (token) => {
-    console.log(token);
-    console.log("API URL:", "http://localhost:8080/api/v1/users/me");
-
-    getUserDetails(token)
+  const loadUserDetails = () => {
+    getUserDetails()
       .then((data) => {
         setUser(data);
-        console.log(data);
       })
       .catch((error) => console.error("Error loading user data:", error));
   };
   
-
-  const loadReviews = (token) => {
-    getMyReviews(token)
+  const loadReviews = () => {
+    getMyReviews()
       .then((data) => setMyReviews(data.reviews || []))
       .catch((error) => console.error("Error loading reviews:", error));
   };
 
-  const loadLikedParking = (token) => {
-    getFavoriteParking(token)
+  const loadLikedParking = () => {
+    getFavoriteParking()
       .then((data) => setLikedParking(data.liked_parking_lots || []))
       .catch((error) => console.error("Error loading liked parking:", error));
   };
