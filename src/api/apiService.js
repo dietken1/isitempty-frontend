@@ -186,3 +186,18 @@ export const fetchParkingLotsWithDistance = async (latitude, longitude) => {
     throw error;
   }
 };
+
+export const sendContactMessage = (formData) => {
+  return fetch("/api/question" {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(formData),
+  })
+    .then((response) => response.json())
+    .catch((error) => {
+      console.error('Error submitting form:', error);
+      throw error;
+    });
+};
