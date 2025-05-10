@@ -46,37 +46,6 @@ const Login = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  const login = useGoogleLogin({
-    flow: "auth-code",
-    onSuccess: async (tokenResponse) => {
-      // tokenResponse.code === 인증 코드
-      try {
-        const res = await fetch("/oauth2/google", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            code: tokenResponse.code,
-          }),
-        });
-
-        if (!res.ok) throw new Error("Google login failed");
-        const data = await res.json();
-
-        setToken({ token: data.accessToken });
-        window.dispatchEvent(new Event("login"));
-        navigate("/");
-      } catch (err) {
-        console.error("Google login error:", err);
-      }
-    },
-    onError: () => {
-      console.log("Google login failed");
-    },
-    redirect_uri: "http://localhost:8080/oauth2/authorization/google",
-  });
-
   return (
     <div className="login-container">
       <div className="login_container">
@@ -130,7 +99,14 @@ const Login = () => {
           <hr />
           <div className="social-login">
             <p>소셜 로그인</p>
-            <button type="button" className="google" onClick={() => login()}>
+            <button
+              type="button"
+              className="google"
+              onClick={() => {
+                window.location.href =
+                  "https://isitempty.kr/oauth2/authorization/google";
+              }}
+            >
               <img src="/images/google.png" alt="구글 로그인" />
             </button>
           </div>
