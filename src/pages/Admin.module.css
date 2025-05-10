@@ -123,3 +123,38 @@
     color: #757575;
     font-style: italic;
   }
+
+  /* 관리자 헤더 */
+  .adminHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e0e0e0;
+  }
+
+  .adminHeader h1 {
+    font-size: 1.8rem;
+    color: #333;
+    margin: 0;
+  }
+
+  .logoutBtn {
+    background-color: #f44336;
+    color: white;
+  }
+
+  .logoutBtn:hover {
+    background-color: #d32f2f;
+  }
+
+  .btnGroup {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+  }
+
+  .btnGroup button {
+    padding: 8px 15px;
+  }
