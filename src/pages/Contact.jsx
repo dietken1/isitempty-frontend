@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { sendContactMessage } from '../api/apiService';
 import './Contact.css';
+import { sendContactMessage } from '../api/apiService';
 
 function Contact() {
   const [formData, setFormData] = useState({
@@ -18,30 +18,23 @@ function Contact() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    sendContactMessage(formData)
-      .then((data) => {
-        if (data.success) {
-          setFormStatus('success');
-          setFormData({
-            name: '',
-            email: '',
-            message: ''
-          });
-        } else {
-          setFormStatus('error'); 
-        }
-      })
-      .catch((error) => {
-        console.error('Error submitting form:', error);
+  
+    try {
+      const createdQuestion = await sendContactMessage(formData);
+      // 반환된 객체에 id(또는 다른 PK 필드)가 있으면 성공 처리
+      if (createdQuestion && createdQuestion.id) {
+        setFormStatus('success');
+        setFormData({ name: '', email: '', message: '' });
+        setTimeout(() => setFormStatus(null), 5000);
+      } else {
         setFormStatus('error');
-      });
-
-    setTimeout(() => {
-      setFormStatus(null);
-    }, 5000);
+      }
+    } catch (error) {
+      console.error(error);
+      setFormStatus('error');
+    }
   };
 
   return (
@@ -96,13 +89,6 @@ function Contact() {
         
         <button type="submit" className="submit-button">Send Message</button>
       </form>
-      
-      <div className="contact-info">
-        <h2>Other Ways to Reach Us</h2>
-        <div className="info-item">
-          <strong>Email:</strong> info@isitempty.kr
-        </div>
-      </div>
     </div>
   );
 }
