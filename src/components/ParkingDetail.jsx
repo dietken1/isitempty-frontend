@@ -11,6 +11,12 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
   const [reviews, setReviews] = useState([]);
   const [isLoadingReviews, setIsLoadingReviews] = useState(false);
   const [reviewError, setReviewError] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token);
+  }, []);
 
   useEffect(() => {
     if (!lot) return;
@@ -82,6 +88,11 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
   };
 
   const handleReviewSubmit = async () => {
+    if (!isLoggedIn) {
+      alert("리뷰를 작성하려면 로그인이 필요합니다.");
+      return;
+    }
+
     if (!selectedRating) {
       alert("별점을 선택해주세요.");
       return;
@@ -94,18 +105,20 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
 
     try {
       await createReview(lot.id, reviewContent, selectedRating);
-      // 리뷰 등록 후 리뷰 목록 새로고침
       const updatedReviews = await getParkingReviews(lot.id);
       setReviews(updatedReviews);
       
-      // 입력 필드 초기화
       setReviewContent("");
       setSelectedRating(0);
       
       alert("리뷰가 등록되었습니다.");
     } catch (error) {
       console.error("리뷰 등록 실패:", error);
-      alert("리뷰 등록에 실패했습니다. 다시 시도해주세요.");
+      if (error.message.includes('401')) {
+        alert("로그인이 필요합니다.");
+      } else {
+        alert("리뷰 등록에 실패했습니다. 다시 시도해주세요.");
+      }
     }
   };
 
@@ -178,6 +191,11 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
       </div>
 
       <div className={styles.ratingContainer}>
+        {!isLoggedIn && (
+          <p style={{ color: '#666', marginBottom: '10px' }}>
+            리뷰를 작성하려면 로그인이 필요합니다.
+          </p>
+        )}
         <div className={styles.starRating}>
           {[1, 2, 3, 4, 5].map((star) => (
             <i
@@ -185,28 +203,31 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
               className={`ri-star-line ${
                 star <= selectedRating ? "ri-star-fill" : ""
               }`}
-              onClick={() => handleRatingClick(star)}
+              onClick={() => isLoggedIn && handleRatingClick(star)}
               style={{
-                cursor: "pointer",
+                cursor: isLoggedIn ? "pointer" : "not-allowed",
                 fontSize: "24px",
                 color: star <= selectedRating ? " #ffe200" : "black",
+                opacity: isLoggedIn ? 1 : 0.5
               }}
             ></i>
           ))}
         </div>
       </div>
 
-      <div className={styles.reviewContainer}>
-        <textarea
-          placeholder="리뷰를 입력하세요"
-          value={reviewContent}
-          onChange={handleReviewChange}
-          className={styles.reviewTextarea}
-        ></textarea>
-        <button className={styles.reviewBtn} onClick={handleReviewSubmit}>
-          리뷰 등록
-        </button>
-      </div>
+      {isLoggedIn && (
+        <div className={styles.reviewContainer}>
+          <textarea
+            placeholder="리뷰를 입력하세요"
+            value={reviewContent}
+            onChange={handleReviewChange}
+            className={styles.reviewTextarea}
+          ></textarea>
+          <button className={styles.reviewBtn} onClick={handleReviewSubmit}>
+            리뷰 등록
+          </button>
+        </div>
+      )}
 
       <div className={styles.reviewsList}>
         <details>
