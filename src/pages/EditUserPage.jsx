@@ -7,15 +7,15 @@ import './EditUserPage.css';
 
 const EditUserPage = () => {
   const navigate = useNavigate(); 
-  const [user, setUser] = useState(null); // 사용자 정보 상태
-  const [updatedUser, setUpdatedUser] = useState({ email: "", password: "" }); // 수정된 사용자 정보 상태
+  const [user, setUser] = useState(null);
+  const [updatedUser, setUpdatedUser] = useState({ email: "", password: "" });
 
   useEffect(() => {
-    const token = TokenLocalStorageRepository.getToken(); // 로컬 스토리지에서 토큰 가져오기
+    const token = TokenLocalStorageRepository.getToken();
     if (!token) {
-      navigate("/login"); // 로그인 안 되어 있으면 로그인 페이지로 리다이렉트
+      navigate("/login");
     } else {
-      loadUserDetails(token); // 사용자 정보 불러오기
+      loadUserDetails(token);
     }
   }, []); 
 
@@ -33,6 +33,7 @@ const EditUserPage = () => {
       })
       .catch((error) => {
         console.error("Error fetching user data:", error);
+        navigate("/login");
       });
 };
 
@@ -48,11 +49,17 @@ const handleSave = () => {
       password: updatedUser.password,
     };
 
-    updateUserDetails(token, userUpdateData)
-      .then((data) => {
-        console.log("User information updated:", data);
-        navigate(`/mypage/${user.id}`);
-      })
+    updateUserDetails(token, userUpdateData) 
+    .then((data) => {
+      console.log("User information updated:", data);
+      // user.id가 null 또는 undefined인 경우를 방지하기 위해 확인
+      if (user && user.id) {
+        navigate(`/mypage/`);
+      } else {
+        console.error("User ID is missing");
+        navigate("/login");
+      }
+    })
       .catch((error) => {
         console.error("Error updating user information:", error);
       });
