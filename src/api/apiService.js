@@ -200,3 +200,79 @@ export const sendContactMessage = (formData) => {
       throw error;
     });
 };
+
+export const getParkingReviews = async (parkingLotId) => {
+  try {
+    const response = await fetch(`/api/reviews/parkingLot/${parkingLotId}`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch parking reviews");
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching parking reviews:", error);
+    throw error;
+  }
+};
+
+export const createReview = async (parkingLotId, content, rating) => {
+  try {
+    const response = await fetch("/api/reviews", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        parkingLotId,
+        content,
+        rating
+      }),
+    });
+    
+    if (!response.ok) {
+      throw new Error("Failed to create review");
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error creating review:", error);
+    throw error;
+  }
+};
+
+export const updateReview = async (reviewId, content, rating) => {
+  try {
+    const response = await fetch(`/api/reviews/${reviewId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        content,
+        rating
+      }),
+    });
+    
+    if (!response.ok) {
+      throw new Error("Failed to update review");
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error updating review:", error);
+    throw error;
+  }
+};
+
+export const deleteReview = async (reviewId) => {
+  try {
+    const response = await fetch(`/api/reviews/${reviewId}`, {
+      method: "DELETE",
+    });
+    
+    if (!response.ok) {
+      throw new Error("Failed to delete review");
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error deleting review:", error);
+    throw error;
+  }
+};
