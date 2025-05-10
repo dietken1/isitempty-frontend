@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import styles from "./Admin.module.css";
+import { TokenLocalStorageRepository } from "../repository/localstorages";
 
-const UserPage = () => {
+const Admin = () => {
   const [users, setUsers] = useState([]);
   const [inquiries, setInquiries] = useState([]);
   const [editingUser, setEditingUser] = useState(null);
@@ -13,24 +14,36 @@ const UserPage = () => {
   }, []);
 
   const fetchUsers = async () => {
-    try {
-      const res = await fetch("/api/users");
-      const data = await res.json();
-      setUsers(data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  try {
+    const token = TokenLocalStorageRepository.getToken();
+    const res = await fetch("/api/users", {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+    if (!res.ok) throw new Error(res.statusText);
+    const data = await res.json();
+    setUsers(data);
+  } catch (err) {
+    console.error("fetchUsers error:", err);
+  }
+};
 
-  const fetchInquiries = async () => {
-    try {
-      const res = await fetch("/api/inquiries");
-      const data = await res.json();
-      setInquiries(data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+const fetchInquiries = async () => {
+  try {
+    const token = TokenLocalStorageRepository.getToken();
+    const res = await fetch("/api/inquiries", {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+    if (!res.ok) throw new Error(res.statusText);
+    const data = await res.json();
+    setInquiries(data);
+  } catch (err) {
+    console.error("fetchInquiries error:", err);
+  }
+};
 
   const handleDeleteUser = async (id) => {
     if (!window.confirm("정말 이 유저를 삭제하시겠습니까?")) return;
@@ -172,4 +185,4 @@ const UserPage = () => {
   );
 };
 
-export default UserPage;
+export default Admin;

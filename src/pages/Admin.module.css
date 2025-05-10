@@ -1,4 +1,7 @@
 .container {
+    display: flex;
+    margin: 30px auto;
+    flex-direction: column;
     padding: 20px;
     background-color: #fafafa;
     font-family: Arial, sans-serif;
@@ -66,7 +69,6 @@
     cursor: not-allowed;
   }
   
-  /* Inputs */
   input {
     padding: 6px 8px;
     font-size: 0.9rem;
