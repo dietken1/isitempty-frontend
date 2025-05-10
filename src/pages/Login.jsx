@@ -44,8 +44,8 @@ const Login = () => {
   }, []);
 
   const handleGoogleLogin = () => {
-    const redirectUri = encodeURIComponent("http://isitempty.kr/redirect"); // ✅ 클라이언트 주소
-    window.location.href = `http://isitempty.kr/oauth2/authorization/google?redirect_uri=${redirectUri}`;
+    const redirectUri = encodeURIComponent("https://isitempty.kr/redirect");
+    window.location.href = `https://isitempty.kr/oauth2/authorization/google?redirect_uri=${redirectUri}`;
   };
 
   return (
