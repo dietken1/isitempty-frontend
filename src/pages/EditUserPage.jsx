@@ -15,14 +15,12 @@ const EditUserPage = () => {
     if (!token) {
       navigate("/login");
     } else {
-      loadUserDetails(token);
+      loadUserDetails();
     }
   }, []); 
 
-  const loadUserDetails = (token) => {
-    console.log("Requesting user details with token:", token);
-
-    getUserDetails(token)
+  const loadUserDetails = () => {
+    getUserDetails()
       .then((data) => {
         console.log("Fetched user data:", data);
         setUser(data);
@@ -36,10 +34,10 @@ const EditUserPage = () => {
         console.error("Error fetching user data:", error);
         navigate("/login");
       });
-};
+  };
 
-const handleSave = async () => {
-    const token = TokenLocalStorageRepository.getToken(); 
+  const handleSave = async () => {
+    const token = TokenLocalStorageRepository.getToken();
     if (!token || !user) {
       return navigate("/login");
     }
@@ -51,7 +49,7 @@ const handleSave = async () => {
     };
   
     try {
-      const message = await updateUserDetails(token, userUpdateData);
+      const message = await updateUserDetails(userUpdateData);
       console.log("User information updated:", message);
       navigate("/mypage/");
     } catch (error) {
