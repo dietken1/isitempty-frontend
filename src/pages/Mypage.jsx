@@ -75,8 +75,8 @@ const MyPage = () => {
           <div className="profile_name">
             {user ? (
               <>
+                <p>{user.username}</p>
                 <p>{user.email}</p>
-                <p>ID: {user.username}</p>
               </>
             ) : (
               <p>Loading...</p>
