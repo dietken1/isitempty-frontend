@@ -224,89 +224,113 @@ export const sendContactMessage = (formData) => {
 
 export const getParkingReviews = async (parkingLotId) => {
   try {
-    const token = TokenLocalStorageRepository.getToken();
-    const response = await fetch(`/api/reviews/parkingLot/${parkingLotId}`, {
+    // 다양한 가능한 경로 시도를 위한 로깅
+    console.log(`getParkingReviews 호출: parkingLotId=${parkingLotId}, 타입=${typeof parkingLotId}`);
+    
+    // API 경로를 문자열 ID로 확실하게 변환
+    const id = String(parkingLotId);
+    console.log(`변환된 ID: ${id}`);
+    
+    // 백엔드 엔드포인트와 일치하는지 확인
+    const response = await axios.get(`/api/reviews/parkingLot/${id}`, {
       headers: {
-        'Authorization': `Bearer ${token}`
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${TokenLocalStorageRepository.getToken()}`
       }
     });
-    if (!response.ok) {
-      throw new Error("Failed to fetch parking reviews");
-    }
-    return await response.json();
+    
+    console.log('리뷰 데이터 응답:', response.data);
+    return response.data;
   } catch (error) {
     console.error("Error fetching parking reviews:", error);
-    throw error;
+    if (error.response) {
+      console.log("응답 상태:", error.response.status);
+      console.log("응답 데이터:", error.response.data);
+      console.log("요청 URL:", error.config.url);
+    } else if (error.request) {
+      console.log("요청이 전송되었으나 응답이 없음:", error.request);
+    } else {
+      console.log("요청 설정 중 오류:", error.message);
+    }
+    
+    // 임시로 빈 배열 반환하여 UI가 깨지지 않게 함
+    console.log("빈 리뷰 배열 반환");
+    return [];
+    
+    // 원래 오류 처리
+    // throw new Error(`Failed to fetch parking reviews: ${error.message}`);
   }
 };
 
 export const createReview = async (parkingLotId, content, rating) => {
   try {
-    const token = TokenLocalStorageRepository.getToken();
-    const response = await fetch("/api/reviews", {
-      method: "POST",
+    console.log(`createReview 호출: parkingLotId=${parkingLotId}, rating=${rating}`);
+    const response = await axios.post("/api/reviews", {
+      parkingLotId,
+      content,
+      rating
+    }, {
       headers: {
         "Content-Type": "application/json",
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        parkingLotId,
-        content,
-        rating
-      }),
+        'Authorization': `Bearer ${TokenLocalStorageRepository.getToken()}`
+      }
     });
     
-    if (!response.ok) {
-      throw new Error("Failed to create review");
-    }
-    return await response.json();
+    console.log('리뷰 생성 응답:', response.data);
+    return response.data;
   } catch (error) {
     console.error("Error creating review:", error);
-    throw error;
+    if (error.response) {
+      console.log("응답 상태:", error.response.status);
+      console.log("응답 데이터:", error.response.data);
+    }
+    throw new Error(`Failed to create review: ${error.message}`);
   }
 };
 
 export const updateReview = async (reviewId, content, rating) => {
   try {
-    const token = TokenLocalStorageRepository.getToken();
-    const response = await fetch(`/api/reviews/${reviewId}`, {
-      method: "PATCH",
+    console.log(`updateReview 호출: reviewId=${reviewId}, rating=${rating}`);
+    const response = await axios.patch(`/api/reviews/${reviewId}`, {
+      content,
+      rating
+    }, {
       headers: {
         "Content-Type": "application/json",
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        content,
-        rating
-      }),
+        'Authorization': `Bearer ${TokenLocalStorageRepository.getToken()}`
+      }
     });
     
-    if (!response.ok) {
-      throw new Error("Failed to update review");
-    }
-    return await response.json();
+    console.log('리뷰 수정 응답:', response.data);
+    return response.data;
   } catch (error) {
     console.error("Error updating review:", error);
-    throw error;
+    if (error.response) {
+      console.log("응답 상태:", error.response.status);
+      console.log("응답 데이터:", error.response.data);
+    }
+    throw new Error(`Failed to update review: ${error.message}`);
   }
 };
 
 export const deleteReview = async (reviewId) => {
   try {
-    const token = TokenLocalStorageRepository.getToken();
-    const response = await fetch(`/api/reviews/${reviewId}`, {
-      method: "DELETE",
+    console.log(`deleteReview 호출: reviewId=${reviewId}`);
+    const response = await axios.delete(`/api/reviews/${reviewId}`, {
       headers: {
-        'Authorization': `Bearer ${token}`
+        "Content-Type": "application/json",
+        'Authorization': `Bearer ${TokenLocalStorageRepository.getToken()}`
       }
     });
     
-    if (!response.ok) {
-      throw new Error("Failed to delete review");
-    }
-    return await response.json();
+    console.log('리뷰 삭제 응답:', response.data);
+    return response.data;
   } catch (error) {
     console.error("Error deleting review:", error);
-    throw error;
+    if (error.response) {
+      console.log("응답 상태:", error.response.status);
+      console.log("응답 데이터:", error.response.data);
+    }
+    throw new Error(`Failed to delete review: ${error.message}`);
   }
 };
