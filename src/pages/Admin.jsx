@@ -28,11 +28,12 @@ const Admin = () => {
       }
 
       // 사용자 정보 가져오기
-      const userInfo = await getUserMe();
-      console.log("현재 사용자 정보:", userInfo);
+      const response = await getUserMe();
+      const userData = response.data;
+      console.log("현재 사용자 정보:", response);
 
       // 관리자 권한 확인 (roleType이 'ADMIN'인지 확인)
-      if (userInfo && userInfo.roleType === 'ADMIN') {
+      if (userData && userData.roleType === 'ADMIN') {
         setLoading(prev => ({ ...prev, auth: false }));
         // 권한이 확인되면 데이터 로드
         fetchUsers();
