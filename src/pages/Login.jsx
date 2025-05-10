@@ -130,24 +130,8 @@ const Login = () => {
           <hr />
           <div className="social-login">
             <p>소셜 로그인</p>
-            <button
-              type="button"
-              className="naver"
-              onClick={() => (window.location.href = "/auth/naver")}
-            >
-              <img src="/images/naver.png" alt="Naver Login" />
-            </button>
-
             <button type="button" className="google" onClick={() => login()}>
               <img src="/images/google.png" alt="구글 로그인" />
-            </button>
-
-            <button
-              type="button"
-              className="kakao"
-              onClick={() => (window.location.href = "/auth/kakao")}
-            >
-              <img src="/images/kakao.png" alt="Kakao Login" />
             </button>
           </div>
         </form>
