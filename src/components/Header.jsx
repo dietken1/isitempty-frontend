@@ -18,8 +18,13 @@ function Header() {
       // 로그인 상태일 때만 관리자 권한 확인
       if (token) {
         try {
-          const userInfo = await getUserMe();
-          setIsAdmin(userInfo && userInfo.roleType === 'ADMIN');
+          const response = await getUserMe();
+          // Axios 응답에서 data 객체 추출
+          const userData = response.data;
+          console.log("사용자 정보:", response);
+          
+          // roleType 확인
+          setIsAdmin(userData && userData.roleType === 'ADMIN');
         } catch (error) {
           console.error("사용자 정보 조회 실패:", error);
           setIsAdmin(false);
