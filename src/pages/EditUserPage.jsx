@@ -57,7 +57,6 @@ const handleSave = () => {
         navigate(`/mypage/`);
       } else {
         console.error("User ID is missing");
-        navigate("/login");
       }
     })
       .catch((error) => {

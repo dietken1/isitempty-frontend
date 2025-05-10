@@ -148,8 +148,8 @@ export const updateUserDetails = (token, user) => {
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({
-      email: user.email,
-      password: user.password,
+      email: userUpdateData.email,
+      password: userUpdateData.password,
     }),
   })
     .then((response) => {
