@@ -7,12 +7,12 @@ import Signup from "./pages/Signup";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Mypage from "./pages/Mypage";
-import EditUserPage from './pages/EditUserPage'; 
+import EditUserPage from "./pages/EditUserPage";
 import Map from "./pages/Map";
 import Admin from "./pages/Admin";
 import "remixicon/fonts/remixicon.css";
 import "./App.css";
-
+import GoogleRedirect from "./pages/GoogleRedirect";
 function App() {
   return (
     <Router>
@@ -29,6 +29,10 @@ function App() {
             <Route path="/mypage/:id/edit" element={<EditUserPage />} />
             <Route path="/map" element={<Map />} />
             <Route path="/admin" element={<Admin />} />
+            <Route
+              path="/login/oauth2/code/google"
+              element={<GoogleRedirect />}
+            />
           </Routes>
         </main>
         <Footer />

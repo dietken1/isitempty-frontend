@@ -3,7 +3,6 @@ import "./Login.css";
 import { useNavigate } from "react-router-dom";
 import { loginUser, getUserMe } from "../api/apiService";
 import { TokenLocalStorageRepository } from "../repository/localstorages";
-import { useGoogleLogin } from "@react-oauth/google";
 
 const Login = () => {
   const [userId, setUserId] = useState("");
@@ -21,9 +20,7 @@ const Login = () => {
 
     try {
       const res = await loginUser(userId, password);
-      console.log(res);
       setToken({ token: res.data.body.token });
-      console.log(res.data.body.token);
       window.dispatchEvent(new Event("login"));
       navigate("/");
     } catch (err) {
@@ -46,36 +43,13 @@ const Login = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  const login = useGoogleLogin({
-    flow: "auth-code",
-    onSuccess: async (tokenResponse) => {
-      // tokenResponse.code === 인증 코드
-      try {
-        const res = await fetch("/oauth2/google", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            code: tokenResponse.code,
-          }),
-        });
-
-        if (!res.ok) throw new Error("Google login failed");
-        const data = await res.json();
-
-        setToken({ token: data.accessToken });
-        window.dispatchEvent(new Event("login"));
-        navigate("/");
-      } catch (err) {
-        console.error("Google login error:", err);
-      }
-    },
-    onError: () => {
-      console.log("Google login failed");
-    },
-    redirect_uri: "https://isitempty.kr/login/oauth2/code/google",
-  });
+  const handleGoogleLogin = () => {
+    // 백엔드가 구글 로그인 처리 시작할 수 있도록 리디렉션
+    const redirectUri = encodeURIComponent(
+      "https://isitempty.kr/login/oauth2/code/google"
+    );
+    window.location.href = `https://isitempty.kr/oauth2/authorization/google?redirect_uri=${redirectUri}`;
+  };
 
   return (
     <div className="login-container">
@@ -130,7 +104,11 @@ const Login = () => {
           <hr />
           <div className="social-login">
             <p>소셜 로그인</p>
-            <button type="button" className="google" onClick={() => login()}>
+            <button
+              type="button"
+              className="google"
+              onClick={handleGoogleLogin}
+            >
               <img src="/images/google.png" alt="구글 로그인" />
             </button>
           </div>
