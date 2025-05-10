@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { sendContactMessage } from '../api/apiService';
 import './Contact.css';
 
 function Contact() {
@@ -19,20 +20,25 @@ function Contact() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Here you would typically send the form data to your backend
-    console.log('Form submitted:', formData);
     
-    // Simulate form submission
-    setFormStatus('success');
-    
-    // Reset form after submission
-    setFormData({
-      name: '',
-      email: '',
-      message: ''
-    });
-    
-    // Clear success message after 5 seconds
+    sendContactMessage(formData)
+      .then((data) => {
+        if (data.success) {
+          setFormStatus('success');
+          setFormData({
+            name: '',
+            email: '',
+            message: ''
+          });
+        } else {
+          setFormStatus('error'); 
+        }
+      })
+      .catch((error) => {
+        console.error('Error submitting form:', error);
+        setFormStatus('error');
+      });
+
     setTimeout(() => {
       setFormStatus(null);
     }, 5000);
