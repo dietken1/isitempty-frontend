@@ -119,6 +119,27 @@ export const getFavoriteParking = async () => {
   }
 };
 
+export const getUserDetails = (token) => {
+  return fetch("/api/v1/users/me", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Failed to fetch user details");
+      }
+      return response.json();
+    })
+    .then((data) => data)
+    .catch((error) => {
+      console.error("Error fetching user details:", error);
+      throw error;
+    });
+};
+
 export const updateUserDetails = (token, user) => {
   return fetch("/api/v1/users/update", {
     method: "PUT",
@@ -126,7 +147,6 @@ export const updateUserDetails = (token, user) => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    // ↓ 여기서 user.email / user.password를 사용
     body: JSON.stringify({
       email: user.email,
       password: user.password,
@@ -137,6 +157,11 @@ export const updateUserDetails = (token, user) => {
         throw new Error(`HTTP ${response.status}: 사용자 정보 수정 실패`);
       }
       return response.json();
+    })
+    .then((data) => data)
+    .catch((error) => {
+      console.error("Error updating user details:", error);
+      throw error;
     });
 };
 
