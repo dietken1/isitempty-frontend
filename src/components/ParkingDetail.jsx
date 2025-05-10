@@ -94,14 +94,14 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
         <h3>{name}</h3>
         <span>{feeInfo} 주차장</span>
         <i
-          className={`ri-heart-line ${isFavorite ? "ri-heart-fill" : ""}`}
-          onClick={handleHeartClick}
-          style={{
-            cursor: "pointer",
-            fontSize: "20px",
-            color: isFavorite ? "red" : "black",
-          }}
-        ></i>
+        className={isFavorite ? "ri-heart-fill" : "ri-heart-line"}
+        onClick={handleHeartClick}
+        style={{
+          cursor: "pointer",
+          fontSize: "20px",
+          color: isFavorite ? "red" : "black",
+        }}
+      ></i>
       </div>
       <div className={styles.detail_info}>
         <p>
@@ -140,23 +140,21 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
 
       <div className={styles.ratingContainer}>
         <div className={styles.starRating}>
-          {[1, 2, 3, 4, 5].map((star) => (
-            <i
-              key={star}
-              className={`ri-star-line ${
-                star <= selectedRating ? "ri-star-fill" : ""
-              }`}
-              onClick={() => handleRatingClick(star)}
-              style={{
-                cursor: "pointer",
-                fontSize: "24px",
-                color: star <= selectedRating ? " #ffe200" : "black",
-              }}
-            ></i>
-          ))}
-        </div>
+        {[1, 2, 3, 4, 5].map((star) => (
+        <i
+          key={star}
+          className={star <= selectedRating ? "ri-star-fill" : "ri-star-line"}
+          onClick={() => handleRatingClick(star)}
+          style={{
+            cursor: "pointer",
+            fontSize: "24px",
+            color: star <= selectedRating ? "#ffe200" : "black",
+          }}
+        ></i>
+      ))}
       </div>
-
+      </div>
+ 
       <div className={styles.reviewContainer}>
         <textarea
           placeholder="리뷰를 입력하세요"
@@ -178,7 +176,7 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
                 <div key={review.id} className={styles.reviewItem}>
                   <p>
                     <strong>{review.user}</strong>
-                    <span> - {review.rating}<i className={ri-star-fill}></i></span>
+                    <span> - {review.rating}<i className="ri-star-fill"></i></span>
                   </p>
                   <p>{review.content}</p>
                   <hr />
