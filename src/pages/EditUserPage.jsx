@@ -37,32 +37,26 @@ const EditUserPage = () => {
       });
 };
 
-const handleSave = () => {
+const handleSave = async () => {
     const token = TokenLocalStorageRepository.getToken(); 
     if (!token || !user) {
-      navigate("/login");
-      return;
+      return navigate("/login");
     }
-
+  
     const userUpdateData = {
       email: updatedUser.email,
       password: updatedUser.password,
     };
-
-    updateUserDetails(token, userUpdateData) 
-    .then((data) => {
-      console.log("User information updated:", data);
-      // user.id가 null 또는 undefined인 경우를 방지하기 위해 확인
-      if (user && user.id) {
-        navigate(`/mypage/`);
-      } else {
-        console.error("User ID is missing");
-      }
-    })
-      .catch((error) => {
-        console.error("Error updating user information:", error);
-      });
-};
+  
+    try {
+      const message = await updateUserDetails(token, userUpdateData);
+      console.log("User information updated:", message);
+      navigate("/mypage/");
+    } catch (error) {
+      console.error("Error updating user information:", error);
+    }
+  };
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
