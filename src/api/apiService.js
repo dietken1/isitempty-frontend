@@ -188,7 +188,7 @@ export const fetchParkingLotsWithDistance = async (latitude, longitude) => {
 };
 
 export const sendContactMessage = (formData) => {
-  return fetch("/api/question" {
+  return fetch("/api/question", {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
