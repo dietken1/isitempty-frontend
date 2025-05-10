@@ -242,17 +242,24 @@ export const getParkingReviews = async (parkingLotId) => {
     
     // 응답 데이터 확인
     if (response.data && Array.isArray(response.data)) {
-      // 엔티티 구조에서 필요한 데이터만 추출하여 반환
-      return response.data.map(review => ({
-        id: review.id,
-        content: review.content,
-        rating: review.rating,
-        user: review.user?.username || '익명',
-        createdAt: review.createdAt
-      }));
+      // 백엔드에서 오는 데이터 구조에 맞게 정규화
+      return response.data.map(review => {
+        const userName = review.user?.username || '익명';
+        const parkingLotName = review.parkingLot?.name || '알 수 없는 주차장';
+        
+        return {
+          id: review.id,
+          content: review.content || '',
+          rating: review.rating || 0,
+          user: userName,
+          parkingLotName: parkingLotName,
+          createdAt: review.createdAt
+        };
+      });
     }
     
     // 데이터가 배열이 아닌 경우 빈 배열 반환
+    console.log('응답이 배열이 아님:', response.data);
     return [];
   } catch (error) {
     console.error("Error fetching parking reviews:", error);

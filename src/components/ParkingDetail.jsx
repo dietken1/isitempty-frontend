@@ -67,31 +67,24 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
         console.log("토큰 존재 여부:", !!token);
         
         const reviewsData = await getParkingReviews(lot.id);
-        console.log('받은 리뷰 데이터:', reviewsData);
+        console.log('받은 리뷰 데이터 (정규화 후):', reviewsData);
         
-        // 백엔드에서 반환된 데이터를 확인하고 적절히 처리
         if (Array.isArray(reviewsData)) {
-          // 리뷰 데이터 구조 정규화
-          const normalizedReviews = reviewsData.map(review => {
-            // 각 리뷰 객체에서 필요한 데이터 추출
-            return {
-              id: review.id || review.reviewId || `review-${Math.random()}`,
-              content: review.content || '',
-              rating: review.rating || 0,
-              user: review.user?.username || review.username || '익명',
-              createdAt: review.createdAt || new Date().toISOString()
-            };
-          });
-          setReviews(normalizedReviews);
+          setReviews(reviewsData);
+          
+          if (reviewsData.length === 0) {
+            setReviewError("이 주차장에 대한 리뷰가 아직 없습니다. 첫 리뷰를 작성해보세요!");
+          }
         } else {
+          console.error('리뷰 데이터가 배열이 아닙니다:', reviewsData);
           setReviews([]);
           setReviewError("리뷰 데이터 형식이 올바르지 않습니다.");
         }
       } catch (error) {
         console.error("리뷰 불러오기 실패:", error);
-        if (error.message.includes('401')) {
+        if (error.message && error.message.includes('401')) {
           setReviewError("리뷰를 보려면 로그인이 필요합니다.");
-        } else if (error.message.includes('404')) {
+        } else if (error.message && error.message.includes('404')) {
           setReviewError("이 주차장에 대한 리뷰가 아직 없습니다.");
         } else {
           setReviewError(`리뷰를 불러오는데 실패했습니다: ${error.message}`);
@@ -285,6 +278,7 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
                   <p>
                     <strong>{review.user}</strong>
                     <span> - {review.rating}<i className="ri-star-fill"></i></span>
+                    <small> ({new Date(review.createdAt).toLocaleDateString()})</small>
                   </p>
                   <p>{review.content}</p>
                   <hr />

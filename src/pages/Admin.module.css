@@ -84,3 +84,43 @@
     outline: none;
     box-shadow: 0 0 3px rgba(25, 118, 210, 0.4);
   }
+
+  /* 로딩 인디케이터 */
+  .loading {
+    padding: 20px;
+    text-align: center;
+    color: #666;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    margin: 10px 0;
+  }
+
+  /* 에러 메시지 */
+  .error {
+    padding: 20px;
+    background-color: #fdecea;
+    border: 1px solid #f44336;
+    color: #d32f2f;
+    border-radius: 4px;
+    margin: 10px 0;
+  }
+
+  .error p {
+    margin-bottom: 10px;
+  }
+
+  .error button {
+    background-color: #f44336;
+  }
+
+  .error button:hover {
+    background-color: #d32f2f;
+  }
+
+  /* 데이터 없음 표시 */
+  .noData {
+    text-align: center;
+    padding: 30px;
+    color: #757575;
+    font-style: italic;
+  }
