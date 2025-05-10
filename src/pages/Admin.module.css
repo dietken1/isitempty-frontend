@@ -1,11 +1,10 @@
 .container {
-    display: flex;
-    margin: 30px auto;
-    flex-direction: column;
-    padding: 20px;
-    background-color: #fafafa;
-    font-family: Arial, sans-serif;
-  }
+  width: 100vw;
+  margin: 0; 
+  box-sizing: border-box;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
   
   .listSection {
     margin-bottom: 40px;
