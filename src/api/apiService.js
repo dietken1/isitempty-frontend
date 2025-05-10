@@ -203,7 +203,12 @@ export const sendContactMessage = (formData) => {
 
 export const getParkingReviews = async (parkingLotId) => {
   try {
-    const response = await fetch(`/api/reviews/parkingLot/${parkingLotId}`);
+    const token = localStorage.getItem('token');
+    const response = await fetch(`/api/reviews/parkingLot/${parkingLotId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
     if (!response.ok) {
       throw new Error("Failed to fetch parking reviews");
     }
@@ -216,10 +221,12 @@ export const getParkingReviews = async (parkingLotId) => {
 
 export const createReview = async (parkingLotId, content, rating) => {
   try {
+    const token = localStorage.getItem('token');
     const response = await fetch("/api/reviews", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify({
         parkingLotId,
@@ -240,10 +247,12 @@ export const createReview = async (parkingLotId, content, rating) => {
 
 export const updateReview = async (reviewId, content, rating) => {
   try {
+    const token = localStorage.getItem('token');
     const response = await fetch(`/api/reviews/${reviewId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify({
         content,
@@ -263,8 +272,12 @@ export const updateReview = async (reviewId, content, rating) => {
 
 export const deleteReview = async (reviewId) => {
   try {
+    const token = localStorage.getItem('token');
     const response = await fetch(`/api/reviews/${reviewId}`, {
       method: "DELETE",
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
     });
     
     if (!response.ok) {
