@@ -3,7 +3,6 @@ import "./Login.css";
 import { useNavigate } from "react-router-dom";
 import { loginUser, getUserMe } from "../api/apiService";
 import { TokenLocalStorageRepository } from "../repository/localstorages";
-import { useGoogleLogin } from "@react-oauth/google";
 
 const Login = () => {
   const [userId, setUserId] = useState("");
@@ -21,9 +20,7 @@ const Login = () => {
 
     try {
       const res = await loginUser(userId, password);
-      console.log(res);
       setToken({ token: res.data.body.token });
-      console.log(res.data.body.token);
       window.dispatchEvent(new Event("login"));
       navigate("/");
     } catch (err) {
@@ -45,6 +42,14 @@ const Login = () => {
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
+
+  const handleGoogleLogin = () => {
+    // 백엔드가 구글 로그인 처리 시작할 수 있도록 리디렉션
+    const redirectUri = encodeURIComponent(
+      "https://isitempty.kr/login/oauth2/code/google"
+    );
+    window.location.href = `https://isitempty.kr/oauth2/authorization/google?redirect_uri=${redirectUri}`;
+  };
 
   return (
     <div className="login-container">
@@ -102,10 +107,7 @@ const Login = () => {
             <button
               type="button"
               className="google"
-              onClick={() => {
-                window.location.href =
-                  "https://isitempty.kr/oauth2/authorization/google";
-              }}
+              onClick={handleGoogleLogin}
             >
               <img src="/images/google.png" alt="구글 로그인" />
             </button>
