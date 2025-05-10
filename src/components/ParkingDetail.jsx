@@ -67,25 +67,27 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
         console.log("토큰 존재 여부:", !!token);
         
         const reviewsData = await getParkingReviews(lot.id);
-        // reviewsData가 비어있으면 빈 배열로 초기화
-        setReviews(Array.isArray(reviewsData) ? reviewsData : []);
+        console.log('받은 리뷰 데이터 (정규화 후):', reviewsData);
         
-        // 리뷰가 없으면 메시지 표시
-        if (Array.isArray(reviewsData) && reviewsData.length === 0) {
-          setReviewError("이 주차장에 대한 리뷰가 아직 없습니다. 첫 리뷰를 작성해보세요!");
+        if (Array.isArray(reviewsData)) {
+          setReviews(reviewsData);
+          
+          if (reviewsData.length === 0) {
+            setReviewError("이 주차장에 대한 리뷰가 아직 없습니다. 첫 리뷰를 작성해보세요!");
+          }
+        } else {
+          console.error('리뷰 데이터가 배열이 아닙니다:', reviewsData);
+          setReviews([]);
+          setReviewError("리뷰 데이터 형식이 올바르지 않습니다.");
         }
       } catch (error) {
         console.error("리뷰 불러오기 실패:", error);
-        if (error && error.message) {
-          if (error.message.includes('401')) {
-            setReviewError("리뷰를 보려면 로그인이 필요합니다.");
-          } else if (error.message.includes('404')) {
-            setReviewError("해당 주차장의 리뷰 정보를 찾을 수 없습니다.");
-          } else {
-            setReviewError("리뷰를 불러오는데 실패했습니다. 잠시 후 다시 시도해주세요.");
-          }
+        if (error.message && error.message.includes('401')) {
+          setReviewError("리뷰를 보려면 로그인이 필요합니다.");
+        } else if (error.message && error.message.includes('404')) {
+          setReviewError("이 주차장에 대한 리뷰가 아직 없습니다.");
         } else {
-          setReviewError("알 수 없는 오류가 발생했습니다.");
+          setReviewError(`리뷰를 불러오는데 실패했습니다: ${error.message}`);
         }
       } finally {
         setIsLoadingReviews(false);
@@ -276,13 +278,14 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
                   <p>
                     <strong>{review.user}</strong>
                     <span> - {review.rating}<i className="ri-star-fill"></i></span>
+                    <small> ({new Date(review.createdAt).toLocaleDateString()})</small>
                   </p>
                   <p>{review.content}</p>
                   <hr />
                 </div>
               ))
             ) : (
-              <p>리뷰가 없습니다.</p>
+              <p>리뷰가 없습니다. 첫 리뷰를 작성해보세요!</p>
             )}
           </div>
         </details>

@@ -224,41 +224,55 @@ export const sendContactMessage = (formData) => {
 
 export const getParkingReviews = async (parkingLotId) => {
   try {
-    // 다양한 가능한 경로 시도를 위한 로깅
     console.log(`getParkingReviews 호출: parkingLotId=${parkingLotId}, 타입=${typeof parkingLotId}`);
     
     // API 경로를 문자열 ID로 확실하게 변환
     const id = String(parkingLotId);
     console.log(`변환된 ID: ${id}`);
     
-    // 백엔드 엔드포인트와 일치하는지 확인
+    const token = TokenLocalStorageRepository.getToken();
     const response = await axios.get(`/api/reviews/parkingLot/${id}`, {
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${TokenLocalStorageRepository.getToken()}`
+        'Authorization': `Bearer ${token}`
       }
     });
     
-    console.log('리뷰 데이터 응답:', response.data);
-    return response.data;
+    console.log('리뷰 API 응답:', response);
+    
+    // 응답 데이터 확인
+    if (response.data && Array.isArray(response.data)) {
+      // 백엔드에서 오는 데이터 구조에 맞게 정규화
+      return response.data.map(review => {
+        const userName = review.user?.username || '익명';
+        const parkingLotName = review.parkingLot?.name || '알 수 없는 주차장';
+        
+        return {
+          id: review.id,
+          content: review.content || '',
+          rating: review.rating || 0,
+          user: userName,
+          parkingLotName: parkingLotName,
+          createdAt: review.createdAt
+        };
+      });
+    }
+    
+    // 데이터가 배열이 아닌 경우 빈 배열 반환
+    console.log('응답이 배열이 아님:', response.data);
+    return [];
   } catch (error) {
     console.error("Error fetching parking reviews:", error);
     if (error.response) {
       console.log("응답 상태:", error.response.status);
       console.log("응답 데이터:", error.response.data);
-      console.log("요청 URL:", error.config.url);
-    } else if (error.request) {
-      console.log("요청이 전송되었으나 응답이 없음:", error.request);
-    } else {
-      console.log("요청 설정 중 오류:", error.message);
+      
+      // 404는 "리뷰가 없음"을 의미
+      if (error.response.status === 404) {
+        return [];
+      }
     }
-    
-    // 임시로 빈 배열 반환하여 UI가 깨지지 않게 함
-    console.log("빈 리뷰 배열 반환");
-    return [];
-    
-    // 원래 오류 처리
-    // throw new Error(`Failed to fetch parking reviews: ${error.message}`);
+    throw error;
   }
 };
 
