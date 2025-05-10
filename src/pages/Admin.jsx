@@ -60,7 +60,7 @@ const Admin = () => {
     
     try {
       const token = TokenLocalStorageRepository.getToken();
-      const res = await fetch("/api/users", {
+      const res = await fetch("/api/v1/users", {
         headers: {
           "Authorization": `Bearer ${token}`
         }
@@ -103,7 +103,7 @@ const Admin = () => {
     
     try {
       const token = TokenLocalStorageRepository.getToken();
-      const res = await fetch("/api/inquiries", {
+      const res = await fetch("/api/question", {
         headers: {
           "Authorization": `Bearer ${token}`
         }
@@ -145,7 +145,7 @@ const Admin = () => {
     
     try {
       const token = TokenLocalStorageRepository.getToken();
-      const res = await fetch(`/api/users/${id}`, { 
+      const res = await fetch(`/api/v1/users/${id}`, {  // 경로 수정
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${token}`
@@ -156,7 +156,7 @@ const Admin = () => {
         throw new Error(`삭제 실패: ${res.status} ${res.statusText}`);
       }
       
-      setUsers(users.filter((u) => u.id !== id));
+      setUsers(users.filter((u) => u.userId !== id));
     } catch (err) {
       console.error("유저 삭제 오류:", err);
       alert("유저 삭제 중 오류가 발생했습니다.");
@@ -168,7 +168,7 @@ const Admin = () => {
     
     try {
       const token = TokenLocalStorageRepository.getToken();
-      const res = await fetch(`/api/inquiries/${id}`, { 
+      const res = await fetch(`/api/question/${id}`, {  // 경로 수정
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${token}`
@@ -190,24 +190,24 @@ const Admin = () => {
   const handleEditInquiry = (inq) => setEditingInquiry(inq);
 
   const handleSaveUser = async () => {
-    const { id, name, email } = editingUser;
+    const { userId, username, email } = editingUser;
     
     try {
       const token = TokenLocalStorageRepository.getToken();
-      const res = await fetch(`/api/users/${id}`, {
+      const res = await fetch(`/api/v1/users/${userId}`, {  // 경로 수정
         method: "PUT",
         headers: { 
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
         },
-        body: JSON.stringify({ name, email }),
+        body: JSON.stringify({ username, email }),
       });
       
       if (!res.ok) {
         throw new Error(`수정 실패: ${res.status} ${res.statusText}`);
       }
       
-      setUsers(users.map(u => (u.id === id ? editingUser : u)));
+      setUsers(users.map(u => (u.userId === userId ? editingUser : u)));
       setEditingUser(null);
     } catch (err) {
       console.error("유저 수정 오류:", err);
@@ -216,17 +216,17 @@ const Admin = () => {
   };
 
   const handleSaveInquiry = async () => {
-    const { id, subject, message } = editingInquiry;
+    const { id, name, email, message } = editingInquiry;
     
     try {
       const token = TokenLocalStorageRepository.getToken();
-      const res = await fetch(`/api/inquiries/${id}`, {
+      const res = await fetch(`/api/question/${id}`, {  // 경로 수정
         method: "PUT",
         headers: { 
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
         },
-        body: JSON.stringify({ subject, message }),
+        body: JSON.stringify({ name, email, message }),
       });
       
       if (!res.ok) {
@@ -272,29 +272,29 @@ const Admin = () => {
             ) : (
               <table className={styles.table}>
                 <thead>
-                  <tr><th>ID</th><th>이름</th><th>이메일</th><th>Actions</th></tr>
+                  <tr><th>ID</th><th>이름</th><th>이메일</th><th>권한</th><th>Actions</th></tr>
                 </thead>
                 <tbody>
                   {users.length === 0 ? (
                     <tr>
-                      <td colSpan="4" className={styles.noData}>표시할 유저 데이터가 없습니다.</td>
+                      <td colSpan="5" className={styles.noData}>표시할 유저 데이터가 없습니다.</td>
                     </tr>
                   ) : (
                     users.map(user => (
-                      <tr key={user.id}>
-                        <td>{user.id}</td>
+                      <tr key={user.userId}>
+                        <td>{user.userId}</td>
                         <td>
-                          {editingUser?.id === user.id ? (
+                          {editingUser?.userId === user.userId ? (
                             <input
-                              value={editingUser.name}
-                              onChange={e => setEditingUser({ ...editingUser, name: e.target.value })}
+                              value={editingUser.username}
+                              onChange={e => setEditingUser({ ...editingUser, username: e.target.value })}
                             />
                           ) : (
-                            user.name
+                            user.username
                           )}
                         </td>
                         <td>
-                          {editingUser?.id === user.id ? (
+                          {editingUser?.userId === user.userId ? (
                             <input
                               value={editingUser.email}
                               onChange={e => setEditingUser({ ...editingUser, email: e.target.value })}
@@ -303,8 +303,9 @@ const Admin = () => {
                             user.email
                           )}
                         </td>
+                        <td>{user.roleType}</td>
                         <td>
-                          {editingUser?.id === user.id ? (
+                          {editingUser?.userId === user.userId ? (
                             <>
                               <button onClick={handleSaveUser}>저장</button>
                               <button onClick={() => setEditingUser(null)}>취소</button>
@@ -312,7 +313,7 @@ const Admin = () => {
                           ) : (
                             <>
                               <button onClick={() => handleEditUser(user)}>수정</button>
-                              <button onClick={() => handleDeleteUser(user.id)}>삭제</button>
+                              <button onClick={() => handleDeleteUser(user.userId)}>삭제</button>
                             </>
                           )}
                         </td>
@@ -336,27 +337,19 @@ const Admin = () => {
             ) : (
               <table className={styles.table}>
                 <thead>
-                  <tr><th>ID</th><th>제목</th><th>메시지</th><th>Actions</th></tr>
+                  <tr><th>ID</th><th>이름</th><th>이메일</th><th>메시지</th><th>Actions</th></tr>
                 </thead>
                 <tbody>
                   {inquiries.length === 0 ? (
                     <tr>
-                      <td colSpan="4" className={styles.noData}>표시할 문의 데이터가 없습니다.</td>
+                      <td colSpan="5" className={styles.noData}>표시할 문의 데이터가 없습니다.</td>
                     </tr>
                   ) : (
                     inquiries.map(inq => (
                       <tr key={inq.id}>
                         <td>{inq.id}</td>
-                        <td>
-                          {editingInquiry?.id === inq.id ? (
-                            <input
-                              value={editingInquiry.subject}
-                              onChange={e => setEditingInquiry({ ...editingInquiry, subject: e.target.value })}
-                            />
-                          ) : (
-                            inq.subject
-                          )}
-                        </td>
+                        <td>{inq.name}</td>
+                        <td>{inq.email}</td>
                         <td>
                           {editingInquiry?.id === inq.id ? (
                             <input
