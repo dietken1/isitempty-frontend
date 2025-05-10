@@ -74,7 +74,7 @@ const Login = () => {
     onError: () => {
       console.log("Google login failed");
     },
-    redirect_uri: "https://isitempty.kr/login/oauth2/code/google",
+    redirect_uri: "http://localhost:8080/oauth2/authorization/google",
   });
 
   return (
