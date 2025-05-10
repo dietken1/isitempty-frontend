@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
 import styles from "./ParkingDetail.module.css";
 import { getDistanceFromLatLonInKm } from "../utils/geo.js";
+import { getParkingReviews, createReview } from "../api/apiService";
 
 const ParkingDetail = ({ lot, onClose, onBackToList }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [selectedRating, setSelectedRating] = useState(0);
   const [reviewContent, setReviewContent] = useState("");
   const [distance, setDistance] = useState(null);
-  const [reviews, setReviews] = useState([]); // 리뷰 목록 상태 추가
+  const [reviews, setReviews] = useState([]);
+  const [isLoadingReviews, setIsLoadingReviews] = useState(false);
+  const [reviewError, setReviewError] = useState(null);
 
   useEffect(() => {
     if (!lot) return;
@@ -32,11 +35,25 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
       }
     );
 
-    // 주차장에 대한 리뷰 불러오기 (예시)
-    setReviews([
-      { id: 1, user: "testuser", rating: 4, content: "좋은 주차장입니다!" },
-      { id: 2, user: "exampleuser", rating: 5, content: "위치가 편리하고 주차공간도 넉넉해요!" },
-    ]);
+    // 리뷰 데이터 가져오기
+    const fetchReviews = async () => {
+      if (!lot.id) return;
+      
+      setIsLoadingReviews(true);
+      setReviewError(null);
+      
+      try {
+        const reviewsData = await getParkingReviews(lot.id);
+        setReviews(reviewsData);
+      } catch (error) {
+        console.error("리뷰 불러오기 실패:", error);
+        setReviewError("리뷰를 불러오는데 실패했습니다.");
+      } finally {
+        setIsLoadingReviews(false);
+      }
+    };
+
+    fetchReviews();
   }, [lot]);
 
   if (!lot) return null;
@@ -64,10 +81,32 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
     setReviewContent(e.target.value);
   };
 
-  const handleReviewSubmit = () => {
-    alert(`리뷰 등록: ${reviewContent}, 별점: ${selectedRating}`);
-    setReviewContent("");
-    setSelectedRating(0);
+  const handleReviewSubmit = async () => {
+    if (!selectedRating) {
+      alert("별점을 선택해주세요.");
+      return;
+    }
+    
+    if (!reviewContent.trim()) {
+      alert("리뷰 내용을 입력해주세요.");
+      return;
+    }
+
+    try {
+      await createReview(lot.id, reviewContent, selectedRating);
+      // 리뷰 등록 후 리뷰 목록 새로고침
+      const updatedReviews = await getParkingReviews(lot.id);
+      setReviews(updatedReviews);
+      
+      // 입력 필드 초기화
+      setReviewContent("");
+      setSelectedRating(0);
+      
+      alert("리뷰가 등록되었습니다.");
+    } catch (error) {
+      console.error("리뷰 등록 실패:", error);
+      alert("리뷰 등록에 실패했습니다. 다시 시도해주세요.");
+    }
   };
 
   return (
@@ -173,7 +212,11 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
         <details>
           <summary>리뷰 보기</summary>
           <div className={styles.reviews}>
-            {reviews.length > 0 ? (
+            {isLoadingReviews ? (
+              <p>리뷰를 불러오는 중...</p>
+            ) : reviewError ? (
+              <p className={styles.error}>{reviewError}</p>
+            ) : reviews.length > 0 ? (
               reviews.map((review) => (
                 <div key={review.id} className={styles.reviewItem}>
                   <p>
