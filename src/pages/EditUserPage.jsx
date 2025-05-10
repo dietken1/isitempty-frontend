@@ -8,7 +8,7 @@ import './EditUserPage.css';
 const EditUserPage = () => {
   const navigate = useNavigate(); 
   const [user, setUser] = useState(null);
-  const [updatedUser, setUpdatedUser] = useState({ email: "", password: "" });
+  const [updatedUser, setUpdatedUser] = useState({  username: "", email: "", password: "" });
 
   useEffect(() => {
     const token = TokenLocalStorageRepository.getToken();
@@ -27,6 +27,7 @@ const EditUserPage = () => {
         console.log("Fetched user data:", data);
         setUser(data);
         setUpdatedUser({
+          username: data.username,  
           email: data.email,
           password: data.password,
         });
@@ -44,6 +45,7 @@ const handleSave = async () => {
     }
   
     const userUpdateData = {
+      username: updatedUser.username,
       email: updatedUser.email,
       password: updatedUser.password,
     };
@@ -75,6 +77,14 @@ const handleSave = async () => {
       <h1>Edit User Info</h1>
       <div>
         <form>
+          <label>Username:</label>
+          <input
+            type="text"
+            name="username"
+            value={updatedUser.username}
+            onChange={handleChange}
+          />
+          <br />
           <label>Email:</label>
           <input
             type="email"
