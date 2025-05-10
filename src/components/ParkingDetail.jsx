@@ -17,6 +17,7 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
   useEffect(() => {
     const checkLoginStatus = () => {
       const token = TokenLocalStorageRepository.getToken();
+      console.log("로그인 상태 확인:", !!token);
       setIsLoggedIn(!!token);
     };
 
@@ -60,14 +61,31 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
       setReviewError(null);
       
       try {
+        console.log(`주차장 ID로 리뷰 요청: ${lot.id}, 타입: ${typeof lot.id}`);
+        console.log("로그인 상태:", isLoggedIn);
+        const token = TokenLocalStorageRepository.getToken();
+        console.log("토큰 존재 여부:", !!token);
+        
         const reviewsData = await getParkingReviews(lot.id);
-        setReviews(reviewsData);
+        // reviewsData가 비어있으면 빈 배열로 초기화
+        setReviews(Array.isArray(reviewsData) ? reviewsData : []);
+        
+        // 리뷰가 없으면 메시지 표시
+        if (Array.isArray(reviewsData) && reviewsData.length === 0) {
+          setReviewError("이 주차장에 대한 리뷰가 아직 없습니다. 첫 리뷰를 작성해보세요!");
+        }
       } catch (error) {
         console.error("리뷰 불러오기 실패:", error);
-        if (error.message.includes('401')) {
-          setReviewError("리뷰를 보려면 로그인이 필요합니다.");
+        if (error && error.message) {
+          if (error.message.includes('401')) {
+            setReviewError("리뷰를 보려면 로그인이 필요합니다.");
+          } else if (error.message.includes('404')) {
+            setReviewError("해당 주차장의 리뷰 정보를 찾을 수 없습니다.");
+          } else {
+            setReviewError("리뷰를 불러오는데 실패했습니다. 잠시 후 다시 시도해주세요.");
+          }
         } else {
-          setReviewError("리뷰를 불러오는데 실패했습니다.");
+          setReviewError("알 수 없는 오류가 발생했습니다.");
         }
       } finally {
         setIsLoadingReviews(false);
