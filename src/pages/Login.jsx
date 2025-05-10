@@ -51,7 +51,7 @@ const Login = () => {
     onSuccess: async (tokenResponse) => {
       // tokenResponse.code === 인증 코드
       try {
-        const res = await fetch("/api/auth/google", {
+        const res = await fetch("/oauth2/google", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -74,7 +74,7 @@ const Login = () => {
     onError: () => {
       console.log("Google login failed");
     },
-    redirect_uri: "http://localhost:5173/login/oauth2/code/google",
+    redirect_uri: "https://isitempty.kr/login/oauth2/code/google",
   });
 
   return (
