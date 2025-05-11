@@ -114,7 +114,8 @@ export const getMyReviews = async () => {
     });
     
     if (!response.ok) {
-      throw new Error("Failed to fetch reviews");
+      const text = await response.text();
+      throw new Error(text || `리뷰 조회 실패: ${response.status}`);
     }
     
     const data = await response.json();
@@ -145,7 +146,8 @@ export const getUserFavorites = async () => {
     });
     
     if (!response.ok) {
-      throw new Error(`Favorites 조회 실패: ${response.status}`);
+      const text = await response.text();
+      throw new Error(text || `Favorites 조회 실패: ${response.status}`);
     }
     
     const data = await response.json();
@@ -177,34 +179,22 @@ export const removeFavoriteParking = async (parkingLotId) => {
   const token = TokenLocalStorageRepository.getToken();
   const res = await fetch(`/api/favorites?parkingLotId=${parkingLotId}`, {
     method: "DELETE",
-    headers: { Authorization: `Bearer ${token}` },
+    headers: { 
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}` 
+    },
   });
-  if (!res.ok) throw new Error(`찜 삭제 실패: ${res.status}`);
-  const message = await res.text();
-  return message;
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || `찜 삭제 실패: ${res.status}`);
+  }
+  return await res.text();
 };
 
 export const getUserDetails = async () => {
   try {
-    const token = TokenLocalStorageRepository.getToken();
-    if (!token) {
-      throw new Error("No token found");
-    }
-
-    const response = await fetch(`/api/v1/users/me`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch user details");
-    }
-
-    const data = await response.json();
-    return data;
+    const response = await getUserMe();
+    return response.data;
   } catch (error) {
     console.error("Error in getUserDetails:", error);
     throw error;
