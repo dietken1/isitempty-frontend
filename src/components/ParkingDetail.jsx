@@ -23,38 +23,43 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
   const [username, setUsername] = useState(null);
 
   useEffect(() => {
-  const checkLogin = async () => {
+  let mounted = true;
+  const loadUser = async () => {
     const token = TokenLocalStorageRepository.getToken();
-    setIsLoggedIn(!!token);
-    if (!token) return setUsername(null);
-
+    if (!token) {
+      setIsLoggedIn(false);
+      setUsername(null);
+      return;
+    }
+    setIsLoggedIn(true);
     try {
       const { data } = await getUserMe();
-      setUsername(data.username);
+      if (mounted) setUsername(data.username);
     } catch {
-      setUsername(null);
+      if (mounted) setUsername(null);
     }
   };
-  checkLogin();
-    window.addEventListener("storage", checkLogin);
-    return () => window.removeEventListener("storage", checkLogin);
+  loadUser();
+  return () => { mounted = false; };
 }, []);
 
   useEffect(() => {
-  if (!lot || !username) return;
-  (async () => {
+  if (!username || !lot) return;
+  let mounted = true;
+  const initFav = async () => {
     try {
       const favs = await getUserFavorites();
-      const favThis = favs.some(
-        f => String(f.parkingLotId) === String(lot.id)
-      );
-      console.log("이 주차장 찜 여부 =", favThis);
-      setIsFavorite(favThis);
+      if (mounted) {
+        const mine = favs.some(f => String(f.parkingLotId) === String(lot.id));
+        setIsFavorite(mine);
+      }
     } catch (err) {
       console.error("찜 초기화 실패:", err);
     }
-  })();
-}, [lot, username]);
+  };
+  initFav();
+  return () => { mounted = false; };
+}, [username, lot]);
 
   useEffect(() => {
   if (!lot) return;
@@ -138,6 +143,13 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
       alert("찜이 추가되었습니다.");
     }
   } catch (err) {
+    const msg = err.message || "";
+
+    if (msg.includes("이미 찜")) {
+      setIsFavorite(true);
+      alert("이미 찜한 주차장입니다.");
+      return;
+    }
       console.error("찜 토글 에러:", err);
       setIsFavorite(prev);
       alert(prev ? "찜 취소에 실패했습니다." : "찜 추가에 실패했습니다.");

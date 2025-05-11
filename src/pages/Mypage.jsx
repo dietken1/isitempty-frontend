@@ -74,7 +74,7 @@ const MyPage = ({onClose, onSelectLot}) => {
             return { ...fav, parkingLotName: lot.name };
           } catch (err) {
             console.error(`주차장(${fav.parkingLotId}) 조회 실패:`, err);
-            return { ...fav, parkingLotName: `ID:${fav.parkingLotId}` };
+            return { ...fav, parkingLotName: `${fav.parkingLotId}` };
           }
         })
       );
