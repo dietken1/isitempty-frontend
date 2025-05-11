@@ -3,7 +3,7 @@ import { TokenLocalStorageRepository } from "../repository/localstorages";
 import { refreshToken } from "./refreshToken";
 
 const instance = axios.create({
-  baseURL: "/api/v1",
+  baseURL: `/api/v1`,
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",

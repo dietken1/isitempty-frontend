@@ -8,7 +8,7 @@ import { TokenLocalStorageRepository } from "../repository/localstorages";
 
 // axios 인스턴스 생성
 const api = axios.create({
-  baseURL: "/api/v1",
+  baseURL: `/api/v1`,
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
@@ -35,7 +35,7 @@ export default {
 // 위도 경도 넘겨서 주변 주차장 불러오기
 export const fetchNearbyParkingLots = async (lat, lng) => {
   try {
-    const response = await fetch("/api/parking-lots/nearby", {
+    const response = await fetch(`/api/parking-lots/nearby`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -57,7 +57,7 @@ export const fetchNearbyParkingLots = async (lat, lng) => {
 };
 // 위도 경도 넘겨서 주변 카메라 불러오기
 export const fetchNearbyCameras = async (latitude, longitude) => {
-  const response = await fetch("/api/camera/nearby", {
+  const response = await fetch(`/api/camera/nearby`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -71,7 +71,7 @@ export const fetchNearbyCameras = async (latitude, longitude) => {
 // 위도 경도 넘겨서 주변 화장실 불러오기
 export const fetchNearbyToilets = async (latitude, longitude) => {
   try {
-    const response = await fetch("/api/toilet/nearby", {
+    const response = await fetch(`/api/toilet/nearby`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -97,7 +97,7 @@ export const getUserMe = () => axiosInstance.get("/users/me");
 export const getMyReviews = async () => {
   try {
     const token = TokenLocalStorageRepository.getToken();
-    const response = await fetch("/api/myreviews", {
+    const response = await fetch(`/api/myreviews`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -115,7 +115,7 @@ export const getMyReviews = async () => {
 export const getFavoriteParking = async () => {
   try {
     const token = TokenLocalStorageRepository.getToken();
-    const response = await fetch("/api/favorites", {
+    const response = await fetch(`/api/favorites`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -137,7 +137,7 @@ export const getUserDetails = async () => {
       throw new Error("No token found");
     }
 
-    const response = await fetch("/api/v1/users/me", {
+    const response = await fetch(`/api/v1/users/me`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -164,7 +164,7 @@ export const updateUserDetails = async (userData) => {
       throw new Error("No token found");
     }
 
-    const response = await fetch("/api/v1/users/update", {
+    const response = await fetch(`/api/v1/users/update`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -188,7 +188,7 @@ export const updateUserDetails = async (userData) => {
 // 위도 경도 넘겨서 거리 포함 모든 주차장 불러오기 (거리 기준 정렬용)
 export const fetchParkingLotsWithDistance = async (latitude, longitude) => {
   try {
-    const response = await fetch("/api/parking-lots/all-with-distance", {
+    const response = await fetch(`/api/parking-lots/all-with-distance`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -208,7 +208,7 @@ export const fetchParkingLotsWithDistance = async (latitude, longitude) => {
 };
 
 export const sendContactMessage = (formData) => {
-  return fetch("/api/question", {
+  return fetch(`/api/question`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -279,7 +279,7 @@ export const getParkingReviews = async (parkingLotId) => {
 export const createReview = async (parkingLotId, content, rating) => {
   try {
     console.log(`createReview 호출: parkingLotId=${parkingLotId}, rating=${rating}`);
-    const response = await axios.post("/api/reviews", {
+    const response = await axios.post(`/api/reviews`, {
       parkingLotId,
       content,
       rating
