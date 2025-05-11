@@ -12,6 +12,7 @@ const Admin = () => {
   const [loading, setLoading] = useState({ users: false, inquiries: false, auth: true });
   const [error, setError] = useState({ users: null, inquiries: null, auth: null });
   const navigate = useNavigate();
+  
 
   useEffect(() => {
     checkAdminAuth();
