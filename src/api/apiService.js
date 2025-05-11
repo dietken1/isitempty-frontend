@@ -125,13 +125,35 @@ export const getMyReviews = async () => {
   }
 };
 
-export const getUserFavorites = async (username) => {
-  const token = TokenLocalStorageRepository.getToken();
-  const res = await fetch(`/api/favorites/user/${username}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  if (!res.ok) throw new Error(`Favorites 조회 실패: ${res.status}`);
-  return await res.json();
+export const getUserFavorites = async () => {
+  try {
+    const token = TokenLocalStorageRepository.getToken();
+    
+    // 사용자 정보 가져오기
+    const userResponse = await getUserMe();
+    const userId = userResponse.data?.id || userResponse.data?.userId;
+    
+    if (!userId) {
+      throw new Error("사용자 ID를 가져올 수 없습니다.");
+    }
+    
+    const response = await fetch(`/api/favorites/user/${userId}`, {
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}` 
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Favorites 조회 실패: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    console.error("Error fetching favorites:", error);
+    throw error;
+  }
 };
 
 export const addFavoriteParking = async (parkingLotId) => {
