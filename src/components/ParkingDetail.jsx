@@ -20,7 +20,7 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
   const [isLoadingReviews, setIsLoadingReviews] = useState(false);
   const [reviewError, setReviewError] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [username, setUsername] = useState(null);
+  const [setUsername] = useState(null);
 
   useEffect(() => {
   let mounted = true;
@@ -41,25 +41,25 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
   };
   loadUser();
   return () => { mounted = false; };
-}, []);
+}, [setUsername]);
 
   useEffect(() => {
-  if (!username || !lot) return;
+  if (!lot) return;
+
   let mounted = true;
-  const initFav = async () => {
+  (async () => {
     try {
       const favs = await getUserFavorites();
-      if (mounted) {
-        const mine = favs.some(f => String(f.parkingLotId) === String(lot.id));
-        setIsFavorite(mine);
-      }
+      if (!mounted) return;
+      const mine = favs.some(f => String(f.parkingLotId) === String(lot.id));
+      setIsFavorite(mine);
     } catch (err) {
-      console.error("찜 초기화 실패:", err);
+      console.error("초기 찜 상태 로드 실패:", err);
     }
-  };
-  initFav();
+  })();
+
   return () => { mounted = false; };
-}, [username, lot]);
+}, [lot]);
 
   useEffect(() => {
   if (!lot) return;
@@ -131,11 +131,10 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
     return;
   }
 
-  const prev = isFavorite;
-  setIsFavorite(!prev);
+  setIsFavorite(fav => !fav);
 
   try {
-    if (prev) {
+    if (isFavorite) {
       await removeFavoriteParking(lot.id);
       alert("찜이 취소되었습니다.");
     } else {
@@ -150,11 +149,15 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
       alert("이미 찜한 주차장입니다.");
       return;
     }
-      console.error("찜 토글 에러:", err);
-      setIsFavorite(prev);
-      alert(prev ? "찜 취소에 실패했습니다." : "찜 추가에 실패했습니다.");
-    }
-  };
+
+    console.error("찜 토글 에러:", err);
+    setIsFavorite(fav => !fav);
+    alert(isFavorite
+      ? "찜 취소에 실패했습니다."
+      : "찜 추가에 실패했습니다."
+    );
+  }
+};
 
   const handleRatingClick = (rating) => {
     setSelectedRating(rating);
