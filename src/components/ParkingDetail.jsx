@@ -28,8 +28,8 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
       setIsLoggedIn(!!token);
       if (token) {
         try {
-          const user = await getUserMe();
-          setUsername(user.username);
+          const { username } = await getUserMe()
+          setUsername(username);
         } catch (err) {
           console.error("내 정보 조회 실패:", err);
           setUsername(null);
@@ -147,11 +147,6 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
       alert("찜이 추가되었습니다.");
     }
   } catch (err) {
-    console.error("찜 토글 에러:", err);
-    if (/401/.test(err.message)) {
-      alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
-      return;
-    }
     alert("찜 추가/제거에 실패했습니다.");
   }
 };
