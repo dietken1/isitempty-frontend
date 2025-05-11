@@ -3,7 +3,7 @@ import "./Login.css";
 import { useNavigate } from "react-router-dom";
 import { loginUser, getUserMe } from "../api/apiService";
 import { TokenLocalStorageRepository } from "../repository/localstorages";
-import { useGoogleLogin } from "@react-oauth/google";
+import axios from "axios";
 
 const Login = () => {
   const [userId, setUserId] = useState("");
@@ -21,9 +21,7 @@ const Login = () => {
 
     try {
       const res = await loginUser(userId, password);
-      console.log(res);
       setToken({ token: res.data.body.token });
-      console.log(res.data.body.token);
       window.dispatchEvent(new Event("login"));
       navigate("/");
     } catch (err) {
@@ -34,7 +32,6 @@ const Login = () => {
     }
   };
 
-  // 로그인된 토큰이 있으면 자동 로그인
   useEffect(() => {
     const token = getToken();
     if (!token) return;
@@ -46,36 +43,10 @@ const Login = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  const login = useGoogleLogin({
-    flow: "auth-code",
-    onSuccess: async (tokenResponse) => {
-      // tokenResponse.code === 인증 코드
-      try {
-        const res = await fetch("/oauth2/google", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            code: tokenResponse.code,
-          }),
-        });
-
-        if (!res.ok) throw new Error("Google login failed");
-        const data = await res.json();
-
-        setToken({ token: data.accessToken });
-        window.dispatchEvent(new Event("login"));
-        navigate("/");
-      } catch (err) {
-        console.error("Google login error:", err);
-      }
-    },
-    onError: () => {
-      console.log("Google login failed");
-    },
-    redirect_uri: "https://isitempty.kr/login/oauth2/code/google",
-  });
+  const handleGoogleLogin = () => {
+    const redirectUri = encodeURIComponent("https://isitempty.kr/redirect");
+    window.location.href = `https://isitempty.kr/oauth2/authorization/google?redirect_uri=${redirectUri}`;
+  };
 
   return (
     <div className="login-container">
@@ -132,22 +103,10 @@ const Login = () => {
             <p>소셜 로그인</p>
             <button
               type="button"
-              className="naver"
-              onClick={() => (window.location.href = "/auth/naver")}
+              className="google"
+              onClick={handleGoogleLogin}
             >
-              <img src="/images/naver.png" alt="Naver Login" />
-            </button>
-
-            <button type="button" className="google" onClick={() => login()}>
               <img src="/images/google.png" alt="구글 로그인" />
-            </button>
-
-            <button
-              type="button"
-              className="kakao"
-              onClick={() => (window.location.href = "/auth/kakao")}
-            >
-              <img src="/images/kakao.png" alt="Kakao Login" />
             </button>
           </div>
         </form>
@@ -155,5 +114,13 @@ const Login = () => {
     </div>
   );
 };
+
+axios.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
 export default Login;
