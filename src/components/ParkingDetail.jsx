@@ -41,6 +41,18 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
 }, []);
 
   useEffect(() => {
+  if (!lot || !username) return;
+  (async () => {
+    try {
+      const favs = await getUserFavorites();
+      setIsFavorite(favs.some(f => f.parkingLotId === lot.id));
+    } catch (err) {
+      console.error("찜 초기화 실패:", err);
+    }
+  })();
+}, [lot, username]);
+
+  useEffect(() => {
   if (!lot) return;
 
   // 거리 계산
@@ -59,17 +71,6 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
       setDistance("위치 정보 없음");
     }
   );
-
-  // 찜 초기화
-  if (username) {
-    getUserFavorites(username)
-      .then(favs => {
-        setIsFavorite(favs.some(f => f.parkingLotId === lot.id));
-      })
-      .catch(err => {
-        console.error("찜 초기화 실패:", err);
-      });
-  }
 
   // 리뷰 로드
   const fetchReviews = async () => {
@@ -100,7 +101,7 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
   };
   fetchReviews();
 
-}, [lot, username]);
+}, [lot]);
 
   if (!lot) return null;
 
