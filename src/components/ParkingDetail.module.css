@@ -100,103 +100,25 @@
 .spot {
   color: black;
 }
-
-
-.reviewItem {
-  position: relative; /* 버튼을 절대 위치로 잡기 위해 부모에 relative */
-  padding-right: 80px; /* 버튼 공간 확보 */
-}
-
-.reviewItem span {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  display: flex;
-  gap: 4px;
-}
-
-.reviewItem button {
-  background: transparent;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 2px 6px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: background-color .2s, color .2s;
-}
-
-.reviewItem button:first-child {
-  color: #007bff;
-  border-color: #007bff;
-}
-
-.reviewItem button:last-child {
-  color: #dc3545;
-  border-color: #dc3545;
-}
-
-.reviewItem button:hover {
-  background-color: rgba(0,0,0,0.05);
-}
-
-.reviewItem button:first-child:hover {
-  background-color: rgba(0,123,255,0.1);
-}
-
-.reviewItem button:last-child:hover {
-  background-color: rgba(220,53,69,0.1);
-}
-/* 버튼 그룹 전체를 오른쪽 상단에 고정시키는 클래스 */
-.buttonGroup {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  display: flex;
-  gap: 4px;
-  z-index: 10; /* 혹시 뒤에 가려지는 경우 */
-}
-
-/* 공통 버튼 스타일 */
-.buttonGroup button {
-  background: transparent;
-  border: 1px solid;
-  border-radius: 4px;
-  padding: 2px 6px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-/* 수정 버튼 */
-.buttonEdit {
-  color: #007bff;
-  border-color: #007bff;
-}
-.buttonEdit:hover {
-  background-color: rgba(0, 123, 255, 0.1);
-}
-
-/* 삭제 버튼 */
-.buttonDelete {
-  color: #dc3545;
-  border-color: #dc3545;
-}
-.buttonDelete:hover {
-  background-color: rgba(220, 53, 69, 0.1);
-}
-
 .reviewActions {
-  display: inline-flex;
-  gap: 8px;
-  margin-left: auto;
+  display: flex;           
+  gap: 8px;                 
+  position: absolute;      
+  top: 8px;                
+  right: 8px;              
 }
+
 .reviewActions button {
-  background: transparent;
-  border: none;
-  color: #007aff;
-  font-size: 0.9rem;
+  background: transparent;  
+  border: 1px solid #ccc;   
+  border-radius: 4px;     
+  padding: 2px 6px;     
+  font-size: 0.85rem;     
+  color: #555;              
   cursor: pointer;
 }
+
 .reviewActions button:hover {
-  text-decoration: underline;
+  background: #f5f5f5;    
+  border-color: #aaa;     
 }
