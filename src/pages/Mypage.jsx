@@ -5,7 +5,7 @@ import { TokenLocalStorageRepository } from "../repository/localstorages";
 
 import './Mypage.css';
 
-const MyPage = () => {
+const MyPage = ({onClose, onSelectLot}) => {
   const [user, setUser] = useState(null);
   const [myReviews, setMyReviews] = useState([]);
   const [likedParking, setLikedParking] = useState([]);
@@ -51,6 +51,17 @@ const MyPage = () => {
     console.error("Error loading reviews:", error);
   }
 };
+
+  const handleClick = async (parkingLotId) => {
+      try {
+        const lot = await getParkingLotById(parkingLotId);
+        onClose();               // MyPage 닫고
+        onSelectLot(lot);        // 부모(map) 로 lot 전달
+      } catch (err) {
+        console.error(err);
+        alert("주차장 정보를 가져오는 데 실패했습니다.");
+      }
+    };
 
   const loadLikedParking = () => {
     getUserFavorites()
@@ -106,49 +117,44 @@ const MyPage = () => {
           </div>
         </div>
 
-        <div id="favorite" className="favorite">
-          {likedParking.length > 0 ? (
-             likedParking.map((parking) => (
-               <Link
-                 key={parking.id}
-                 to={`/parking/${parking.parkingLotId}`}
-                 className="liked-item"
-               >
-                 <strong>
-                   <i className="ri-parking-box-fill"></i>&nbsp;
-                   {parking.name}
-                 </strong>
-                 <hr />
-               </Link>
-             ))
-          ) : (
-            <p>좋아요한 주차장이 없습니다.</p>
-          )}
-        </div>
-
-        <div id="myreview" className="myreview">
-          <div className="review-list">
-            {myReviews.length > 0 ? (
-              myReviews.map((review) => (
-                <Link
-                  key={review.id}
-                  to={`/parking/${review.parkingLotId}`}
-                  className="review-item"
-                >
-                  <p>
-                      <i className="ri-parking-box-fill"></i>&nbsp;
-                      <strong>{review.parkingLotName}</strong>
-                  </p>
-                  <p><i className="ri-star-fill"></i> {review.rating}</p>
-                  {review.content && <p className="content">{review.content}</p>}
-                </Link>
-              ))
-            ) : (
-              <p>작성한 리뷰가 없습니다.</p>
-            )}
-          </div>
-        </div>
+         <div id="favorite" className="favorite">
+        {likedParking.length > 0 ? (
+          likedParking.map(p => (
+            <div
+              key={p.id}
+              className="liked-item"
+              onClick={() => handleClick(p.parkingLotId)}
+            >
+              <strong><i className="ri-parking-box-fill"></i> {p.name}</strong>
+              <hr />
+            </div>
+          ))
+        ) : (
+          <p>좋아요한 주차장이 없습니다.</p>
+        )}
       </div>
+
+      <div id="myreview" className="myreview">
+        {myReviews.length > 0 ? (
+          myReviews.map(r => (
+            <div
+              key={r.id}
+              className="review-item"
+              onClick={() => handleClick(r.parkingLotId)}
+            >
+              <p>
+                <i className="ri-parking-box-fill"></i>&nbsp;
+                <strong>{r.parkingLotName}</strong>
+              </p>
+              <p><i className="ri-star-fill"></i> {r.rating}</p>
+              {r.content && <p className="content">{r.content}</p>}
+            </div>
+          ))
+        ) : (
+          <p>작성한 리뷰가 없습니다.</p>
+        )}
+      </div>
+    </div>
     </div>
   );
 };

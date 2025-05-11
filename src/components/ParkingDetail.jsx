@@ -128,15 +128,18 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
     if (isFavorite) {
       await removeFavoriteParking(lot.id);
       setIsFavorite(false);
+      alert("찜이 취소되었습니다.");
     } else {
       await addFavoriteParking(lot.id);
       setIsFavorite(true);
+      alert("찜이 추가되었습니다.");
     }
   } catch (err) {
     console.error("찜 토글 에러:", err);
-    alert(err.message.includes("이미 찜") 
-    ? "이미 찜한 주차장입니다." 
-    : "찜 추가/제거에 실패했습니다.");
+    if (/401/.test(err.message)) {
+      return;
+    }
+    alert("찜 추가/제거에 실패했습니다.");
   }
 };
 
