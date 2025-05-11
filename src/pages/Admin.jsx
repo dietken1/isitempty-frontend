@@ -189,7 +189,7 @@ const Admin = () => {
     try {
       const token = TokenLocalStorageRepository.getToken();
       const res = await fetch(`/api/admin/users/${userId}`, {
-        method: "PUT",
+        method: "PUT", 
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
