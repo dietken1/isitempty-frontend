@@ -60,7 +60,7 @@ const Admin = () => {
     
     try {
       const token = TokenLocalStorageRepository.getToken();
-      const res = await fetch("/api/admin/users", {
+      const res = await fetch(`/api/admin/users`, {
         headers: {
           "Authorization": `Bearer ${token}`
         }
@@ -103,7 +103,7 @@ const Admin = () => {
     
     try {
       const token = TokenLocalStorageRepository.getToken();
-      const res = await fetch("/api/question", {
+      const res = await fetch(`/api/question`, {
         headers: {
           "Authorization": `Bearer ${token}`
         }
