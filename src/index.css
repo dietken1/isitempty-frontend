@@ -86,3 +86,7 @@ input:focus {
   outline: none;
   box-shadow: none;
 }
+textarea {
+  background-color: #fff;
+  color: black;
+}

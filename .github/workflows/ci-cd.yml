@@ -61,6 +61,7 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         script: |
           cd /var/www/isitempty
+          docker rm -f isitempty-front || true
           docker-compose pull frontend
           docker-compose up -d --no-deps --force-recreate frontend
           
