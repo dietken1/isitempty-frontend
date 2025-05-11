@@ -4,6 +4,8 @@ import styles from "./Admin.module.css";
 import { TokenLocalStorageRepository } from "../repository/localstorages";
 import { getUserMe } from "../api/apiService";
 
+const PAGE_SIZE = 10;
+
 const Admin = () => {
   const [users, setUsers] = useState([]);
   const [inquiries, setInquiries] = useState([]);
@@ -13,6 +15,8 @@ const Admin = () => {
   const [error, setError] = useState({ users: null, inquiries: null, auth: null });
   const navigate = useNavigate();
   
+  const [userPage, setUserPage] = useState(1);
+  const [inqPage, setInqPage] = useState(1);
 
   useEffect(() => {
     checkAdminAuth();
@@ -56,88 +60,65 @@ const Admin = () => {
   };
 
   const fetchUsers = async () => {
-    setLoading(prev => ({ ...prev, users: true }));
-    setError(prev => ({ ...prev, users: null }));
-    
+    setLoading(l => ({ ...l, users: true }));
+    setError(e => ({ ...e, users: null }));
     try {
       const token = TokenLocalStorageRepository.getToken();
-      const res = await fetch(`/api/admin/users`, {
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
+      const res = await fetch("/api/admin/users", {
+        headers: { Authorization: `Bearer ${token}` }
       });
-      
-      if (!res.ok) {
-        throw new Error(`${res.status}: ${res.statusText}`);
-      }
-      
-      // 응답이 비어있는지 확인
-      const text = await res.text();
-      if (!text) {
-        console.log("응답이 비어있습니다.");
-        setUsers([]);
-        return;
-      }
-      
-      try {
-        const data = JSON.parse(text);
-        console.log("받은 사용자 데이터:", data);
-        setUsers(Array.isArray(data) ? data : []);
-      } catch (parseError) {
-        console.error("JSON 파싱 오류:", parseError);
-        console.error("원본 텍스트:", text);
-        setUsers([]);
-        setError(prev => ({ ...prev, users: "데이터 형식 오류: " + parseError.message }));
-      }
+      if (!res.ok) throw new Error(res.statusText);
+      const data = await res.json();
+      setUsers(data);
+      setUserPage(1);
     } catch (err) {
-      console.error("fetchUsers error:", err);
-      setUsers([]);
-      setError(prev => ({ ...prev, users: err.message }));
+      setError(e => ({ ...e, users: err.message }));
     } finally {
-      setLoading(prev => ({ ...prev, users: false }));
+      setLoading(l => ({ ...l, users: false }));
     }
   };
 
   const fetchInquiries = async () => {
-    setLoading(prev => ({ ...prev, inquiries: true }));
-    setError(prev => ({ ...prev, inquiries: null }));
-    
+    setLoading(l => ({ ...l, inquiries: true }));
+    setError(e => ({ ...e, inquiries: null }));
     try {
       const token = TokenLocalStorageRepository.getToken();
-      const res = await fetch(`/api/question`, {
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
+      const res = await fetch("/api/question", {
+        headers: { Authorization: `Bearer ${token}` }
       });
-      
-      if (!res.ok) {
-        throw new Error(`${res.status}: ${res.statusText}`);
-      }
-      
-      // 응답이 비어있는지 확인
-      const text = await res.text();
-      if (!text) {
-        console.log("응답이 비어있습니다.");
-        setInquiries([]);
-        return;
-      }
-      
-      try {
-        const data = JSON.parse(text);
-        console.log("받은 문의 데이터:", data);
-        setInquiries(Array.isArray(data) ? data : []);
-      } catch (parseError) {
-        console.error("JSON 파싱 오류:", parseError);
-        console.error("원본 텍스트:", text);
-        setInquiries([]);
-        setError(prev => ({ ...prev, inquiries: "데이터 형식 오류: " + parseError.message }));
-      }
+      if (!res.ok) throw new Error(res.statusText);
+      const data = await res.json();
+      setInquiries(data);
+      setInqPage(1);
     } catch (err) {
-      console.error("fetchInquiries error:", err);
-      setInquiries([]);
-      setError(prev => ({ ...prev, inquiries: err.message }));
+      setError(e => ({ ...e, inquiries: err.message }));
     } finally {
-      setLoading(prev => ({ ...prev, inquiries: false }));
+      setLoading(l => ({ ...l, inquiries: false }));
+    }
+  };
+
+  const handleToggleRole = async (user) => {
+    const newRole = user.roleType === "ADMIN" ? "USER" : "ADMIN";
+    if (!window.confirm(`${user.username}의 권한을 ${newRole}로 변경하시겠습니까?`)) return;
+    try {
+      const token = TokenLocalStorageRepository.getToken();
+      const res = await fetch(`/api/admin/users/${user.userId}/role`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ roleType: newRole })
+      });
+      if (!res.ok) throw new Error(res.statusText);
+      // 성공 시 state 업데이트
+      setUsers(us => us.map(u =>
+        u.userId === user.userId ? { ...u, roleType: newRole } : u
+      ));
+      alert("권한이 변경되었습니다.");
+    } catch (err) {
+      console.error(err);
+      alert("권한 변경에 실패했습니다.");
     }
   };
 
@@ -192,9 +173,6 @@ const Admin = () => {
       alert("문의 삭제 중 오류가 발생했습니다.");
     }
   };
-
-  const handleEditUser = user => setEditingUser(user);
-  const handleEditInquiry = inq => setEditingInquiry(inq);
 
   const handleSaveUser = async () => {
   const { userId, username, email, password, roleType } = editingUser;
@@ -257,147 +235,156 @@ const Admin = () => {
     }
   };
 
+  const pagedUsers = users.slice((userPage - 1) * PAGE_SIZE, userPage * PAGE_SIZE);
+  const pagedInquiries = inquiries.slice((inqPage - 1) * PAGE_SIZE, inqPage * PAGE_SIZE);
+  const totalUserPages = Math.ceil(users.length / PAGE_SIZE);
+  const totalInqPages  = Math.ceil(inquiries.length / PAGE_SIZE);
+
   return (
     <div className={styles.container}>
-      {loading.auth ? (
-        <div className={styles.loading}>관리자 권한 확인 중...</div>
-      ) : error.auth ? (
-        <div className={styles.error}>
-          <p>접근 오류: {error.auth}</p>
-          <div className={styles.btnGroup}>
-            <button onClick={() => navigate("/login")}>로그인하기</button>
-            <button onClick={() => navigate("/")}>홈으로 이동</button>
-          </div>
-        </div>
-      ) : (
-        <>
-          <div className={styles.adminHeader}>
-            <h1>관리자 페이지</h1>
-            <button onClick={logout} className={styles.logoutBtn}>로그아웃</button>
-          </div>
-          
-          <section className={styles.listSection}>
-            <h2>유저 목록</h2>
-            {loading.users ? (
-              <div className={styles.loading}>데이터를 불러오는 중...</div>
-            ) : error.users ? (
-              <div className={styles.error}>
-                <p>오류: {error.users}</p>
-                <button onClick={fetchUsers}>다시 시도</button>
-              </div>
-            ) : (
-              <table className={styles.table}>
-                <thead>
-                  <tr><th>ID</th><th>이름</th><th>이메일</th><th>권한</th><th>Actions</th></tr>
-                </thead>
-                <tbody>
-                  {users.length === 0 ? (
-                    <tr>
-                      <td colSpan="5" className={styles.noData}>표시할 유저 데이터가 없습니다.</td>
-                    </tr>
-                  ) : (
-                    users.map(user => (
-                      <tr key={user.userId}>
-                        <td>{user.userId}</td>
-                        <td>
-                          {editingUser?.userId === user.userId ? (
-                            <input
-                              value={editingUser.username}
-                              onChange={e => setEditingUser({ ...editingUser, username: e.target.value })}
-                            />
-                          ) : (
-                            user.username
-                          )}
-                        </td>
-                        <td>
-                          {editingUser?.userId === user.userId ? (
-                            <input
-                              value={editingUser.email}
-                              onChange={e => setEditingUser({ ...editingUser, email: e.target.value })}
-                            />
-                          ) : (
-                            user.email
-                          )}
-                        </td>
-                        <td>{user.roleType}</td>
-                        <td>
-                          {editingUser?.userId === user.userId ? (
-                            <>
-                              <button onClick={handleSaveUser}>저장</button>
-                              <button onClick={() => setEditingUser(null)}>취소</button>
-                            </>
-                          ) : (
-                            <>
-                              <button onClick={() => handleEditUser(user)}>수정</button>
-                              <button onClick={() => handleDeleteUser(user.userId)}>삭제</button>
-                            </>
-                          )}
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            )}
-          </section>
+      {loading.auth
+        ? <div>관리자 권한 확인 중...</div>
+        : error.auth
+          ? <div className={styles.error}>{error.auth}</div>
+          : <>
+      {/* 관리 헤더 */}
+      <div className={styles.adminHeader}>
+        <h1>관리자 페이지</h1>
+        <button onClick={logout}>로그아웃</button>
+      </div>
 
-          <section className={styles.listSection}>
-            <h2>문의 목록</h2>
-            {loading.inquiries ? (
-              <div className={styles.loading}>데이터를 불러오는 중...</div>
-            ) : error.inquiries ? (
-              <div className={styles.error}>
-                <p>오류: {error.inquiries}</p>
-                <button onClick={fetchInquiries}>다시 시도</button>
-              </div>
-            ) : (
-              <table className={styles.table}>
-                <thead>
-                  <tr><th>ID</th><th>이름</th><th>이메일</th><th>메시지</th><th>Actions</th></tr>
-                </thead>
-                <tbody>
-                  {inquiries.length === 0 ? (
-                    <tr>
-                      <td colSpan="5" className={styles.noData}>표시할 문의 데이터가 없습니다.</td>
-                    </tr>
-                  ) : (
-                    inquiries.map(inq => (
-                      <tr key={inq.id}>
-                        <td>{inq.id}</td>
-                        <td>{inq.name}</td>
-                        <td>{inq.email}</td>
-                        <td>
-                          {editingInquiry?.id === inq.id ? (
-                            <input
-                              value={editingInquiry.message}
-                              onChange={e => setEditingInquiry({ ...editingInquiry, message: e.target.value })}
-                            />
-                          ) : (
-                            inq.message
-                          )}
-                        </td>
-                        <td>
-                          {editingInquiry?.id === inq.id ? (
-                            <>
-                              <button onClick={handleSaveInquiry}>저장</button>
-                              <button onClick={() => setEditingInquiry(null)}>취소</button>
-                            </>
-                          ) : (
-                            <>
-                              <button onClick={() => handleEditInquiry(inq)}>수정</button>
-                              <button onClick={() => handleDeleteInquiry(inq.id)}>삭제</button>
-                            </>
-                          )}
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            )}
-          </section>
-        </>
-      )}
+      {/* 유저 목록 */}
+      <section className={styles.listSection}>
+        <h2>유저 목록</h2>
+        {loading.users
+          ? <div>로딩 중...</div>
+          : error.users
+            ? <div className={styles.error}>{error.users}</div>
+            : <>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>ID</th><th>이름</th><th>이메일</th><th>권한</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pagedUsers.map(user => (
+                <tr key={user.userId}>
+                  <td>{user.userId}</td>
+                  <td>{editingUser?.userId === user.userId
+                      ? <input value={editingUser.username}
+                               onChange={e => setEditingUser({...editingUser, username: e.target.value})}/>
+                      : user.username
+                    }
+                  </td>
+                  <td>{editingUser?.userId === user.userId
+                      ? <input value={editingUser.email}
+                               onChange={e => setEditingUser({...editingUser, email: e.target.value})}/>
+                      : user.email
+                    }
+                  </td>
+                  <td>{user.roleType}</td>
+                  <td>
+                    <button onClick={() => handleToggleRole(user)}>
+                      권한 변경
+                    </button>
+                    {editingUser?.userId === user.userId
+                      ? <>
+                          <button onClick={handleSaveUser}>저장</button>
+                          <button onClick={() => setEditingUser(null)}>취소</button>
+                        </>
+                      : <>
+                          <button onClick={() => setEditingUser(user)}>수정</button>
+                          <button onClick={() => handleDeleteUser(user.userId)}>삭제</button>
+                        </>
+                    }
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {/* 페이지네이션 */}
+          <div className={styles.pagination}>
+            <button
+              disabled={userPage <= 1}
+              onClick={() => setUserPage(p => p - 1)}
+            >Prev</button>
+            <span>{userPage} / {totalUserPages}</span>
+            <button
+              disabled={userPage >= totalUserPages}
+              onClick={() => setUserPage(p => p + 1)}
+            >Next</button>
+          </div>
+        </>}
+      </section>
+
+      {/* 문의 목록 */}
+      <section className={styles.listSection}>
+        <h2>문의 목록</h2>
+        {loading.inquiries
+          ? <div>로딩 중...</div>
+          : error.inquiries
+            ? <div className={styles.error}>{error.inquiries}</div>
+            : <>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>ID</th><th>이름</th><th>이메일</th><th>메시지</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pagedInquiries.map(inq => (
+                <tr key={inq.id}>
+                  <td>{inq.id}</td>
+                  <td>{editingInquiry?.id === inq.id
+                      ? <input value={editingInquiry.name}
+                               onChange={e => setEditingInquiry({...editingInquiry, name: e.target.value})}/>
+                      : inq.name
+                    }
+                  </td>
+                  <td>{editingInquiry?.id === inq.id
+                      ? <input value={editingInquiry.email}
+                               onChange={e => setEditingInquiry({...editingInquiry, email: e.target.value})}/>
+                      : inq.email
+                    }
+                  </td>
+                  <td>{editingInquiry?.id === inq.id
+                      ? <input value={editingInquiry.message}
+                               onChange={e => setEditingInquiry({...editingInquiry, message: e.target.value})}/>
+                      : inq.message
+                    }
+                  </td>
+                  <td>
+                    {editingInquiry?.id === inq.id
+                      ? <>
+                          <button onClick={handleSaveInquiry}>저장</button>
+                          <button onClick={() => setEditingInquiry(null)}>취소</button>
+                        </>
+                      : <>
+                          <button onClick={() => setEditingInquiry(inq)}>수정</button>
+                          <button onClick={() => handleDeleteInquiry(inq.id)}>삭제</button>
+                        </>
+                    }
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {/* 페이지네이션 */}
+          <div className={styles.pagination}>
+            <button
+              disabled={inqPage <= 1}
+              onClick={() => setInqPage(p => p - 1)}
+            >Prev</button>
+            <span>{inqPage} / {totalInqPages}</span>
+            <button
+              disabled={inqPage >= totalInqPages}
+              onClick={() => setInqPage(p => p + 1)}
+            >Next</button>
+          </div>
+        </>}
+      </section>
+      </>}
     </div>
   );
 };
