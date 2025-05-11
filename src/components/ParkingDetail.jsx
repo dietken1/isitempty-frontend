@@ -7,7 +7,7 @@ import {
   getUserFavorites,
   addFavoriteParking,
   removeFavoriteParking,
-  getUserDetails
+  getUserMe
 } from "../api/apiService";
 import { TokenLocalStorageRepository } from "../repository/localstorages";
 
@@ -28,7 +28,7 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
       setIsLoggedIn(!!token);
       if (token) {
         try {
-          const user = await getUserDetails();
+          const user = await getUserMe();
 +         setUsername(user.username);
         } catch (err) {
           console.error("내 정보 조회 실패:", err);
@@ -134,7 +134,9 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
     }
   } catch (err) {
     console.error("찜 토글 에러:", err);
-    alert(isFavorite ? "찜 취소에 실패했습니다." : "찜 추가에 실패했습니다.");
+    alert(err.message.includes("이미 찜") 
+    ? "이미 찜한 주차장입니다." 
+    : "찜 추가/제거에 실패했습니다.");
   }
 };
 
