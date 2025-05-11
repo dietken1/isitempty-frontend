@@ -108,6 +108,7 @@ export const getMyReviews = async () => {
     // 수정된 API 경로
     const response = await fetch(`/api/reviews/user/${userId}`, {
       headers: {
+        "Content-Type": "application/json",
         'Authorization': `Bearer ${token}`
       }
     });
@@ -124,34 +125,39 @@ export const getMyReviews = async () => {
   }
 };
 
-export const getFavoriteParking = async () => {
-  try {
-    const token = TokenLocalStorageRepository.getToken();
-    // 사용자 정보 가져오기
-    const userResponse = await getUserMe();
-    const userId = userResponse.data?.id || userResponse.data?.userId;
-    
-    if (!userId) {
-      throw new Error("사용자 ID를 가져올 수 없습니다.");
-    }
-    
-    // 수정된 API 경로
-    const response = await fetch(`/api/favorites/user/${userId}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
-    
-    if (!response.ok) {
-      throw new Error("Failed to fetch favorites");
-    }
-    
-    const data = await response.json();
-    return { liked_parking_lots: Array.isArray(data) ? data : [] };
-  } catch (error) {
-    console.error("Error fetching favorite parking:", error);
-    throw error;
-  }
+export const getUserFavorites = async (username) => {
+  const token = TokenLocalStorageRepository.getToken();
+  const res = await fetch(`/api/favorites/user/${username}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error(`Favorites 조회 실패: ${res.status}`);
+  return await res.json();
+};
+
+export const addFavoriteParking = async (parkingLotId) => {
+  const token = TokenLocalStorageRepository.getToken();
+  const res = await fetch("/api/favorites", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ parkingLotId }),
+  });
+  if (!res.ok) throw new Error(`찜 추가 실패: ${res.status}`);
+  const message = await res.text();
+  return message;
+};
+
+export const removeFavoriteParking = async (parkingLotId) => {
+  const token = TokenLocalStorageRepository.getToken();
+  const res = await fetch(`/api/favorites?parkingLotId=${parkingLotId}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error(`찜 삭제 실패: ${res.status}`);
+  const message = await res.text();
+  return message;
 };
 
 export const getUserDetails = async () => {
