@@ -18,14 +18,9 @@ const MyPage = () => {
     } else {
       loadUserDetails();
       loadReviews();
-    }
-  }, []);
-
-  useEffect(() => {
-    if (user && user.username) {
       loadLikedParking();
     }
-  }, [user]);
+  }, []);
 
   const loadUserDetails = () => {
     getUserMe()
@@ -42,9 +37,7 @@ const MyPage = () => {
   };
 
   const loadLikedParking = () => {
-    if (!user || !user.username) return;
-    
-    getUserFavorites(user.username)
+    getUserFavorites()
       .then((favorites) => {
         setLikedParking(favorites);
       })
