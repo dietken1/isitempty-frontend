@@ -22,12 +22,11 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
   const [isLoadingReviews, setIsLoadingReviews] = useState(false);
   const [reviewError, setReviewError] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [setUsername] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
   let mounted = true;
-  const loadUser = async () => {
+  (async () => {
     const token = TokenLocalStorageRepository.getToken();
     if (!token) {
       setIsLoggedIn(false);
@@ -35,16 +34,12 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
       return;
     }
     setIsLoggedIn(true);
-    try {
-      const { data } = await getUserMe();
-      if (mounted) setCurrentUser(data.username);
-    } catch {
-      if (mounted) setCurrentUser(null);
-    }
-  };
-  loadUser();
+    const res = await getUserMe();
+    if (!mounted) return;
+    setCurrentUser(res.data.username);
+  })().catch(() => mounted && setCurrentUser(null));
   return () => { mounted = false; };
-}, [setUsername]);
+}, []);
 
   useEffect(() => {
   if (!lot) return;
@@ -93,6 +88,7 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
 
     try {
       const reviewsData = await getParkingReviews(lot.id);
+      console.log("🎯 reviewsData:", reviewsData);
       if (!Array.isArray(reviewsData)) {
         throw new Error("리뷰 형식 오류");
       }
@@ -348,12 +344,16 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
                     <strong>{review.user}</strong>
                     <span> - {review.rating}<i className="ri-star-fill"></i></span>
                     <small> ({new Date(review.createdAt).toLocaleDateString()})</small>
-                    {currentUser?.username === review.user && (
-                    <span style={{ float: 'right' }}>
-                      <button onClick={() => handleEditReview(review.id, review.content, review.rating)}>수정</button>
-                      <button onClick={() => handleDeleteReview(review.id)}>삭제</button>
-                    </span>
-                  )}
+                    {currentUser === review.user && (
+                      <span className={styles.reviewActions}>
+                        <button onClick={() => handleEditReview(review.id, review.content, review.rating)}>
+                          수정
+                        </button>
+                        <button onClick={() => handleDeleteReview(review.id)}>
+                          삭제
+                        </button>
+                      </span>
+                    )}
                   </p>
                   <p>{review.content}</p>
                   <hr />
