@@ -99,6 +99,7 @@ export const getMyReviews = async () => {
     const token = TokenLocalStorageRepository.getToken();
     const response = await fetch(`/api/myreviews`, {
       headers: {
+        "Content-Type": "application/json",
         'Authorization': `Bearer ${token}`
       }
     });
@@ -112,22 +113,37 @@ export const getMyReviews = async () => {
   }
 };
 
-export const getFavoriteParking = async () => {
-  try {
-    const token = TokenLocalStorageRepository.getToken();
-    const response = await fetch(`/api/favorites`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
-    if (!response.ok) {
-      throw new Error("Failed to fetch favorites");
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("Error fetching favorite parking:", error);
-    throw error;
-  }
+export const getUserFavorites = async (username) => {
+  const token = TokenLocalStorageRepository.getToken();
+  const res = await fetch(`/api/favorites/user/${username}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error(`Favorites 조회 실패: ${res.status}`);
+  return await res.json();
+};
+
+export const addFavoriteParking = async (parkingLotId) => {
+  const token = TokenLocalStorageRepository.getToken();
+  const res = await fetch("/api/favorites", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ parkingLotId }),
+  });
+  if (!res.ok) throw new Error(`찜 추가 실패: ${res.status}`);
+  return await res.json();
+};
+
+export const removeFavoriteParking = async (parkingLotId) => {
+  const token = TokenLocalStorageRepository.getToken();
+  const res = await fetch(`/api/favorites?parkingLotId=${parkingLotId}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error(`찜 삭제 실패: ${res.status}`);
+  return await res.text();
 };
 
 export const getUserDetails = async () => {

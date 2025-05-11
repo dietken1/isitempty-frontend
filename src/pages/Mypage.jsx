@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom"; 
-import { getMyReviews, getFavoriteParking, getUserDetails } from "../api/apiService"; 
+import { getMyReviews, getUserFavorites, getUserDetails } from "../api/apiService"; 
 import { TokenLocalStorageRepository } from "../repository/localstorages";
 
 import './Mypage.css';
@@ -37,8 +37,10 @@ const MyPage = () => {
   };
 
   const loadLikedParking = () => {
-    getFavoriteParking()
-      .then((data) => setLikedParking(data.liked_parking_lots || []))
+    getUserFavorites(user.username)
+      .then((favorites) => {
+        setLikedParking(favorites);
+      })
       .catch((error) => console.error("Error loading liked parking:", error));
   };
 
@@ -92,7 +94,9 @@ const MyPage = () => {
           {likedParking.length > 0 ? (
             likedParking.map((parking) => (
               <div key={parking.id} className="liked-item">
-                <strong><i className="ri-parking-box-fill"></i> {parking.name}</strong>
+                <Link to={`/parking/${parking.parkingLotId}`}>
+                  <strong><i className="ri-parking-box-fill"></i> {parking.name}</strong>
+                </Link>
                 <hr />
               </div>
             ))

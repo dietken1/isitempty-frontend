@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from "react";
 import styles from "./ParkingDetail.module.css";
 import { getDistanceFromLatLonInKm } from "../utils/geo.js";
-import { getParkingReviews, createReview } from "../api/apiService";
+import {
+  getParkingReviews,
+  createReview,
+  getUserFavorites,
+  addFavoriteParking,
+  removeFavoriteParking,
+  getUserDetails
+} from "../api/apiService";
 import { TokenLocalStorageRepository } from "../repository/localstorages";
 
 const ParkingDetail = ({ lot, onClose, onBackToList }) => {
@@ -13,89 +20,91 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
   const [isLoadingReviews, setIsLoadingReviews] = useState(false);
   const [reviewError, setReviewError] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState(null);
 
   useEffect(() => {
-    const checkLoginStatus = () => {
+    const checkLoginStatus = async () => {
       const token = TokenLocalStorageRepository.getToken();
-      console.log("로그인 상태 확인:", !!token);
       setIsLoggedIn(!!token);
+      if (token) {
+        try {
+          const user = await getUserDetails();
++         setUsername(user.username);
+        } catch (err) {
+          console.error("내 정보 조회 실패:", err);
+          setUsername(null);
+        }
+      } else {
+        setUsername(null);
+      }
     };
 
     checkLoginStatus();
-    // 토큰이 변경될 때마다 로그인 상태를 다시 확인
-    window.addEventListener('storage', checkLoginStatus);
-    
-    return () => {
-      window.removeEventListener('storage', checkLoginStatus);
-    };
+    window.addEventListener("storage", checkLoginStatus);
+    return () => window.removeEventListener("storage", checkLoginStatus);
   }, []);
 
   useEffect(() => {
-    if (!lot) return;
+  if (!lot) return;
 
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const userLat = position.coords.latitude;
-        const userLon = position.coords.longitude;
+  // 거리 계산
+  navigator.geolocation.getCurrentPosition(
+    ({ coords }) => {
+      const dist = getDistanceFromLatLonInKm(
+        coords.latitude,
+        coords.longitude,
+        lot.latitude,
+        lot.longitude
+      );
+      setDistance(dist.toFixed(2)); // km, 소수점 둘째 자리
+    },
+    (err) => {
+      console.error("위치 정보 가져오기 실패:", err);
+      setDistance("위치 정보 없음");
+    }
+  );
 
-        const dist = getDistanceFromLatLonInKm(
-          userLat,
-          userLon,
-          lot.latitude,
-          lot.longitude
-        );
+  // 찜 초기화
+  if (username) {
+    getUserFavorites(username)
+      .then(favs => {
+        setIsFavorite(favs.some(f => f.parkingLotId === lot.id));
+      })
+      .catch(err => {
+        console.error("찜 초기화 실패:", err);
+      });
+  }
 
-        setDistance(dist.toFixed(2)); // km 단위, 소수점 둘째자리까지
-      },
-      (err) => {
-        console.error("위치 정보 가져오기 실패:", err);
-        setDistance("위치 정보 없음");
+  // 리뷰 로드
+  const fetchReviews = async () => {
+    if (!lot.id) return;
+
+    setIsLoadingReviews(true);
+    setReviewError(null);
+
+    try {
+      const reviewsData = await getParkingReviews(lot.id);
+      if (!Array.isArray(reviewsData)) {
+        throw new Error("리뷰 형식 오류");
       }
-    );
-
-    // 리뷰 데이터 가져오기
-    const fetchReviews = async () => {
-      if (!lot.id) return;
-      
-      setIsLoadingReviews(true);
-      setReviewError(null);
-      
-      try {
-        console.log(`주차장 ID로 리뷰 요청: ${lot.id}, 타입: ${typeof lot.id}`);
-        console.log("로그인 상태:", isLoggedIn);
-        const token = TokenLocalStorageRepository.getToken();
-        console.log("토큰 존재 여부:", !!token);
-        
-        const reviewsData = await getParkingReviews(lot.id);
-        console.log('받은 리뷰 데이터 (정규화 후):', reviewsData);
-        
-        if (Array.isArray(reviewsData)) {
-          setReviews(reviewsData);
-          
-          if (reviewsData.length === 0) {
-            setReviewError("이 주차장에 대한 리뷰가 아직 없습니다. 첫 리뷰를 작성해보세요!");
-          }
-        } else {
-          console.error('리뷰 데이터가 배열이 아닙니다:', reviewsData);
-          setReviews([]);
-          setReviewError("리뷰 데이터 형식이 올바르지 않습니다.");
-        }
-      } catch (error) {
-        console.error("리뷰 불러오기 실패:", error);
-        if (error.message && error.message.includes('401')) {
-          setReviewError("리뷰를 보려면 로그인이 필요합니다.");
-        } else if (error.message && error.message.includes('404')) {
-          setReviewError("이 주차장에 대한 리뷰가 아직 없습니다.");
-        } else {
-          setReviewError(`리뷰를 불러오는데 실패했습니다: ${error.message}`);
-        }
-      } finally {
-        setIsLoadingReviews(false);
+      setReviews(reviewsData);
+      if (reviewsData.length === 0) {
+        setReviewError("첫 리뷰를 작성해보세요!");
       }
-    };
+    } catch (error) {
+      console.error("리뷰 불러오기 실패:", error);
+      setReviewError(
+        error.message.includes("401")
+          ? "로그인 후 리뷰를 볼 수 있습니다."
+          : "리뷰 로드 중 오류가 발생했습니다."
+      );
+    } finally {
+      setIsLoadingReviews(false);
+    }
+  };
+  fetchReviews();
 
-    fetchReviews();
-  }, [lot]);
+}, [lot, username]);
 
   if (!lot) return null;
 
@@ -110,9 +119,25 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
     availableSpots,
   } = lot;
 
-  const handleHeartClick = () => {
-    setIsFavorite(!isFavorite);
-  };
+  const handleHeartClick = async () => {
+  if (!isLoggedIn) {
+    alert("로그인 후 이용해주세요.");
+    return;
+  }
+  try {
+    if (isFavorite) {
+      await removeFavoriteParking(lot.id);
+      setIsFavorite(false);
+    } else {
+      await addFavoriteParking(lot.id);
+      setIsFavorite(true);
+    }
+  } catch (err) {
+    console.error("찜 토글 에러:", err);
+    alert(isFavorite ? "찜 취소에 실패했습니다." : "찜 추가에 실패했습니다.");
+  }
+};
+
 
   const handleRatingClick = (rating) => {
     setSelectedRating(rating);
