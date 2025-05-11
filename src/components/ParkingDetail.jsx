@@ -346,10 +346,10 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
                     <small> ({new Date(review.createdAt).toLocaleDateString()})</small>
                     {currentUser === review.user && (
                       <span className={styles.reviewActions}>
-                        <button onClick={() => handleEditReview(review.id, review.content, review.rating)}>
+                        <button className={styles.buttonEdit} onClick={() => handleEditReview(review.id, review.content, review.rating)}>
                           수정
                         </button>
-                        <button onClick={() => handleDeleteReview(review.id)}>
+                        <button className={styles.buttonDelete} onClick={() => handleDeleteReview(review.id)}>
                           삭제
                         </button>
                       </span>
