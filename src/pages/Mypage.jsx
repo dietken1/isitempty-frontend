@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom"; 
-import { getMyReviews, getUserFavorites, getUserDetails } from "../api/apiService"; 
+import { getMyReviews, getUserFavorites, getUserMe } from "../api/apiService"; 
 import { TokenLocalStorageRepository } from "../repository/localstorages";
 
 import './Mypage.css';
@@ -28,7 +28,7 @@ const MyPage = () => {
   }, [user]);
 
   const loadUserDetails = () => {
-    getUserDetails()
+    getUserMe()
       .then((data) => {
         setUser(data);
       })
@@ -99,14 +99,19 @@ const MyPage = () => {
 
         <div id="favorite" className="favorite">
           {likedParking.length > 0 ? (
-            likedParking.map((parking) => (
-              <div key={parking.id} className="liked-item">
-                <Link to={`/parking/${parking.parkingLotId}`}>
-                  <strong><i className="ri-parking-box-fill"></i> {parking.name}</strong>
-                </Link>
-                <hr />
-              </div>
-            ))
+             likedParking.map((parking) => (
+               <Link
+                 key={parking.id}
+                 to={`/parking/${parking.parkingLotId}`}
+                 className="liked-item"
+               >
+                 <strong>
+                   <i className="ri-parking-box-fill"></i>&nbsp;
+                   {parking.name}
+                 </strong>
+                 <hr />
+               </Link>
+             ))
           ) : (
             <p>좋아요한 주차장이 없습니다.</p>
           )}
@@ -116,13 +121,18 @@ const MyPage = () => {
           <div className="review-list">
             {myReviews.length > 0 ? (
               myReviews.map((review) => (
-                <div key={review.id} className="review-item">
-                  <p><strong><i className="ri-parking-box-fill"></i> {review.parking_lot__name}</strong></p>
-                  <strong><i className="ri-user-fill"></i> {review.user__username}</strong>
-                  <span><i className="ri-star-fill"></i> {review.rating}</span>
-                  <p>{review.content || ''}</p>
-                  <hr />
-                </div>
+                <Link
+                  key={review.id}
+                  to={`/parking/${review.parkingLotId}`}
+                  className="review-item"
+                >
+                  <p>
+                    <i className="ri-parking-box-fill"></i>&nbsp;
+                    <strong>주차장 ID: {review.parkingLotId}</strong>
+                  </p>
+                  <p><i className="ri-star-fill"></i> {review.rating}</p>
+                  {review.content && <p className="content">{review.content}</p>}
+                </Link>
               ))
             ) : (
               <p>작성한 리뷰가 없습니다.</p>
