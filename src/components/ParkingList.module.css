@@ -25,13 +25,15 @@
   z-index: 2;
   overflow-y: scroll;
   transform: translateX(-50%);
-  padding: 8px 18px 15px 42px;
+  padding: 3px 18px 15px 42px;
   width: 98%;
   background-color: rgb(255 255 255 / 90%);
   border-radius: 5%;
 }
 .header {
+  position: relative;
   display: flex;
+  top: -1%;
   justify-content: flex-end;
   align-items: center;
 }
@@ -75,6 +77,8 @@
   display: flex;
   flex-direction: row;
   align-items: center;
+  left: -4%;
+  position: relative;
   font-size: 16px;
   gap: 2px;
   justify-content: flex-start;
