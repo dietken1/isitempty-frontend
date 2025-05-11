@@ -23,7 +23,7 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
   const [username, setUsername] = useState(null);
 
   useEffect(() => {
-  const updateUser = async () => {
+  const checkLogin = async () => {
     const token = TokenLocalStorageRepository.getToken();
     setIsLoggedIn(!!token);
     if (!token) return setUsername(null);
@@ -35,9 +35,9 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
       setUsername(null);
     }
   };
-  updateUser();
-  window.addEventListener("storage", updateUser);
-  return () => window.removeEventListener("storage", updateUser);
+  checkLogin();
+    window.addEventListener("storage", checkLogin);
+    return () => window.removeEventListener("storage", checkLogin);
 }, []);
 
   useEffect(() => {
@@ -133,24 +133,11 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
       alert("찜이 추가되었습니다.");
     }
   } catch (err) {
-    setIsFavorite(prev);
-
-    const msg = err.message || "";
-    if (msg.includes("이미 찜한")) {
-      try {
-        await removeFavoriteParking(lot.id);
-        setIsFavorite(false);
-        alert("찜이 취소되었습니다.");
-      } catch (removeErr) {
-        console.error("찜 해제 중 오류:", removeErr);
-        alert("찜 해제에 실패했습니다.");
-      }
-    } else {
       console.error("찜 토글 에러:", err);
-      alert("찜 추가/제거에 실패했습니다.");
+      setIsFavorite(prev);
+      alert(prev ? "찜 취소에 실패했습니다." : "찜 추가에 실패했습니다.");
     }
-  }
-};
+  };
 
   const handleRatingClick = (rating) => {
     setSelectedRating(rating);
