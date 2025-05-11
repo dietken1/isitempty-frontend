@@ -169,8 +169,10 @@ export const addFavoriteParking = async (parkingLotId) => {
     credentials: "include",
     body: JSON.stringify({ parkingLotId }),
   });
-  if (!res.ok) {
-    const text = await res.text();
+  
+  const text = await res.text();
+  console.log("🚀 addFavorite response:", res.status, text);
+    if (!res.ok) {
     throw new Error(text || `찜 추가 실패: ${res.status}`);
   }
   return await res.text();
