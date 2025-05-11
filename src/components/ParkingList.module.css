@@ -48,6 +48,9 @@
   border: none;
   padding: 0.1em 0.4em;
 }
+.header_right button:hover {
+  background-color: transparent;
+}
 .header_right button {
   background-color: transparent;
 }
