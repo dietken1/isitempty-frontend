@@ -146,3 +146,41 @@
 .reviewItem button:last-child:hover {
   background-color: rgba(220,53,69,0.1);
 }
+/* 버튼 그룹 전체를 오른쪽 상단에 고정시키는 클래스 */
+.buttonGroup {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 4px;
+  z-index: 10; /* 혹시 뒤에 가려지는 경우 */
+}
+
+/* 공통 버튼 스타일 */
+.buttonGroup button {
+  background: transparent;
+  border: 1px solid;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+/* 수정 버튼 */
+.buttonEdit {
+  color: #007bff;
+  border-color: #007bff;
+}
+.buttonEdit:hover {
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
+/* 삭제 버튼 */
+.buttonDelete {
+  color: #dc3545;
+  border-color: #dc3545;
+}
+.buttonDelete:hover {
+  background-color: rgba(220, 53, 69, 0.1);
+}
