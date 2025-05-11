@@ -144,13 +144,12 @@ const Admin = () => {
     if (!window.confirm("정말 이 유저를 삭제하시겠습니까?")) return;
     try {
       const token = TokenLocalStorageRepository.getToken();
-      const res = await fetch("/api/admin/users", {
+      const res = await fetch("/api/admin/users/${userId}}", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
         },
-        body: JSON.stringify({ id })
       });
       if (!res.ok) throw new Error(res.statusText);
       setUsers(prev => prev.filter(u => u.userId !== id));
@@ -186,16 +185,16 @@ const Admin = () => {
   const handleEditInquiry = inq => setEditingInquiry(inq);
 
   const handleSaveUser = async () => {
-    const { userId, username, email } = editingUser;
+    const { userId, username, email, password, roleType  } = editingUser;
     try {
       const token = TokenLocalStorageRepository.getToken();
-      const res = await fetch("/api/admin/users", {
+      const res = await fetch("/api/admin/users/${userId}", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
         },
-        body: JSON.stringify({ userId, username, email })
+        body: JSON.stringify({ username, email, password, roleType })
       });
       if (!res.ok) throw new Error(res.statusText);
       setUsers(prev => prev.map(u => (u.userId === userId ? editingUser : u)));
