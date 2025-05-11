@@ -134,7 +134,9 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
     }
   } catch (err) {
     console.error("찜 토글 에러:", err);
-    alert(isFavorite ? "찜 취소에 실패했습니다." : "찜 추가에 실패했습니다.");
+    alert(err.message.includes("이미 찜") 
+    ? "이미 찜한 주차장입니다." 
+    : "찜 추가/제거에 실패했습니다.");
   }
 };
 
