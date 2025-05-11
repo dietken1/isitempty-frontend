@@ -98,41 +98,40 @@ const ParkingList = ({
           <span>분</span>
           <button onClick={handleApplyTime}>적용</button>
         </div>
-        <div className={styles.header_right}>
-          <button
-            className={sortType === "distance" ? styles.active : ""}
-            onClick={() => setSortType("distance")}
-          >
-            거리순
-          </button>
-          |
-          <button
-            className={sortType === "fee" ? styles.active : ""}
-            onClick={() => {
-              if (!parkingTime) {
-                alert("요금을 계산하려면 주차 시간을 입력해주세요.");
-                return;
-              }
-              setSortType("fee");
-            }}
-          >
-            요금순
-          </button>
-          |
-          <button
-            className={sortType === "rating" ? styles.active : ""}
-            onClick={() => setSortType("rating")}
-          >
-            별점순
-          </button>
-        </div>
         <i
           className="ri-close-line"
           onClick={onClose}
           style={{ cursor: "pointer", fontSize: "20px" }}
         ></i>
       </div>
-
+      <div className={styles.header_right}>
+        <button
+          className={sortType === "distance" ? styles.active : ""}
+          onClick={() => setSortType("distance")}
+        >
+          거리순
+        </button>
+        |
+        <button
+          className={sortType === "fee" ? styles.active : ""}
+          onClick={() => {
+            if (!parkingTime) {
+              alert("요금을 계산하려면 주차 시간을 입력해주세요.");
+              return;
+            }
+            setSortType("fee");
+          }}
+        >
+          요금순
+        </button>
+        |
+        <button
+          className={sortType === "rating" ? styles.active : ""}
+          onClick={() => setSortType("rating")}
+        >
+          별점순
+        </button>
+      </div>
       <ol className={styles.list}>
         {sortedLots.map((lot, idx) => (
           <li
