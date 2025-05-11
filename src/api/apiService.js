@@ -97,16 +97,28 @@ export const getUserMe = () => axiosInstance.get("/users/me");
 export const getMyReviews = async () => {
   try {
     const token = TokenLocalStorageRepository.getToken();
-    const response = await fetch(`/api/myreviews`, {
+    // 사용자 정보 가져오기
+    const userResponse = await getUserMe();
+    const userId = userResponse.data?.id || userResponse.data?.userId;
+    
+    if (!userId) {
+      throw new Error("사용자 ID를 가져올 수 없습니다.");
+    }
+    
+    // 수정된 API 경로
+    const response = await fetch(`/api/reviews/user/${userId}`, {
       headers: {
         "Content-Type": "application/json",
         'Authorization': `Bearer ${token}`
       }
     });
+    
     if (!response.ok) {
       throw new Error("Failed to fetch reviews");
     }
-    return await response.json();
+    
+    const data = await response.json();
+    return { reviews: Array.isArray(data) ? data : [] };
   } catch (error) {
     console.error("Error fetching reviews:", error);
     throw error;
@@ -197,8 +209,16 @@ export const updateUserDetails = async (userData) => {
       throw new Error("Failed to update user details");
     }
 
-    const data = await response.json();
-    return data;
+    // 응답 타입 확인
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      const data = await response.json();
+      return data;
+    } else {
+      // JSON이 아닌 경우 텍스트로 처리
+      const text = await response.text();
+      return { message: text };
+    }
   } catch (error) {
     console.error("Error in updateUserDetails:", error);
     throw error;

@@ -49,11 +49,14 @@ const EditUserPage = () => {
     };
   
     try {
-      const message = await updateUserDetails(userUpdateData);
-      console.log("User information updated:", message);
+      const response = await updateUserDetails(userUpdateData);
+      console.log("User information updated:", response);
+      const successMessage = response.message ? response.message : "사용자 정보가 성공적으로 업데이트되었습니다.";
+      alert(successMessage);
       navigate("/mypage/");
     } catch (error) {
       console.error("Error updating user information:", error);
+      alert("사용자 정보 업데이트 중 오류가 발생했습니다.");
     }
   };
   
