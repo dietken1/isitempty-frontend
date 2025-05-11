@@ -3,7 +3,7 @@ import { TokenLocalStorageRepository } from "../repository/localstorages";
 
 export const refreshToken = async () => {
   try {
-    const response = await axios.get("/api/v1/auth/refresh", {
+    const response = await axios.get(`/api/v1/auth/refresh`, {
       withCredentials: true,
     });
 
