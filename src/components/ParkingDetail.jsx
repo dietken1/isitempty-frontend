@@ -23,38 +23,22 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
   const [username, setUsername] = useState(null);
 
   useEffect(() => {
-    const checkLoginStatus = async () => {
-      const token = TokenLocalStorageRepository.getToken();
-      setIsLoggedIn(!!token);
-      if (token) {
-        try {
-          const { username } = await getUserMe()
-          setUsername(username);
-        } catch (err) {
-          console.error("내 정보 조회 실패:", err);
-          setUsername(null);
-        }
-      } else {
-        setUsername(null);
-      }
-    };
+  const updateUser = async () => {
+    const token = TokenLocalStorageRepository.getToken();
+    setIsLoggedIn(!!token);
+    if (!token) return setUsername(null);
 
-    checkLoginStatus();
-    window.addEventListener("storage", checkLoginStatus);
-    return () => window.removeEventListener("storage", checkLoginStatus);
-  }, []);
-
-  useEffect(() => {
-    if (!lot || !username) return;
-    (async () => {
-      try {
-        const favs = await getUserFavorites(username);
-        setIsFavorite(favs.some(f => f.parkingLotId === lot.id));
-      } catch (err) {
-        console.error("찜 초기화 실패:", err);
-      }
-    })();
-  }, [lot, username]);
+    try {
+      const { data } = await getUserMe();
+      setUsername(data.username);
+    } catch {
+      setUsername(null);
+    }
+  };
+  updateUser();
+  window.addEventListener("storage", updateUser);
+  return () => window.removeEventListener("storage", updateUser);
+}, []);
 
   useEffect(() => {
   if (!lot) return;
@@ -150,7 +134,7 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
     }
   } catch (err) {
     setIsFavorite(prev);
-    
+
     const msg = err.message || "";
     if (msg.includes("이미 찜한")) {
       try {
