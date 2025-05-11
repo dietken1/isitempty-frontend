@@ -141,17 +141,16 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
   setIsFavorite(!prev);
 
   try {
-    if (isFavorite) {
+    if (prev) {
       await removeFavoriteParking(lot.id);
-      setIsFavorite(false);
       alert("찜이 취소되었습니다.");
     } else {
       await addFavoriteParking(lot.id);
-      setIsFavorite(true);
       alert("찜이 추가되었습니다.");
     }
   } catch (err) {
     setIsFavorite(prev);
+    
     const msg = err.message || "";
     if (msg.includes("이미 찜한")) {
       try {
