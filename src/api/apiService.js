@@ -166,16 +166,15 @@ export const addFavoriteParking = async (parkingLotId) => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    credentials: "include",
     body: JSON.stringify({ parkingLotId }),
   });
-  
+
   const text = await res.text();
   console.log("🚀 addFavorite response:", res.status, text);
     if (!res.ok) {
-    throw new Error(text || `찜 추가 실패: ${res.status}`);
+    throw new Error(text);
   }
-  return await res.text();
+  return text;
 };
 
 export const removeFavoriteParking = async (parkingLotId) => {
@@ -187,15 +186,15 @@ export const removeFavoriteParking = async (parkingLotId) => {
        headers: {
          "Authorization": `Bearer ${token}`,
        },
-       credentials: "include",
      }
    );
+  const text = await res.text();
+  console.log("🚀 removeFavorite response:", res.status, text);
    if (!res.ok) {
-     const text = await res.text();
-     throw new Error(text || `찜 삭제 실패: ${res.status}`);
+     throw new Error(text);
    }
  
-   return await res.text();
+   return text;
  };
 
 export const getUserDetails = async () => {
