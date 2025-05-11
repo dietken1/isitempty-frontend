@@ -166,6 +166,7 @@ export const addFavoriteParking = async (parkingLotId) => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
+    credentials: "include",
     body: JSON.stringify({ parkingLotId }),
   });
   if (!res.ok) {
@@ -191,6 +192,7 @@ export const removeFavoriteParking = async (parkingLotId) => {
          "Content-Type": "application/json",
          "Authorization": `Bearer ${token}`,
        },
+       credentials: "include",
      }
    );
  
