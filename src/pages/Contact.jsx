@@ -41,7 +41,7 @@ function Contact() {
     <div className="contact-container">
       <h1>Contact Us</h1>
       <p className="contact-intro">
-        Have questions or feedback? We'd love to hear from you!
+        문제가 있으시다면 언제든 문의해주세요!
       </p>
       
       {formStatus === 'success' && (
