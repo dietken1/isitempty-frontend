@@ -133,7 +133,8 @@ export const addFavoriteParking = async (parkingLotId) => {
     body: JSON.stringify({ parkingLotId }),
   });
   if (!res.ok) throw new Error(`찜 추가 실패: ${res.status}`);
-  return await res.json();
+  const message = await res.text();
+  return message;
 };
 
 export const removeFavoriteParking = async (parkingLotId) => {
@@ -143,7 +144,8 @@ export const removeFavoriteParking = async (parkingLotId) => {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) throw new Error(`찜 삭제 실패: ${res.status}`);
-  return await res.text();
+  const message = await res.text();
+  return message;
 };
 
 export const getUserDetails = async () => {
