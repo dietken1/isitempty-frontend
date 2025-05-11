@@ -144,7 +144,7 @@ const Admin = () => {
     if (!window.confirm("정말 이 유저를 삭제하시겠습니까?")) return;
     try {
       const token = TokenLocalStorageRepository.getToken();
-      const res = await fetch("/api/admin/users/${userId}}", {
+      const res = await fetch(`/api/admin/users/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -188,7 +188,7 @@ const Admin = () => {
     const { userId, username, email, password, roleType  } = editingUser;
     try {
       const token = TokenLocalStorageRepository.getToken();
-      const res = await fetch("/api/admin/users/${userId}", {
+      const res = await fetch(`/api/admin/users/${userId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
