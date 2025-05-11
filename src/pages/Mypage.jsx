@@ -20,7 +20,7 @@ const MyPage = ({onClose, onSelectLot}) => {
       loadReviews();
       loadLikedParking();
     }
-  }, []);
+  }, [navigate]);
 
   const loadUserDetails = () => {
     getUserDetails()
@@ -64,14 +64,25 @@ const MyPage = ({onClose, onSelectLot}) => {
       }
     };
 
-  const loadLikedParking = () => {
-    getUserFavorites()
-      .then((favorites) => {
-        setLikedParking(favorites);
-      })
-      .catch((error) => console.error("Error loading liked parking:", error));
+  const loadLikedParking = async () => {
+    try {
+      const favs = await getUserFavorites();
+      const enriched = await Promise.all(
+        favs.map(async (fav) => {
+          try {
+            const lot = await getParkingLotById(fav.parkingLotId);
+            return { ...fav, parkingLotName: lot.name };
+          } catch (err) {
+            console.error(`주차장(${fav.parkingLotId}) 조회 실패:`, err);
+            return { ...fav, parkingLotName: `ID:${fav.parkingLotId}` };
+          }
+        })
+      );
+      setLikedParking(enriched);
+    } catch (err) {
+      console.error("Error loading liked parking:", err);
+    }
   };
-
   const toggleFavorite = () => {
     document.getElementById('favorite').classList.toggle('active');
     document.getElementById('myreview').classList.remove('active');
@@ -126,7 +137,7 @@ const MyPage = ({onClose, onSelectLot}) => {
               className="liked-item"
               onClick={() => handleClick(p.parkingLotId)}
             >
-              <strong><i className="ri-parking-box-fill"></i> {p.name}</strong>
+              <strong><i className="ri-parking-box-fill"></i>{p.parkingLotName}</strong> 
               <hr />
             </div>
           ))
