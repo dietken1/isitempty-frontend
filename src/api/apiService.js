@@ -177,19 +177,35 @@ export const addFavoriteParking = async (parkingLotId) => {
 
 export const removeFavoriteParking = async (parkingLotId) => {
   const token = TokenLocalStorageRepository.getToken();
-  const res = await fetch(`/api/favorites?parkingLotId=${parkingLotId}`, {
-    method: "DELETE",
-    headers: { 
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}` 
-    },
-  });
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(text || `찜 삭제 실패: ${res.status}`);
-  }
-  return await res.text();
-};
+  if (!token) {
+     window.alert("세션이 만료되었습니다. 다시 로그인해주세요.");
+     window.location.href = "/login";
+     throw new Error("No auth token");
+   }
+   console.log("🗑 찜 삭제 ▶", parkingLotId, "token=", token);
+   const res = await fetch(
+     `/api/favorites?parkingLotId=${encodeURIComponent(parkingLotId)}`,
+     {
+       method: "DELETE",
+       headers: {
+         "Content-Type": "application/json",
+         "Authorization": `Bearer ${token}`,
+       },
+     }
+   );
+ 
+   if (res.status === 401) {
+     window.alert("로그인이 필요합니다.");
+     window.location.href = "/login";
+     throw new Error("Unauthorized");
+   }
+ 
+   if (!res.ok) {
+     throw new Error(`찜 삭제 실패: ${res.status}`);
+   }
+ 
+   return await res.text();
+ };
 
 export const getUserDetails = async () => {
   try {
