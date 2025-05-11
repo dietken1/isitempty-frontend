@@ -41,11 +41,15 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
 }, []);
 
   useEffect(() => {
-  if (!lot || !username) return;
+  if (!lot) return;
   (async () => {
     try {
-      const favs = await getUserFavorites();
-      setIsFavorite(favs.some(f => f.parkingLotId === lot.id));
+      console.log("🏷️ 초기화: username =", username, "lot.id =", lot.id);
+      const favs = await getUserFavorites();  
+      console.log("🏷️ 초기화: getUserFavorites() 결과 =", favs);
+      const favThis = favs.some(f => f.parkingLotId === lot.id);
+      console.log("🏷️ 초기화: 이 주차장 찜 여부 =", favThis);
+      setIsFavorite(favThis);
     } catch (err) {
       console.error("찜 초기화 실패:", err);
     }
