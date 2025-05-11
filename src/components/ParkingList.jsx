@@ -82,6 +82,11 @@ const ParkingList = ({
 
   return (
     <div className={styles.listContainer}>
+      <i
+        className="ri-close-line"
+        onClick={onClose}
+        style={{ cursor: "pointer", fontSize: "20px" }}
+      ></i>
       <div className={styles.header}>
         <div className={styles.header_left}>
           <input
@@ -126,13 +131,7 @@ const ParkingList = ({
             별점순
           </button>
         </div>
-        <i
-          className="ri-close-line"
-          onClick={onClose}
-          style={{ cursor: "pointer", fontSize: "20px" }}
-        ></i>
       </div>
-
       <ol className={styles.list}>
         {sortedLots.map((lot, idx) => (
           <li
