@@ -37,8 +37,9 @@ const MyPage = ({onClose, onSelectLot}) => {
     const enriched = await Promise.all(
       reviews.map(async (rev) => {
         try {
-          const lot = await getParkingLotById(rev.parkingLotId);
-          return { ...rev, parkingLotName: lot.name };
+          const lotResp = await getParkingLotById(rev.parkingLotId);
+          console.log("lotResp:", lotResp);
+          return { parkingLotName: lotResp.name || lotResp.data?.name || lotResp.parkingLot?.name || "Unknown", };
         } catch (e) {
           console.error(`주차장(${rev.parkingLotId}) 조회 실패:`, e);
           return { ...rev, parkingLotName: `${rev.parkingLotId}` };
