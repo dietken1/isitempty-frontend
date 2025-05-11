@@ -184,25 +184,8 @@ export const removeFavoriteParking = async (parkingLotId) => {
 
 export const getUserDetails = async () => {
   try {
-    const token = TokenLocalStorageRepository.getToken();
-    if (!token) {
-      throw new Error("No token found");
-    }
-
-    const response = await fetch(`/api/v1/users/me`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to fetch user details");
-    }
-
-    const data = await response.json();
-    return data;
+    const response = await getUserMe();
+    return response.data;
   } catch (error) {
     console.error("Error in getUserDetails:", error);
     throw error;
