@@ -14,7 +14,6 @@ const Admin = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // 관리자 권한 확인
     checkAdminAuth();
   }, []);
 
@@ -43,6 +42,7 @@ const Admin = () => {
         setLoading(prev => ({ ...prev, auth: false }));
       }
     } catch (err) {
+
       console.error("관리자 인증 확인 오류:", err);
       setError(prev => ({ ...prev, auth: "인증 확인 중 오류가 발생했습니다: " + err.message }));
       setLoading(prev => ({ ...prev, auth: false }));
@@ -142,23 +142,19 @@ const Admin = () => {
 
   const handleDeleteUser = async (id) => {
     if (!window.confirm("정말 이 유저를 삭제하시겠습니까?")) return;
-    
     try {
       const token = TokenLocalStorageRepository.getToken();
-      const res = await fetch(`/api/v1/users/${id}`, {  // 경로 수정
+      const res = await fetch("/api/v1/users/delete", {
         method: "DELETE",
         headers: {
+          "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
-        }
+        },
+        body: JSON.stringify({ id })
       });
-      
-      if (!res.ok) {
-        throw new Error(`삭제 실패: ${res.status} ${res.statusText}`);
-      }
-      
-      setUsers(users.filter((u) => u.userId !== id));
+      if (!res.ok) throw new Error(res.statusText);
+      setUsers(prev => prev.filter(u => u.userId !== id));
     } catch (err) {
-      console.error("유저 삭제 오류:", err);
       alert("유저 삭제 중 오류가 발생했습니다.");
     }
   };
@@ -186,37 +182,31 @@ const Admin = () => {
     }
   };
 
-  const handleEditUser = (user) => setEditingUser(user);
-  const handleEditInquiry = (inq) => setEditingInquiry(inq);
+  const handleEditUser = user => setEditingUser(user);
+  const handleEditInquiry = inq => setEditingInquiry(inq);
 
   const handleSaveUser = async () => {
     const { userId, username, email } = editingUser;
-    
     try {
       const token = TokenLocalStorageRepository.getToken();
-      const res = await fetch(`/api/v1/users/${userId}`, {  // 경로 수정
+      const res = await fetch("/api/v1/users/update", {
         method: "PUT",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
         },
-        body: JSON.stringify({ username, email }),
+        body: JSON.stringify({ userId, username, email })
       });
-      
-      if (!res.ok) {
-        throw new Error(`수정 실패: ${res.status} ${res.statusText}`);
-      }
-      
-      setUsers(users.map(u => (u.userId === userId ? editingUser : u)));
+      if (!res.ok) throw new Error(res.statusText);
+      setUsers(prev => prev.map(u => (u.userId === userId ? editingUser : u)));
       setEditingUser(null);
     } catch (err) {
-      console.error("유저 수정 오류:", err);
       alert("유저 정보 수정 중 오류가 발생했습니다.");
     }
   };
 
   const handleSaveInquiry = async () => {
-    const { id, name, email, message } = editingInquiry;
+    const { id, message } = editingInquiry;
     
     try {
       const token = TokenLocalStorageRepository.getToken();
@@ -226,7 +216,7 @@ const Admin = () => {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
         },
-        body: JSON.stringify({ name, email, message }),
+        body: JSON.stringify({ message }),
       });
       
       if (!res.ok) {
