@@ -31,15 +31,12 @@ const Admin = () => {
         return;
       }
 
-      // 사용자 정보 가져오기
       const response = await getUserMe();
       const userData = response.data;
       console.log("현재 사용자 정보:", response);
 
-      // 관리자 권한 확인 (roleType이 'ADMIN'인지 확인)
       if (userData && userData.roleType === 'ADMIN') {
         setLoading(prev => ({ ...prev, auth: false }));
-        // 권한이 확인되면 데이터 로드
         fetchUsers();
         fetchInquiries();
       } else {
@@ -111,7 +108,6 @@ const Admin = () => {
         body: JSON.stringify({ roleType: newRole })
       });
       if (!res.ok) throw new Error(res.statusText);
-      // 성공 시 state 업데이트
       setUsers(us => us.map(u =>
         u.userId === user.userId ? { ...u, roleType: newRole } : u
       ));
@@ -156,7 +152,7 @@ const Admin = () => {
     
     try {
       const token = TokenLocalStorageRepository.getToken();
-      const res = await fetch(`/api/question/${id}`, {  // 경로 수정
+      const res = await fetch(`/api/question/${id}`, { 
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${token}`
@@ -214,7 +210,7 @@ const Admin = () => {
     
     try {
       const token = TokenLocalStorageRepository.getToken();
-      const res = await fetch(`/api/question/${id}`, {  // 경로 수정
+      const res = await fetch(`/api/question/${id}`, {
         method: "PUT",
         headers: { 
           "Content-Type": "application/json",
@@ -247,13 +243,11 @@ const Admin = () => {
         : error.auth
           ? <div className={styles.error}>{error.auth}</div>
           : <>
-      {/* 관리 헤더 */}
       <div className={styles.adminHeader}>
         <h1>관리자 페이지</h1>
         <button onClick={logout}>로그아웃</button>
       </div>
 
-      {/* 유저 목록 */}
       <section className={styles.listSection}>
         <h2>유저 목록</h2>
         {loading.users
@@ -303,7 +297,6 @@ const Admin = () => {
               ))}
             </tbody>
           </table>
-          {/* 페이지네이션 */}
           <div className={styles.pagination}>
             <button
               disabled={userPage <= 1}
@@ -318,7 +311,6 @@ const Admin = () => {
         </>}
       </section>
 
-      {/* 문의 목록 */}
       <section className={styles.listSection}>
         <h2>문의 목록</h2>
         {loading.inquiries
@@ -370,7 +362,6 @@ const Admin = () => {
               ))}
             </tbody>
           </table>
-          {/* 페이지네이션 */}
           <div className={styles.pagination}>
             <button
               disabled={inqPage <= 1}

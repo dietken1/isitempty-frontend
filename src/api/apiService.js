@@ -400,3 +400,15 @@ export const deleteReview = async (reviewId) => {
     throw new Error(`Failed to delete review: ${error.message}`);
   }
 };
+
+export const getParkingLotById = async (id) => {
+  const token = TokenLocalStorageRepository.getToken();
+  const res = await fetch(`/api/parking-lots/${id}`, {
+    headers: { 
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}` 
+    }
+  });
+  if (!res.ok) throw new Error(`주차장 조회 실패: ${res.status}`);
+  return await res.json();
+};

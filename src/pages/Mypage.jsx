@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom"; 
-import { getMyReviews, getUserFavorites, getUserMe } from "../api/apiService"; 
+import { getMyReviews, getUserFavorites, getUserDetails, getParkingLotById } from "../api/apiService"; 
 import { TokenLocalStorageRepository } from "../repository/localstorages";
 
 import './Mypage.css';
@@ -23,18 +23,34 @@ const MyPage = () => {
   }, []);
 
   const loadUserDetails = () => {
-    getUserMe()
+    getUserDetails()
       .then((data) => {
         setUser(data);
       })
       .catch((error) => console.error("Error loading user data:", error));
   };
   
-  const loadReviews = () => {
-    getMyReviews()
-      .then((data) => setMyReviews(data.reviews || []))
-      .catch((error) => console.error("Error loading reviews:", error));
-  };
+  const loadReviews = async () => {
+  try {
+    const { reviews = [] } = await getMyReviews();
+
+    const enriched = await Promise.all(
+      reviews.map(async (rev) => {
+        try {
+          const lot = await getParkingLotById(rev.parkingLotId);
+          return { ...rev, parkingLotName: lot.name };
+        } catch (e) {
+          console.error(`주차장(${rev.parkingLotId}) 조회 실패:`, e);
+          return { ...rev, parkingLotName: `ID:${rev.parkingLotId}` };
+        }
+      })
+    );
+
+    setMyReviews(enriched);
+  } catch (error) {
+    console.error("Error loading reviews:", error);
+  }
+};
 
   const loadLikedParking = () => {
     getUserFavorites()
@@ -120,8 +136,8 @@ const MyPage = () => {
                   className="review-item"
                 >
                   <p>
-                    <i className="ri-parking-box-fill"></i>&nbsp;
-                    <strong>주차장 ID: {review.parkingLotId}</strong>
+                      <i className="ri-parking-box-fill"></i>&nbsp;
+                      <strong>{review.parkingLotName}</strong>
                   </p>
                   <p><i className="ri-star-fill"></i> {review.rating}</p>
                   {review.content && <p className="content">{review.content}</p>}
