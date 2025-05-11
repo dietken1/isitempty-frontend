@@ -4,6 +4,8 @@ import { getDistanceFromLatLonInKm } from "../utils/geo.js";
 import {
   getParkingReviews,
   createReview,
+  deleteReview,
+  updateReview,
   getUserFavorites,
   addFavoriteParking,
   removeFavoriteParking,
@@ -21,6 +23,7 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
   const [reviewError, setReviewError] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [setUsername] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
   let mounted = true;
@@ -28,15 +31,15 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
     const token = TokenLocalStorageRepository.getToken();
     if (!token) {
       setIsLoggedIn(false);
-      setUsername(null);
+      setCurrentUser(null);
       return;
     }
     setIsLoggedIn(true);
     try {
       const { data } = await getUserMe();
-      if (mounted) setUsername(data.username);
+      if (mounted) setCurrentUser(data.username);
     } catch {
-      if (mounted) setUsername(null);
+      if (mounted) setCurrentUser(null);
     }
   };
   loadUser();
@@ -111,6 +114,27 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
   fetchReviews();
 
 }, [lot]);
+
+  const handleDeleteReview = async (reviewId) => {
+    if (!window.confirm("정말 리뷰를 삭제하시겠습니까?")) return;
+    try {
+      await deleteReview(reviewId);
+      setReviews(rs => rs.filter(r => r.id !== reviewId));
+    } catch {
+      alert("리뷰 삭제에 실패했습니다.");
+    }
+  };
+
+  const handleEditReview = async (reviewId, content, rating) => {
+    const newContent = window.prompt("리뷰 내용을 수정하세요:", content);
+    if (newContent == null) return;
+    try {
+      await updateReview(reviewId, newContent, rating);
+      setReviews(rs => rs.map(r => r.id === reviewId ? { ...r, content: newContent } : r));
+    } catch {
+      alert("리뷰 수정에 실패했습니다.");
+    }
+  };
 
   if (!lot) return null;
 
@@ -324,6 +348,12 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
                     <strong>{review.user}</strong>
                     <span> - {review.rating}<i className="ri-star-fill"></i></span>
                     <small> ({new Date(review.createdAt).toLocaleDateString()})</small>
+                    {currentUser?.username === review.user && (
+                    <span style={{ float: 'right' }}>
+                      <button onClick={() => handleEditReview(review.id, review.content, review.rating)}>수정</button>
+                      <button onClick={() => handleDeleteReview(review.id)}>삭제</button>
+                    </span>
+                  )}
                   </p>
                   <p>{review.content}</p>
                   <hr />
