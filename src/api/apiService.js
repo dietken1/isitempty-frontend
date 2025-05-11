@@ -281,57 +281,17 @@ export const sendContactMessage = (formData) => {
 };
 
 export const getParkingReviews = async (parkingLotId) => {
-  try {
-    console.log(`getParkingReviews 호출: parkingLotId=${parkingLotId}, 타입=${typeof parkingLotId}`);
-    
-    // API 경로를 문자열 ID로 확실하게 변환
-    const id = String(parkingLotId);
-    console.log(`변환된 ID: ${id}`);
-    
-    const token = TokenLocalStorageRepository.getToken();
-    const response = await axios.get(`/api/reviews/parkingLot/${id}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      }
-    });
-    
-    console.log('리뷰 API 응답:', response);
-    
-    // 응답 데이터 확인
-    if (response.data && Array.isArray(response.data)) {
-      // 백엔드에서 오는 데이터 구조에 맞게 정규화
-      return response.data.map(review => {
-        const userName = review.user?.username || '익명';
-        const parkingLotName = review.parkingLot?.name || '알 수 없는 주차장';
-        
-        return {
-          id: review.id,
-          content: review.content || '',
-          rating: review.rating || 0,
-          user: userName,
-          parkingLotName: parkingLotName,
-          createdAt: review.createdAt
-        };
-      });
-    }
-    
-    // 데이터가 배열이 아닌 경우 빈 배열 반환
-    console.log('응답이 배열이 아님:', response.data);
-    return [];
-  } catch (error) {
-    console.error("Error fetching parking reviews:", error);
-    if (error.response) {
-      console.log("응답 상태:", error.response.status);
-      console.log("응답 데이터:", error.response.data);
-      
-      // 404는 "리뷰가 없음"을 의미
-      if (error.response.status === 404) {
-        return [];
-      }
-    }
-    throw error;
-  }
+  const res = await axios.get(`/api/reviews/parkingLot/${parkingLotId}`, {
+    headers: { Authorization: `Bearer ${TokenLocalStorageRepository.getToken()}` }
+  });
+  const arr = Array.isArray(res.data) ? res.data : res.data.data || [];
+  return arr.map(r => ({
+    id: r.id,
+    content: r.content,
+    rating: r.rating,
+    user: r.user.username,
+    createdAt: r.createdAt
+  }));
 };
 
 export const createReview = async (parkingLotId, content, rating) => {
