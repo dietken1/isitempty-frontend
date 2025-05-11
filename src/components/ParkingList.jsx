@@ -51,7 +51,7 @@ const ParkingList = ({
         (a, b) => (a.numericFee ?? Infinity) - (b.numericFee ?? Infinity)
       );
     } else if (sortType === "rating") {
-      sorted.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+      sorted.sort((a, b) => (b.averageRating ?? 0) - (a.averageRating ?? 0));
     }
 
     setSortedLots(sorted);
@@ -143,7 +143,7 @@ const ParkingList = ({
             <strong>{lot.name}</strong>
             &nbsp;-{" "}
             <i style={{ color: "#FFCA00" }} className="ri-star-fill"></i>
-            {lot.rating ?? "0.0"}
+            {lot.averageRating ?? "0.0"}
             {lot.totalFee && <> - 요금: {lot.totalFee}</>}
           </li>
         ))}
