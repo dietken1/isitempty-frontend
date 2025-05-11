@@ -103,29 +103,47 @@
     justify-content: center;
   }
   
-  .review-item {
-    padding: 10px;
-    border: 1px solid #ddd;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .review-item:hover {
-    background-color: #f9f9f9;
-  }
-  
-  .liked-item {
-    padding: 10px;
-    border: 1px solid #ddd;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .liked-item:hover {
-    background-color: #f9f9f9;
-  }
+.liked-item {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  padding: 10px;
+  border: 1px solid #ddd;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.liked-item:hover {
+  background: #f5f5f5;
+}
+
+.review-list {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.review-item {
+  display: block;
+  padding: 16px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  text-decoration: none;
+  color: inherit;
+}
+.review-item:hover {
+  background: #fafafa;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.review-item p {
+  margin: 6px 0;
+}
+.review-item .content {
+  font-size: 0.95rem;
+  color: #555;
+  margin-top: 8px;
+}
   
   footer {
     background-color: #333;
