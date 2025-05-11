@@ -85,7 +85,12 @@ const ParkingList = ({
       <i
         className="ri-close-line"
         onClick={onClose}
-        style={{ cursor: "pointer", fontSize: "20px" }}
+        style={{
+          cursor: "pointer",
+          fontSize: "20px",
+          position: "relative",
+          right: "-92%",
+        }}
       ></i>
       <div className={styles.header}>
         <div className={styles.header_left}>
