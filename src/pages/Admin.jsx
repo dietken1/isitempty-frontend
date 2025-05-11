@@ -140,23 +140,34 @@ const Admin = () => {
     }
   };
 
-  const handleDeleteUser = async (id) => {
-    if (!window.confirm("정말 이 유저를 삭제하시겠습니까?")) return;
-    try {
-      const token = TokenLocalStorageRepository.getToken();
-      const res = await fetch(`/api/admin/users/${id}`, {
+  const handleDeleteUser = async (userId) => {
+  if (!window.confirm("정말 이 유저를 삭제하시겠습니까?")) return;
+
+  try {
+    const token = TokenLocalStorageRepository.getToken();
+    console.log("🗑 삭제 ▶ ", `/api/admin/users/${userId}`, "token=", token);
+
+    const res = await fetch(
+      `/api/admin/users/${userId}`,
+      {
         method: "DELETE",
         headers: {
-          "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
         },
-      });
-      if (!res.ok) throw new Error(res.statusText);
-      setUsers(prev => prev.filter(u => u.userId !== id));
-    } catch (err) {
-      alert("유저 삭제 중 오류가 발생했습니다.");
+      }
+    );
+
+    console.log("DELETE status:", res.status, await res.text());
+    if (!res.ok) {
+      throw new Error(`삭제 실패: ${res.status}`);
     }
-  };
+
+    setUsers((prev) => prev.filter((u) => u.userId !== userId));
+  } catch (err) {
+    console.error(err);
+    alert("유저 삭제 중 오류가 발생했습니다.");
+  }
+};
 
   const handleDeleteInquiry = async (id) => {
     if (!window.confirm("정말 이 문의를 삭제하시겠습니까?")) return;
@@ -185,24 +196,39 @@ const Admin = () => {
   const handleEditInquiry = inq => setEditingInquiry(inq);
 
   const handleSaveUser = async () => {
-    const { userId, username, email, password, roleType  } = editingUser;
-    try {
-      const token = TokenLocalStorageRepository.getToken();
-      const res = await fetch(`/api/admin/users/${userId}`, {
-        method: "PUT", 
+  const { userId, username, email, password, roleType } = editingUser;
+  if (!window.confirm("이 내용으로 수정하시겠습니까?")) return;
+
+  try {
+    const token = TokenLocalStorageRepository.getToken();
+    console.log("✏️ 수정 ▶ ", `/api/admin/users/${userId}`, "body=", { username, email, password, roleType });
+
+    const res = await fetch(
+      `/api/admin/users/${userId}`,
+      {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify({ username, email, password, roleType })
-      });
-      if (!res.ok) throw new Error(res.statusText);
-      setUsers(prev => prev.map(u => (u.userId === userId ? editingUser : u)));
-      setEditingUser(null);
-    } catch (err) {
-      alert("유저 정보 수정 중 오류가 발생했습니다.");
+        body: JSON.stringify({ username, email, password, roleType }),
+      }
+    );
+
+    console.log("PUT status:", res.status, await res.text());
+    if (!res.ok) {
+      throw new Error(`수정 실패: ${res.status}`);
     }
-  };
+
+    setUsers((prev) =>
+      prev.map((u) => (u.userId === userId ? editingUser : u))
+    );
+    setEditingUser(null);
+  } catch (err) {
+    console.error(err);
+    alert("유저 정보 수정 중 오류가 발생했습니다.");
+  }
+};
 
   const handleSaveInquiry = async () => {
     const { id, message } = editingInquiry;
