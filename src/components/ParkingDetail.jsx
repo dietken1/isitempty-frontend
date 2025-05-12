@@ -84,19 +84,22 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
 
       try {
         const reviewsData = await getParkingReviews(lot.id);
-        if (!Array.isArray(reviewsData)) {
-          throw new Error("리뷰 형식 오류");
+        
+        if (!reviewsData || reviewsData.length === 0) {
+          setReviews([]);
+          setReviewError("이 주차장에 대한 첫 리뷰를 작성해보세요!");
+          setIsLoadingReviews(false);
+          return;
         }
+        
         setReviews(reviewsData);
-        if (reviewsData.length === 0) {
-          setReviewError("첫 리뷰를 작성해보세요!");
-        }
       } catch (error) {
-        console.error("리뷰 불러오기 실패:", error);
+        console.error(`리뷰 로드 실패 (${lot.id}): ${error.message}`);
+        
         setReviewError(
-          error.message.includes("401")
+          error.response && error.response.status === 401
             ? "로그인 후 리뷰를 볼 수 있습니다."
-            : "리뷰 로드 중 오류가 발생했습니다."
+            : "리뷰를 불러올 수 없습니다. 다시 시도해주세요."
         );
       } finally {
         setIsLoadingReviews(false);
