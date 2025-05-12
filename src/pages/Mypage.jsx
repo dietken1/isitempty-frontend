@@ -85,24 +85,43 @@ const MyPage = ({onClose, onSelectLot}) => {
   }
 };
 
-
   const loadLikedParking = async () => {
     try {
       const favs = await getUserFavorites();
-      const enriched = await Promise.all(
-        favs.map(async (fav) => {
-          try {
-            const lot = await getParkingLotById(fav.parkingLotId);
-            return { ...fav, parkingLotName: lot.name };
-          } catch (err) {
-            console.error(`주차장(${fav.parkingLotId}) 조회 실패:`, err);
-            return { ...fav, parkingLotName: `${fav.parkingLotId}` };
-          }
-        })
-      );
+      console.log("찜 데이터:", favs);
+      
+      if (!favs.length) {
+        console.log("찜한 주차장이 없습니다");
+        setLikedParking([]);
+        return;
+      }
+      
+      const enriched = favs.map((fav) => {
+        console.log("찜 항목:", fav);
+        
+        // parkingLot 객체가 있는지 확인하고 주차장 정보 추출
+        if (fav.parkingLot && fav.parkingLot.name) {
+          return {
+            id: fav.id,
+            parkingLotId: fav.parkingLot.id,
+            parkingLotName: fav.parkingLot.name,
+            parkingLot: fav.parkingLot  // 전체 주차장 객체 저장
+          };
+        }
+        
+        // parkingLot이 없거나 name이 없는 경우 기본값 설정
+        return { 
+          id: fav.id || Math.random().toString(36).substr(2, 9),
+          parkingLotId: fav.parkingLotId,
+          parkingLotName: "알 수 없는 주차장" 
+        };
+      });
+      
+      console.log("가공된 찜 데이터:", enriched);
       setLikedParking(enriched);
     } catch (err) {
-      console.error("Error loading liked parking:", err);
+      console.error("좋아요한 주차장 불러오기 실패:", err);
+      setLikedParking([]);
     }
   };
   const toggleFavorite = () => {
@@ -157,7 +176,7 @@ const MyPage = ({onClose, onSelectLot}) => {
             <div
               key={p.id}
               className="liked-item"
-              onClick={() => handleClick(p.parkingLotId)}
+              onClick={() => handleClick(p)}
             >
               <strong><i className="ri-parking-box-fill"></i>{p.parkingLotName}</strong> 
               <hr />
@@ -174,7 +193,7 @@ const MyPage = ({onClose, onSelectLot}) => {
             <div
               key={r.id}
               className="review-item"
-              onClick={() => handleClick(r.parkingLotId)}
+              onClick={() => handleClick(r)}
             >
               <p>
                 <i className="ri-parking-box-fill"></i>&nbsp;

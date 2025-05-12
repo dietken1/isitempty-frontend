@@ -99,22 +99,37 @@ const Admin = () => {
     if (!window.confirm(`${user.username}의 권한을 ${newRole}로 변경하시겠습니까?`)) return;
     try {
       const token = TokenLocalStorageRepository.getToken();
+      
+      // 현재 사용자의 권한 확인
+      const currentUserResponse = await getUserMe();
+      console.log("현재 로그인 사용자 정보:", currentUserResponse.data);
+      console.log("변경하려는 대상 사용자:", user);
+      
+      console.log("권한 변경 요청:", `/api/admin/users/${user.userId}/role`, { roleType: newRole });
+      console.log("토큰:", token);
+      
       const res = await fetch(`/api/admin/users/${user.userId}/role`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
+          "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify({ roleType: newRole })
       });
-      if (!res.ok) throw new Error(res.statusText);
+      
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("권한 변경 실패 응답:", res.status, errorText);
+        throw new Error(`${res.status}: ${errorText || res.statusText}`);
+      }
+      
       setUsers(us => us.map(u =>
         u.userId === user.userId ? { ...u, roleType: newRole } : u
       ));
       alert("권한이 변경되었습니다.");
     } catch (err) {
-      console.error(err);
-      alert("권한 변경에 실패했습니다.");
+      console.error("권한 변경 오류:", err);
+      alert(`권한 변경에 실패했습니다: ${err.message}`);
     }
   };
 
