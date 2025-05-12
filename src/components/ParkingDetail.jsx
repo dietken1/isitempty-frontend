@@ -9,7 +9,7 @@ import {
   getUserFavorites,
   addFavoriteParking,
   removeFavoriteParking,
-  getUserMe
+  getUserMe,
 } from "../api/apiService";
 import { TokenLocalStorageRepository } from "../repository/localstorages";
 
@@ -25,97 +25,105 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
-  let mounted = true;
-  (async () => {
-    const token = TokenLocalStorageRepository.getToken();
-    if (!token) {
-      setIsLoggedIn(false);
-      setCurrentUser(null);
-      return;
-    }
-    setIsLoggedIn(true);
-    const res = await getUserMe();
-    if (!mounted) return;
-    setCurrentUser(res.data.username);
-  })().catch(() => mounted && setCurrentUser(null));
-  return () => { mounted = false; };
-}, []);
-
-  useEffect(() => {
-  if (!lot) return;
-
-  let mounted = true;
-  (async () => {
-    try {
-      const favs = await getUserFavorites();
+    let mounted = true;
+    (async () => {
+      const token = TokenLocalStorageRepository.getToken();
+      if (!token) {
+        setIsLoggedIn(false);
+        setCurrentUser(null);
+        return;
+      }
+      setIsLoggedIn(true);
+      const res = await getUserMe();
       if (!mounted) return;
-      const mine = favs.some(f => String(f.parkingLotId) === String(lot.id));
-      setIsFavorite(mine);
-    } catch (err) {
-      console.error("초기 찜 상태 로드 실패:", err);
-    }
-  })();
-
-  return () => { mounted = false; };
-}, [lot]);
+      setCurrentUser(res.data.username);
+    })().catch(() => mounted && setCurrentUser(null));
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   useEffect(() => {
-  if (!lot) return;
+    if (!lot) return;
 
-  // 거리 계산
-  navigator.geolocation.getCurrentPosition(
-    ({ coords }) => {
-      const dist = getDistanceFromLatLonInKm(
-        coords.latitude,
-        coords.longitude,
-        lot.latitude,
-        lot.longitude
-      );
-      setDistance(dist.toFixed(2)); // km, 소수점 둘째 자리
-    },
-    (err) => {
-      console.error("위치 정보 가져오기 실패:", err);
-      setDistance("위치 정보 없음");
-    }
-  );
-
-  // 리뷰 로드
-  const fetchReviews = async () => {
-    if (!lot.id) return;
-
-    setIsLoadingReviews(true);
-    setReviewError(null);
-
-    try {
-      const reviewsData = await getParkingReviews(lot.id);
-      console.log("🎯 reviewsData:", reviewsData);
-      if (!Array.isArray(reviewsData)) {
-        throw new Error("리뷰 형식 오류");
+    let mounted = true;
+    (async () => {
+      try {
+        const favs = await getUserFavorites();
+        if (!mounted) return;
+        const mine = favs.some(
+          (f) => String(f.parkingLotId) === String(lot.id)
+        );
+        setIsFavorite(mine);
+      } catch (err) {
+        console.error("초기 찜 상태 로드 실패:", err);
       }
-      setReviews(reviewsData);
-      if (reviewsData.length === 0) {
-        setReviewError("첫 리뷰를 작성해보세요!");
-      }
-    } catch (error) {
-      console.error("리뷰 불러오기 실패:", error);
-      setReviewError(
-        error.message.includes("401")
-          ? "로그인 후 리뷰를 볼 수 있습니다."
-          : "리뷰 로드 중 오류가 발생했습니다."
-      );
-    } finally {
-      setIsLoadingReviews(false);
-    }
-  };
-  fetchReviews();
+    })();
 
-}, [lot]);
+    return () => {
+      mounted = false;
+    };
+  }, [lot]);
+
+  useEffect(() => {
+    if (!lot) return;
+
+    // 거리 계산
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        if (!lot || !lot.latitude || !lot.longitude) return;
+
+        const dist = getDistanceFromLatLonInKm(
+          coords.latitude,
+          coords.longitude,
+          lot.latitude,
+          lot.longitude
+        );
+        if (!isNaN(dist)) setDistance(dist.toFixed(2));
+        else setDistance("계산 불가");
+      },
+      (err) => {
+        console.error("위치 정보 가져오기 실패:", err);
+        setDistance("위치 정보 없음");
+      }
+    );
+
+    // 리뷰 로드
+    const fetchReviews = async () => {
+      if (!lot.id) return;
+
+      setIsLoadingReviews(true);
+      setReviewError(null);
+
+      try {
+        const reviewsData = await getParkingReviews(lot.id);
+        console.log("🎯 reviewsData:", reviewsData);
+        if (!Array.isArray(reviewsData)) {
+          throw new Error("리뷰 형식 오류");
+        }
+        setReviews(reviewsData);
+        if (reviewsData.length === 0) {
+          setReviewError("첫 리뷰를 작성해보세요!");
+        }
+      } catch (error) {
+        console.error("리뷰 불러오기 실패:", error);
+        setReviewError(
+          error.message.includes("401")
+            ? "로그인 후 리뷰를 볼 수 있습니다."
+            : "리뷰 로드 중 오류가 발생했습니다."
+        );
+      } finally {
+        setIsLoadingReviews(false);
+      }
+    };
+    fetchReviews();
+  }, [lot]);
 
   const handleDeleteReview = async (reviewId) => {
     if (!window.confirm("정말 리뷰를 삭제하시겠습니까?")) return;
     try {
       await deleteReview(reviewId);
-      setReviews(rs => rs.filter(r => r.id !== reviewId));
+      setReviews((rs) => rs.filter((r) => r.id !== reviewId));
     } catch {
       alert("리뷰 삭제에 실패했습니다.");
     }
@@ -126,7 +134,9 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
     if (newContent == null) return;
     try {
       await updateReview(reviewId, newContent, rating);
-      setReviews(rs => rs.map(r => r.id === reviewId ? { ...r, content: newContent } : r));
+      setReviews((rs) =>
+        rs.map((r) => (r.id === reviewId ? { ...r, content: newContent } : r))
+      );
     } catch {
       alert("리뷰 수정에 실패했습니다.");
     }
@@ -146,38 +156,35 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
   } = lot;
 
   const handleHeartClick = async () => {
-  if (!isLoggedIn) {
-    alert("로그인 후 이용해주세요.");
-    return;
-  }
-
-  setIsFavorite(fav => !fav);
-
-  try {
-    if (isFavorite) {
-      await removeFavoriteParking(lot.id);
-      alert("찜이 취소되었습니다.");
-    } else {
-      await addFavoriteParking(lot.id);
-      alert("찜이 추가되었습니다.");
-    }
-  } catch (err) {
-    const msg = err.message || "";
-
-    if (msg.includes("이미 찜")) {
-      setIsFavorite(true);
-      alert("이미 찜한 주차장입니다.");
+    if (!isLoggedIn) {
+      alert("로그인 후 이용해주세요.");
       return;
     }
 
-    console.error("찜 토글 에러:", err);
-    setIsFavorite(fav => !fav);
-    alert(isFavorite
-      ? "찜 취소에 실패했습니다."
-      : "찜 추가에 실패했습니다."
-    );
-  }
-};
+    setIsFavorite((fav) => !fav);
+
+    try {
+      if (isFavorite) {
+        await removeFavoriteParking(lot.id);
+        alert("찜이 취소되었습니다.");
+      } else {
+        await addFavoriteParking(lot.id);
+        alert("찜이 추가되었습니다.");
+      }
+    } catch (err) {
+      const msg = err.message || "";
+
+      if (msg.includes("이미 찜")) {
+        setIsFavorite(true);
+        alert("이미 찜한 주차장입니다.");
+        return;
+      }
+
+      console.error("찜 토글 에러:", err);
+      setIsFavorite((fav) => !fav);
+      alert(isFavorite ? "찜 취소에 실패했습니다." : "찜 추가에 실패했습니다.");
+    }
+  };
 
   const handleRatingClick = (rating) => {
     setSelectedRating(rating);
@@ -197,7 +204,7 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
       alert("별점을 선택해주세요.");
       return;
     }
-    
+
     if (!reviewContent.trim()) {
       alert("리뷰 내용을 입력해주세요.");
       return;
@@ -207,14 +214,14 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
       await createReview(lot.id, reviewContent, selectedRating);
       const updatedReviews = await getParkingReviews(lot.id);
       setReviews(updatedReviews);
-      
+
       setReviewContent("");
       setSelectedRating(0);
-      
+
       alert("리뷰가 등록되었습니다.");
     } catch (error) {
       console.error("리뷰 등록 실패:", error);
-      if (error.message.includes('401')) {
+      if (error.message.includes("401")) {
         alert("로그인이 필요합니다.");
       } else {
         alert("리뷰 등록에 실패했습니다. 다시 시도해주세요.");
@@ -292,7 +299,7 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
 
       <div className={styles.ratingContainer}>
         {!isLoggedIn && (
-          <p style={{ color: '#666', marginBottom: '10px' }}>
+          <p style={{ color: "#666", marginBottom: "10px" }}>
             리뷰를 작성하려면 로그인이 필요합니다.
           </p>
         )}
@@ -308,7 +315,7 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
                 cursor: isLoggedIn ? "pointer" : "not-allowed",
                 fontSize: "24px",
                 color: star <= selectedRating ? " #ffe200" : "black",
-                opacity: isLoggedIn ? 1 : 0.5
+                opacity: isLoggedIn ? 1 : 0.5,
               }}
             ></i>
           ))}
@@ -342,14 +349,33 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
                 <div key={review.id} className={styles.reviewItem}>
                   <p>
                     <strong>{review.user}</strong>
-                    <span> - {review.rating}<i className="ri-star-fill"></i></span>
-                    <small> ({new Date(review.createdAt).toLocaleDateString()})</small>
+                    <span>
+                      {" "}
+                      - {review.rating}
+                      <i className="ri-star-fill"></i>
+                    </span>
+                    <small>
+                      {" "}
+                      ({new Date(review.createdAt).toLocaleDateString()})
+                    </small>
                     {currentUser === review.user && (
                       <span className={styles.reviewActions}>
-                        <button className={styles.buttonEdit} onClick={() => handleEditReview(review.id, review.content, review.rating)}>
+                        <button
+                          className={styles.buttonEdit}
+                          onClick={() =>
+                            handleEditReview(
+                              review.id,
+                              review.content,
+                              review.rating
+                            )
+                          }
+                        >
                           수정
                         </button>
-                        <button className={styles.buttonDelete} onClick={() => handleDeleteReview(review.id)}>
+                        <button
+                          className={styles.buttonDelete}
+                          onClick={() => handleDeleteReview(review.id)}
+                        >
                           삭제
                         </button>
                       </span>
