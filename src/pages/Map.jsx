@@ -4,6 +4,7 @@ import SearchBar from "../components/SearchBar";
 import KakaoMap from "../components/Kakaomap";
 import styles from "./Map.module.css";
 import { useMarkerLayer } from "../hooks/useMarkerLayer";
+import { useLocation } from "react-router-dom";
 import {
   fetchNearbyParkingLots,
   fetchNearbyToilets,
@@ -35,6 +36,22 @@ const Map = () => {
   const [showParking, setShowParking] = useState(true);
   const [showCamera, setShowCamera] = useState(false);
   const [showToilet, setShowToilet] = useState(false);
+
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.selectedParkingLot) {
+      setSelectedParkingLot(location.state.selectedParkingLot);
+
+      // 위치 이동
+      const { latitude, longitude } = location.state.selectedParkingLot;
+      if (mapRef.current && latitude && longitude) {
+        const pos = new window.kakao.maps.LatLng(latitude, longitude);
+        mapRef.current.setCenter(pos);
+        mapRef.current.setLevel(5);
+      }
+    }
+  }, [location.state]);
 
   useEffect(() => {
     if (!loaded) return;
