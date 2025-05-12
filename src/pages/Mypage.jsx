@@ -31,27 +31,35 @@ const MyPage = ({onClose, onSelectLot}) => {
   };
   
   const loadReviews = async () => {
-  try {
-    const { reviews = [] } = await getMyReviews();
+    try {
+      const { reviews = [] } = await getMyReviews();
 
-    const enriched = await Promise.all(
-      reviews.map(async (rev) => {
-        try {
-          const lotResp = await getParkingLotById(rev.parkingLotId);
-          console.log("lotResp:", lotResp);
-          return { parkingLotName: lotResp.name || lotResp.data?.name || lotResp.parkingLot?.name || "Unknown", };
-        } catch (e) {
-          console.error(`주차장(${rev.parkingLotId}) 조회 실패:`, e);
-          return { ...rev, parkingLotName: `${rev.parkingLotId}` };
-        }
-      })
-    );
+      const enriched = await Promise.all(
+        reviews.map(async (rev) => {
+          // parkingLotId가 없는 경우 기본값 설정
+          if (!rev.parkingLotId) {
+            return { ...rev, parkingLotName: "알 수 없는 주차장" };
+          }
+          
+          try {
+            const lotResp = await getParkingLotById(rev.parkingLotId);
+            return { 
+              ...rev, 
+              parkingLotName: lotResp.name || `주차장 #${rev.parkingLotId}` 
+            };
+          } catch (e) {
+            console.error(`주차장(${rev.parkingLotId}) 조회 실패:`, e);
+            return { ...rev, parkingLotName: `주차장 #${rev.parkingLotId}` };
+          }
+        })
+      );
 
-    setMyReviews(enriched);
-  } catch (error) {
-    console.error("Error loading reviews:", error);
-  }
-};
+      setMyReviews(enriched);
+    } catch (error) {
+      console.error("리뷰 목록 불러오기 실패:", error);
+      setMyReviews([]);
+    }
+  };
 
   const handleClick = async (parkingLotId) => {
       try {
@@ -69,18 +77,24 @@ const MyPage = ({onClose, onSelectLot}) => {
       const favs = await getUserFavorites();
       const enriched = await Promise.all(
         favs.map(async (fav) => {
+          // parkingLotId가 없는 경우 기본값 설정
+          if (!fav.parkingLotId) {
+            return { ...fav, parkingLotName: "알 수 없는 주차장" };
+          }
+          
           try {
             const lot = await getParkingLotById(fav.parkingLotId);
-            return { ...fav, parkingLotName: lot.name };
+            return { ...fav, parkingLotName: lot.name || `주차장 #${fav.parkingLotId}` };
           } catch (err) {
             console.error(`주차장(${fav.parkingLotId}) 조회 실패:`, err);
-            return { ...fav, parkingLotName: `${fav.parkingLotId}` };
+            return { ...fav, parkingLotName: `주차장 #${fav.parkingLotId}` };
           }
         })
       );
       setLikedParking(enriched);
     } catch (err) {
-      console.error("Error loading liked parking:", err);
+      console.error("좋아요한 주차장 불러오기 실패:", err);
+      setLikedParking([]);
     }
   };
   const toggleFavorite = () => {
