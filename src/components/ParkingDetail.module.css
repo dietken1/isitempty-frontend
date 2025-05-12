@@ -101,7 +101,7 @@
   color: black;
 }
 
-reviewItem {
+.reviewItem {
   position: relative; /* 버튼을 절대 위치로 잡기 위해 부모에 relative */
   padding-right: 80px; /* 버튼 공간 확보 */
 }
@@ -124,20 +124,25 @@ reviewItem {
   transition: background-color .2s, color .2s;
 }
 
-/* 수정 버튼 */
-.buttonEdit {
+.editBtn {
   color: #007bff;
   border-color: #007bff;
 }
-.buttonEdit:hover {
+.editBtn:hover {
   background-color: rgba(0, 123, 255, 0.1);
 }
 
 /* 삭제 버튼 */
-.buttonDelete {
+.deleteBtn {
   color: #dc3545;
   border-color: #dc3545;
 }
-.buttonDelete:hover {
+.deleteBtn:hover {
   background-color: rgba(220, 53, 69, 0.1);
+}
+
+/* 리뷰 내용 */
+.reviewContent {
+  margin: 8px 0;
+  line-height: 1.5;
 }
