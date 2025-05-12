@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom"; 
 import { getMyReviews, getUserFavorites, getUserDetails, getParkingLotById } from "../api/apiService"; 
 import { TokenLocalStorageRepository } from "../repository/localstorages";
+import ParkingDetail from "../components/ParkingDetail";
 
 import './Mypage.css';
 
@@ -10,6 +11,7 @@ const MyPage = ({onClose, onSelectLot}) => {
   const [myReviews, setMyReviews] = useState([]);
   const [likedParking, setLikedParking] = useState([]);
   const navigate = useNavigate();
+  const [selectedLot, setSelectedLot] = useState(null);
 
   useEffect(() => {
     const token = TokenLocalStorageRepository.getToken();
@@ -39,7 +41,14 @@ const MyPage = ({onClose, onSelectLot}) => {
         try {
           const lotResp = await getParkingLotById(rev.parkingLotId);
           console.log("lotResp:", lotResp);
-          return { parkingLotName: lotResp.name || lotResp.data?.name || lotResp.parkingLot?.name || "Unknown", };
+          const name =
+            lotResp.name ||
+            lotResp.data?.name ||
+            lotResp.parkingLot?.name ||
+            "Unknown";
+          return {  ...rev,
+            parkingLotName: name,
+            parkingLot: lotResp};
         } catch (e) {
           console.error(`주차장(${rev.parkingLotId}) 조회 실패:`, e);
           return { ...rev, parkingLotName: `${rev.parkingLotId}` };
@@ -53,49 +62,25 @@ const MyPage = ({onClose, onSelectLot}) => {
   }
 };
 
-  const handleClick = async (item) => {
-  console.log("▶ 클릭한 아이템:", item);
-  try {
-    if (typeof onClose !== 'function' || typeof onSelectLot !== 'function') {
-      console.error("onClose 또는 onSelectLot가 함수가 아닙니다.", { onClose, onSelectLot });
-      return;
-    }
+  const handleClick = async (fav) => {
+    // fav.parkingLot이 있으면 바로, 없으면 API로 가져와서…
+    const lot = fav.parkingLot || await getParkingLotById(fav.parkingLotId);
+    setSelectedLot(lot);
+  };
 
-    // 1) item.parkingLot이 이미 객체라면 바로 전달
-    if (item && item.parkingLot && typeof item.parkingLot === 'object') {
-      onClose();
-      onSelectLot(item.parkingLot);
-      return;
-    }
 
-    // 2) parkingLotId만 있을 때 API 호출
-    if (item && (item.parkingLotId || item.id)) {
-      const parkingLotId = item.parkingLotId || item.id;
-      const lotData = await getParkingLotById(parkingLotId);
-      onClose();
-      onSelectLot(lotData);
-      return;
-    }
-
-    console.error("주차장 정보가 없습니다:", item);
-    alert("주차장 정보를 가져오는 데 실패했습니다.");
-  } catch (err) {
-    console.error("handleClick 내부 에러:", err);
-    alert("주차장 정보를 가져오는 데 실패했습니다.");
-  }
-};
 
   const loadLikedParking = async () => {
     try {
       const favs = await getUserFavorites();
       console.log("찜 데이터:", favs);
-      
+
       if (!favs.length) {
         console.log("찜한 주차장이 없습니다");
         setLikedParking([]);
         return;
       }
-      
+
       const enriched = favs.map((fav) => {
         console.log("찜 항목:", fav);
         
@@ -170,7 +155,7 @@ const MyPage = ({onClose, onSelectLot}) => {
           </div>
         </div>
 
-         <div id="favorite" className="favorite">
+        <div id="favorite" className="favorite">
         {likedParking.length > 0 ? (
           likedParking.map(p => (
             <div
@@ -178,7 +163,7 @@ const MyPage = ({onClose, onSelectLot}) => {
               className="liked-item"
               onClick={() => handleClick(p)}
             >
-              <strong><i className="ri-parking-box-fill"></i>{p.parkingLotName}</strong> 
+              <strong><i className="ri-parking-box-fill"></i> {p.parkingLot?.name || p.parkingLotName}</strong>
               <hr />
             </div>
           ))
@@ -207,6 +192,13 @@ const MyPage = ({onClose, onSelectLot}) => {
           <p>작성한 리뷰가 없습니다.</p>
         )}
       </div>
+      {selectedLot && (
+        <ParkingDetail
+          lot={selectedLot}
+          onClose={() => setSelectedLot(null)}
+          onBackToList={() => setSelectedLot(null)}
+        />
+      )}
     </div>
     </div>
   );
