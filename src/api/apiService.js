@@ -15,6 +15,20 @@ const api = axios.create({
   },
 });
 
+// 404 에러에 대한 로깅 방지
+axios.interceptors.response.use(
+  response => response,
+  error => {
+    // 404 에러는 콘솔에 출력하지 않음
+    if (error.response && error.response.status === 404) {
+      // 조용히 에러 전파
+      return Promise.reject(error);
+    }
+    // 다른 에러는 그대로 로깅
+    return Promise.reject(error);
+  }
+);
+
 /**
  * Hello API 호출
  * @returns {Promise<Object>} - Hello 메시지
@@ -294,12 +308,13 @@ export const getParkingReviews = async (parkingLotId) => {
       createdAt: r.createdAt
     }));
   } catch (error) {
-    // 404 오류(리뷰가 없는 경우)는 빈 배열 반환
+    // 404 오류(리뷰가 없는 경우)는 빈 배열 반환 (로그 메시지 간소화)
     if (error.response && error.response.status === 404) {
-      console.log(`주차장(${parkingLotId})의 리뷰가 없습니다.`);
+      // console.log(`주차장(${parkingLotId})의 리뷰가 없습니다.`);
       return [];
     }
-    console.error("리뷰 불러오기 실패:", error);
+    // 로그에 전체 오류 객체 대신 간단한 메시지만 표시
+    console.error(`리뷰 불러오기 실패 (${parkingLotId}): ${error.message}`);
     throw error;
   }
 };
@@ -378,13 +393,39 @@ export const deleteReview = async (reviewId) => {
 };
 
 export const getParkingLotById = async (id) => {
+  // id가 undefined 또는 null인 경우 빈 객체 반환
+  if (!id) {
+    console.warn("주차장 ID가 유효하지 않습니다:", id);
+    return { name: "알 수 없는 주차장", id: "unknown" };
+  }
+
   const token = TokenLocalStorageRepository.getToken();
-  const res = await fetch(`/api/parking-lots/${id}`, {
-    headers: { 
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}` 
+  try {
+    const res = await fetch(`/api/parking-lots/${id}`, {
+      headers: { 
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}` 
+      }
+    });
+    
+    if (!res.ok) {
+      throw new Error(`주차장 조회 실패: ${res.status}`);
     }
-  });
-  if (!res.ok) throw new Error(`주차장 조회 실패: ${res.status}`);
-  return await res.json();
+    
+    // 응답이 비어있는지 확인
+    const text = await res.text();
+    if (!text || text.trim() === '') {
+      return { name: `주차장 #${id}`, id };
+    }
+    
+    try {
+      return JSON.parse(text);
+    } catch (parseError) {
+      console.error(`주차장 데이터 파싱 실패 (ID: ${id}):`, parseError);
+      return { name: `주차장 #${id}`, id };
+    }
+  } catch (error) {
+    console.error(`주차장(${id}) 조회 실패:`, error.message);
+    throw error;
+  }
 };
