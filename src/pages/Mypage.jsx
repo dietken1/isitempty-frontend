@@ -31,78 +31,59 @@ const MyPage = ({onClose, onSelectLot}) => {
   };
   
   const loadReviews = async () => {
-    try {
-      const reviewsData = await getMyReviews();
-      console.log("리뷰 데이터:", reviewsData);
-      
-      // reviewsData가 객체이고 reviews 속성을 가지고 있는지 확인
-      const reviews = reviewsData && reviewsData.reviews ? reviewsData.reviews : [];
-      
-      console.log("처리할 리뷰 목록:", reviews);
-      
-      if (!reviews.length) {
-        console.log("리뷰가 없습니다");
-        setMyReviews([]);
-        return;
-      }
+  try {
+    const { reviews = [] } = await getMyReviews();
 
-      const enriched = reviews.map((rev) => {
-        console.log("리뷰 항목:", rev);
-        
-        // parkingLot 객체가 있는지 확인하고 주차장 정보 추출
-        if (rev.parkingLot && rev.parkingLot.name) {
-          return {
-            id: rev.id,
-            parkingLotId: rev.parkingLot.id,
-            parkingLotName: rev.parkingLot.name,
-            rating: rev.rating || 0,
-            content: rev.content || "",
-            parkingLot: rev.parkingLot  // 전체 주차장 객체 저장
-          };
+    const enriched = await Promise.all(
+      reviews.map(async (rev) => {
+        try {
+          const lotResp = await getParkingLotById(rev.parkingLotId);
+          console.log("lotResp:", lotResp);
+          return { parkingLotName: lotResp.name || lotResp.data?.name || lotResp.parkingLot?.name || "Unknown", };
+        } catch (e) {
+          console.error(`주차장(${rev.parkingLotId}) 조회 실패:`, e);
+          return { ...rev, parkingLotName: `${rev.parkingLotId}` };
         }
-        
-        // parkingLot이 없거나 name이 없는 경우 기본값 설정
-        return { 
-          id: rev.id || Math.random().toString(36).substr(2, 9),
-          parkingLotId: rev.parkingLotId,
-          parkingLotName: "알 수 없는 주차장",
-          rating: rev.rating || 0,
-          content: rev.content || ""
-        };
-      });
+      })
+    );
 
-      console.log("가공된 리뷰 데이터:", enriched);
-      setMyReviews(enriched);
-    } catch (error) {
-      console.error("리뷰 목록 불러오기 실패:", error);
-      setMyReviews([]);
-    }
-  };
+    setMyReviews(enriched);
+  } catch (error) {
+    console.error("Error loading reviews:", error);
+  }
+};
 
   const handleClick = async (item) => {
-    try {
-      // item이 객체이고 parkingLot 속성을 가지고 있는 경우
-      if (item && item.parkingLot) {
-        onClose();
-        onSelectLot(item.parkingLot);
-        return;
-      }
-      
-      // parkingLotId가 있을 경우 API 호출
-      if (item && item.parkingLotId) {
-        const lot = await getParkingLotById(item.parkingLotId);
-        onClose();
-        onSelectLot(lot);
-        return;
-      }
-      
-      console.error("주차장 정보가 없습니다:", item);
-      alert("주차장 정보를 가져오는 데 실패했습니다.");
-    } catch (err) {
-      console.error(err);
-      alert("주차장 정보를 가져오는 데 실패했습니다.");
+  console.log("▶ 클릭한 아이템:", item);
+  try {
+    if (typeof onClose !== 'function' || typeof onSelectLot !== 'function') {
+      console.error("onClose 또는 onSelectLot가 함수가 아닙니다.", { onClose, onSelectLot });
+      return;
     }
-  };
+
+    // 1) item.parkingLot이 이미 객체라면 바로 전달
+    if (item && item.parkingLot && typeof item.parkingLot === 'object') {
+      onClose();
+      onSelectLot(item.parkingLot);
+      return;
+    }
+
+    // 2) parkingLotId만 있을 때 API 호출
+    if (item && (item.parkingLotId || item.id)) {
+      const parkingLotId = item.parkingLotId || item.id;
+      const lotData = await getParkingLotById(parkingLotId);
+      onClose();
+      onSelectLot(lotData);
+      return;
+    }
+
+    console.error("주차장 정보가 없습니다:", item);
+    alert("주차장 정보를 가져오는 데 실패했습니다.");
+  } catch (err) {
+    console.error("handleClick 내부 에러:", err);
+    alert("주차장 정보를 가져오는 데 실패했습니다.");
+  }
+};
 
   const loadLikedParking = async () => {
     try {
