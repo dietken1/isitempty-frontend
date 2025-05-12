@@ -37,30 +37,41 @@ const MyPage = ({onClose, onSelectLot}) => {
     const { reviews = [] } = await getMyReviews();
 
     const enriched = await Promise.all(
-      reviews.map(async (rev) => {
-        try {
-          const lotResp = await getParkingLotById(rev.parkingLotId);
-          console.log("lotResp:", lotResp);
-          const name =
-            lotResp.name ||
-            lotResp.data?.name ||
-            lotResp.parkingLot?.name ||
-            "Unknown";
-          return {  ...rev,
-            parkingLotName: name,
-            parkingLot: lotResp};
-        } catch (e) {
-          console.error(`주차장(${rev.parkingLotId}) 조회 실패:`, e);
-          return { ...rev, parkingLotName: `${rev.parkingLotId}` };
-        }
-      })
-    );
+       reviews.map(async rev => {
+         try {
+           const lotResp = await getParkingLotById(rev.parkingLotId);
+           console.log("lotResp:", lotResp);
 
-    setMyReviews(enriched);
-  } catch (error) {
-    console.error("Error loading reviews:", error);
-  }
-};
+           // 어떤 형태로 와도 name을 꺼낼 수 있게 payload에 담는다
+           const payload =
+             lotResp.parkingLot       ? lotResp.parkingLot      :
+             lotResp.data?.parkingLot ? lotResp.data.parkingLot :
+             lotResp.data             ? lotResp.data            :
+             lotResp;
+
+           const parkingLotName = payload.name || "알 수 없는 주차장";
+
+           return {
+             ...rev,
+             parkingLotName,
+             parkingLot: payload
+           };
+         } catch (e) {
+           console.error(`주차장(${rev.parkingLotId}) 조회 실패:`, e);
+           return {
+             ...rev,
+             parkingLotName: "알 수 없는 주차장",
+             parkingLot: null
+           };
+         }
+       })
+     );
+     setMyReviews(enriched);
+
+    } catch (error) {
+      console.error("Error loading reviews:", error);
+    }
+  };
 
   const handleClick = async (fav) => {
     // fav.parkingLot이 있으면 바로, 없으면 API로 가져와서…
@@ -109,6 +120,7 @@ const MyPage = ({onClose, onSelectLot}) => {
       setLikedParking([]);
     }
   };
+
   const toggleFavorite = () => {
     document.getElementById('favorite').classList.toggle('active');
     document.getElementById('myreview').classList.remove('active');
@@ -164,7 +176,7 @@ const MyPage = ({onClose, onSelectLot}) => {
               onClick={() => handleClick(p)}
             >
               <strong><i className="ri-parking-box-fill"></i> {p.parkingLot?.name || p.parkingLotName}</strong>
-              <hr />
+              <br />
             </div>
           ))
         ) : (

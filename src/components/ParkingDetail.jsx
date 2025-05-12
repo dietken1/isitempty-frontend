@@ -4,6 +4,8 @@ import { getDistanceFromLatLonInKm } from "../utils/geo.js";
 import {
   getParkingReviews,
   createReview,
+  updateReview,
+  deleteReview,
   getUserFavorites,
   addFavoriteParking,
   removeFavoriteParking,
@@ -186,6 +188,49 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
       }
     }
   };
+  const handleEditReview = async (reviewId, oldContent, oldRating) => {
+    const newContent = window.prompt("리뷰를 수정하세요:", oldContent);
+    if (newContent == null) return;
+
+    let newRating = oldRating;
+    const ratingStr = window.prompt(
+      "별점(1~5)을 수정하세요:",
+      String(oldRating)
+    );
+    if (ratingStr == null) return;
+    newRating = parseInt(ratingStr, 10);
+    if (isNaN(newRating) || newRating < 1 || newRating > 5) {
+      alert("별점은 1에서 5 사이 숫자여야 합니다.");
+      return;
+    }
+
+    try {
+      await updateReview(reviewId, newContent, newRating);
+      setReviews((rs) =>
+        rs.map((r) =>
+          r.id === reviewId
+            ? { ...r, content: newContent, rating: newRating }
+            : r
+        )
+      );
+      alert("리뷰가 수정되었습니다.");
+    } catch (err) {
+      console.error("리뷰 수정 실패:", err);
+      alert("리뷰 수정에 실패했습니다.");
+    }
+  };
+
+  const handleDeleteReview = async (reviewId) => {
+    if (!window.confirm("정말 이 리뷰를 삭제하시겠습니까?")) return;
+    try {
+      await deleteReview(reviewId);
+      setReviews((rs) => rs.filter((r) => r.id !== reviewId));
+      alert("리뷰가 삭제되었습니다.");
+    } catch (err) {
+      console.error("리뷰 삭제 실패:", err);
+      alert("리뷰 삭제에 실패했습니다.");
+    }
+  };
 
   return (
     <div className={styles.detailContainer}>
@@ -316,6 +361,28 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
                       {" "}
                       ({new Date(review.createdAt).toLocaleDateString()})
                     </small>
+                    {currentUser === review.user && (
+                    <span className={styles.reviewActions} style={{ float: "right"}}>
+                      <button
+                        className={styles.editBtn}
+                        onClick={() =>
+                          handleEditReview(
+                            review.id,
+                            review.content,
+                            review.rating
+                          )
+                        }
+                      >
+                        수정
+                      </button>
+                      <button
+                        className={styles.deleteBtn}
+                        onClick={() => handleDeleteReview(review.id)}
+                      >
+                        삭제
+                      </button>
+                    </span>
+                  )}
                   </p>
                   <p>{review.content}</p>
                   <hr />
