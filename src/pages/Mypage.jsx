@@ -49,14 +49,15 @@ const MyPage = ({onClose, onSelectLot}) => {
       const enriched = reviews.map((rev) => {
         console.log("리뷰 항목:", rev);
         
-        // parkingLot 객체가 있는지 확인하고 주차장 이름 추출
+        // parkingLot 객체가 있는지 확인하고 주차장 정보 추출
         if (rev.parkingLot && rev.parkingLot.name) {
           return {
             id: rev.id,
             parkingLotId: rev.parkingLot.id,
             parkingLotName: rev.parkingLot.name,
             rating: rev.rating || 0,
-            content: rev.content || ""
+            content: rev.content || "",
+            parkingLot: rev.parkingLot  // 전체 주차장 객체 저장
           };
         }
         
@@ -78,16 +79,30 @@ const MyPage = ({onClose, onSelectLot}) => {
     }
   };
 
-  const handleClick = async (parkingLotId) => {
-      try {
-        const lot = await getParkingLotById(parkingLotId);
-        onClose();               // MyPage 닫고
-        onSelectLot(lot);        // 부모(map) 로 lot 전달
-      } catch (err) {
-        console.error(err);
-        alert("주차장 정보를 가져오는 데 실패했습니다.");
+  const handleClick = async (item) => {
+    try {
+      // item이 객체이고 parkingLot 속성을 가지고 있는 경우
+      if (item && item.parkingLot) {
+        onClose();
+        onSelectLot(item.parkingLot);
+        return;
       }
-    };
+      
+      // parkingLotId가 있을 경우 API 호출
+      if (item && item.parkingLotId) {
+        const lot = await getParkingLotById(item.parkingLotId);
+        onClose();
+        onSelectLot(lot);
+        return;
+      }
+      
+      console.error("주차장 정보가 없습니다:", item);
+      alert("주차장 정보를 가져오는 데 실패했습니다.");
+    } catch (err) {
+      console.error(err);
+      alert("주차장 정보를 가져오는 데 실패했습니다.");
+    }
+  };
 
   const loadLikedParking = async () => {
     try {
@@ -103,12 +118,13 @@ const MyPage = ({onClose, onSelectLot}) => {
       const enriched = favs.map((fav) => {
         console.log("찜 항목:", fav);
         
-        // parkingLot 객체가 있는지 확인하고 주차장 이름 추출
+        // parkingLot 객체가 있는지 확인하고 주차장 정보 추출
         if (fav.parkingLot && fav.parkingLot.name) {
           return {
             id: fav.id,
             parkingLotId: fav.parkingLot.id,
-            parkingLotName: fav.parkingLot.name
+            parkingLotName: fav.parkingLot.name,
+            parkingLot: fav.parkingLot  // 전체 주차장 객체 저장
           };
         }
         
@@ -179,7 +195,7 @@ const MyPage = ({onClose, onSelectLot}) => {
             <div
               key={p.id}
               className="liked-item"
-              onClick={() => handleClick(p.parkingLotId)}
+              onClick={() => handleClick(p)}
             >
               <strong><i className="ri-parking-box-fill"></i>{p.parkingLotName}</strong> 
               <hr />
@@ -196,7 +212,7 @@ const MyPage = ({onClose, onSelectLot}) => {
             <div
               key={r.id}
               className="review-item"
-              onClick={() => handleClick(r.parkingLotId)}
+              onClick={() => handleClick(r)}
             >
               <p>
                 <i className="ri-parking-box-fill"></i>&nbsp;
