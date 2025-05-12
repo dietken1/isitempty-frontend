@@ -32,28 +32,45 @@ const MyPage = ({onClose, onSelectLot}) => {
   
   const loadReviews = async () => {
     try {
-      const { reviews = [] } = await getMyReviews();
+      const reviewsData = await getMyReviews();
+      console.log("리뷰 데이터:", reviewsData);
+      
+      // reviewsData가 객체이고 reviews 속성을 가지고 있는지 확인
+      const reviews = reviewsData && reviewsData.reviews ? reviewsData.reviews : [];
+      
+      console.log("처리할 리뷰 목록:", reviews);
+      
+      if (!reviews.length) {
+        console.log("리뷰가 없습니다");
+        setMyReviews([]);
+        return;
+      }
 
-      const enriched = await Promise.all(
-        reviews.map(async (rev) => {
-          // parkingLotId가 없는 경우 기본값 설정
-          if (!rev.parkingLotId) {
-            return { ...rev, parkingLotName: "알 수 없는 주차장" };
-          }
-          
-          try {
-            const lotResp = await getParkingLotById(rev.parkingLotId);
-            return { 
-              ...rev, 
-              parkingLotName: lotResp.name || `주차장 #${rev.parkingLotId}` 
-            };
-          } catch (e) {
-            console.error(`주차장(${rev.parkingLotId}) 조회 실패:`, e);
-            return { ...rev, parkingLotName: `주차장 #${rev.parkingLotId}` };
-          }
-        })
-      );
+      const enriched = reviews.map((rev) => {
+        console.log("리뷰 항목:", rev);
+        
+        // parkingLot 객체가 있는지 확인하고 주차장 이름 추출
+        if (rev.parkingLot && rev.parkingLot.name) {
+          return {
+            id: rev.id,
+            parkingLotId: rev.parkingLot.id,
+            parkingLotName: rev.parkingLot.name,
+            rating: rev.rating || 0,
+            content: rev.content || ""
+          };
+        }
+        
+        // parkingLot이 없거나 name이 없는 경우 기본값 설정
+        return { 
+          id: rev.id || Math.random().toString(36).substr(2, 9),
+          parkingLotId: rev.parkingLotId,
+          parkingLotName: "알 수 없는 주차장",
+          rating: rev.rating || 0,
+          content: rev.content || ""
+        };
+      });
 
+      console.log("가공된 리뷰 데이터:", enriched);
       setMyReviews(enriched);
     } catch (error) {
       console.error("리뷰 목록 불러오기 실패:", error);
@@ -75,22 +92,35 @@ const MyPage = ({onClose, onSelectLot}) => {
   const loadLikedParking = async () => {
     try {
       const favs = await getUserFavorites();
-      const enriched = await Promise.all(
-        favs.map(async (fav) => {
-          // parkingLotId가 없는 경우 기본값 설정
-          if (!fav.parkingLotId) {
-            return { ...fav, parkingLotName: "알 수 없는 주차장" };
-          }
-          
-          try {
-            const lot = await getParkingLotById(fav.parkingLotId);
-            return { ...fav, parkingLotName: lot.name || `주차장 #${fav.parkingLotId}` };
-          } catch (err) {
-            console.error(`주차장(${fav.parkingLotId}) 조회 실패:`, err);
-            return { ...fav, parkingLotName: `주차장 #${fav.parkingLotId}` };
-          }
-        })
-      );
+      console.log("찜 데이터:", favs);
+      
+      if (!favs.length) {
+        console.log("찜한 주차장이 없습니다");
+        setLikedParking([]);
+        return;
+      }
+      
+      const enriched = favs.map((fav) => {
+        console.log("찜 항목:", fav);
+        
+        // parkingLot 객체가 있는지 확인하고 주차장 이름 추출
+        if (fav.parkingLot && fav.parkingLot.name) {
+          return {
+            id: fav.id,
+            parkingLotId: fav.parkingLot.id,
+            parkingLotName: fav.parkingLot.name
+          };
+        }
+        
+        // parkingLot이 없거나 name이 없는 경우 기본값 설정
+        return { 
+          id: fav.id || Math.random().toString(36).substr(2, 9),
+          parkingLotId: fav.parkingLotId,
+          parkingLotName: "알 수 없는 주차장" 
+        };
+      });
+      
+      console.log("가공된 찜 데이터:", enriched);
       setLikedParking(enriched);
     } catch (err) {
       console.error("좋아요한 주차장 불러오기 실패:", err);
