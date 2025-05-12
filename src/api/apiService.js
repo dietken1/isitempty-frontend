@@ -281,17 +281,27 @@ export const sendContactMessage = (formData) => {
 };
 
 export const getParkingReviews = async (parkingLotId) => {
-  const res = await axios.get(`/api/reviews/parkingLot/${parkingLotId}`, {
-    headers: { Authorization: `Bearer ${TokenLocalStorageRepository.getToken()}` }
-  });
-  const arr = Array.isArray(res.data) ? res.data : res.data.data || [];
-  return arr.map(r => ({
-    id: r.id,
-    content: r.content,
-    rating: r.rating,
-    user: r.user.username,
-    createdAt: r.createdAt
-  }));
+  try {
+    const res = await axios.get(`/api/reviews/parkingLot/${parkingLotId}`, {
+      headers: { Authorization: `Bearer ${TokenLocalStorageRepository.getToken()}` }
+    });
+    const arr = Array.isArray(res.data) ? res.data : res.data.data || [];
+    return arr.map(r => ({
+      id: r.id,
+      content: r.content,
+      rating: r.rating,
+      user: r.user.username,
+      createdAt: r.createdAt
+    }));
+  } catch (error) {
+    // 404 오류(리뷰가 없는 경우)는 빈 배열 반환
+    if (error.response && error.response.status === 404) {
+      console.log(`주차장(${parkingLotId})의 리뷰가 없습니다.`);
+      return [];
+    }
+    console.error("리뷰 불러오기 실패:", error);
+    throw error;
+  }
 };
 
 export const createReview = async (parkingLotId, content, rating) => {
