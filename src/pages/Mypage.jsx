@@ -53,16 +53,38 @@ const MyPage = ({onClose, onSelectLot}) => {
   }
 };
 
-  const handleClick = async (parkingLotId) => {
-      try {
-        const lot = await getParkingLotById(parkingLotId);
-        onClose();               // MyPage 닫고
-        onSelectLot(lot);        // 부모(map) 로 lot 전달
-      } catch (err) {
-        console.error(err);
-        alert("주차장 정보를 가져오는 데 실패했습니다.");
-      }
-    };
+  const handleClick = async (item) => {
+  console.log("▶ 클릭한 아이템:", item);
+  try {
+    if (typeof onClose !== 'function' || typeof onSelectLot !== 'function') {
+      console.error("onClose 또는 onSelectLot가 함수가 아닙니다.", { onClose, onSelectLot });
+      return;
+    }
+
+    // 1) item.parkingLot이 이미 객체라면 바로 전달
+    if (item && item.parkingLot && typeof item.parkingLot === 'object') {
+      onClose();
+      onSelectLot(item.parkingLot);
+      return;
+    }
+
+    // 2) parkingLotId만 있을 때 API 호출
+    if (item && (item.parkingLotId || item.id)) {
+      const parkingLotId = item.parkingLotId || item.id;
+      const lotData = await getParkingLotById(parkingLotId);
+      onClose();
+      onSelectLot(lotData);
+      return;
+    }
+
+    console.error("주차장 정보가 없습니다:", item);
+    alert("주차장 정보를 가져오는 데 실패했습니다.");
+  } catch (err) {
+    console.error("handleClick 내부 에러:", err);
+    alert("주차장 정보를 가져오는 데 실패했습니다.");
+  }
+};
+
 
   const loadLikedParking = async () => {
     try {
