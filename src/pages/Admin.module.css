@@ -39,7 +39,7 @@
   }
   
   /* Buttons */
-  button {
+  .table button {
     margin: 4px;
     padding: 6px 12px;
     font-size: 0.9rem;
