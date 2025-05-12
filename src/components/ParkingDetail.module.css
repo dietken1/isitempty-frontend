@@ -101,6 +101,10 @@
   color: black;
 }
 
+reviewItem {
+  position: relative; /* 버튼을 절대 위치로 잡기 위해 부모에 relative */
+  padding-right: 80px; /* 버튼 공간 확보 */
+}
 
 .reviewActions {
   position: absolute;
@@ -110,7 +114,7 @@
   gap: 4px;
 }
 
-.reviewItem button {
+.reviewActions button {
   background: transparent;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -120,24 +124,20 @@
   transition: background-color .2s, color .2s;
 }
 
-.reviewItem button:first-child {
+/* 수정 버튼 */
+.buttonEdit {
   color: #007bff;
   border-color: #007bff;
 }
+.buttonEdit:hover {
+  background-color: rgba(0, 123, 255, 0.1);
+}
 
-.reviewItem button:last-child {
+/* 삭제 버튼 */
+.buttonDelete {
   color: #dc3545;
   border-color: #dc3545;
 }
-
-.reviewItem button:hover {
-  background-color: rgba(0,0,0,0.05);
-}
-
-.reviewItem button:first-child:hover {
-  background-color: rgba(0,123,255,0.1);
-}
-
-.reviewItem button:last-child:hover {
-  background-color: rgba(220,53,69,0.1);
+.buttonDelete:hover {
+  background-color: rgba(220, 53, 69, 0.1);
 }
