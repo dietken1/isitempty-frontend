@@ -170,4 +170,26 @@
     cursor: pointer;
     text-decoration: none;
   }
-  
+
+.favorite::-webkit-scrollbar,
+.myreview::-webkit-scrollbar {
+  width: 6px;
+}
+
+.favorite::-webkit-scrollbar-track,
+.myreview::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.favorite::-webkit-scrollbar-thumb,
+.myreview::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 3px; 
+}
+
+
+.favorite,
+.myreview {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.3) transparent;
+}
