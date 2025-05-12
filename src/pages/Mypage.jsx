@@ -37,46 +37,46 @@ const MyPage = () => {
   };
 
   const loadReviews = async () => {
-    try {
-      const { reviews = [] } = await getMyReviews();
+  try {
+    const { reviews = [] } = await getMyReviews();
 
-      const enriched = await Promise.all(
-        reviews.map(async (rev) => {
-          try {
-            const lotResp = await getParkingLotById(rev.parkingLotId);
-            console.log("lotResp:", lotResp);
+    const enriched = await Promise.all(
+      reviews.map(async (rev) => {
+        try {
+          const lotResp = await getParkingLotById(rev.parkingLotId);
 
-            // 어떤 형태로 와도 name을 꺼낼 수 있게 payload에 담는다
-            const payload = lotResp.parkingLot
-              ? lotResp.parkingLot
-              : lotResp.data?.parkingLot
-              ? lotResp.data.parkingLot
-              : lotResp.data
-              ? lotResp.data
-              : lotResp;
+          // lotResp 안에 name이 어디에 들어 있을지 순서대로 꺼내기
+          const parkingLotObj =
+            lotResp.name ? lotResp :
+            lotResp.parkingLot?.name ? lotResp.parkingLot :
+            lotResp.data?.name ? lotResp.data :
+            lotResp.data?.parkingLot ? lotResp.data.parkingLot :
+            null;
 
-            const parkingLotName = payload.name || "알 수 없는 주차장";
+          const parkingLotName = parkingLotObj?.name || "알 수 없는 주차장";
 
-            return {
-              ...rev,
-              parkingLotName,
-              parkingLot: payload,
-            };
-          } catch (e) {
-            console.error(`주차장(${rev.parkingLotId}) 조회 실패:`, e);
-            return {
-              ...rev,
-              parkingLotName: "알 수 없는 주차장",
-              parkingLot: null,
-            };
-          }
-        })
-      );
-      setMyReviews(enriched);
-    } catch (error) {
-      console.error("Error loading reviews:", error);
-    }
-  };
+          return {
+            ...rev,
+            parkingLotName,
+            parkingLot: parkingLotObj,  // 나중에 상세보기에도 쓰고 싶으면
+          };
+        } catch (e) {
+          console.error(`주차장(${rev.parkingLotId}) 조회 실패:`, e);
+          return {
+            ...rev,
+            parkingLotName: "알 수 없는 주차장",
+            parkingLot: null,
+          };
+        }
+      })
+    );
+
+    setMyReviews(enriched);
+  } catch (error) {
+    console.error("Error loading reviews:", error);
+  }
+};
+
 
   const handleClick = async (fav) => {
     // fav.parkingLot이 있으면 바로, 없으면 API로 가져와서…
