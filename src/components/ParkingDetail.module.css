@@ -101,42 +101,41 @@
   color: black;
 }
 
+.reviewItem {
+  position: relative;
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
 .reviewActions {
   position: absolute;
   top: 8px;
   right: 8px;
   display: flex;
   gap: 4px;
+  z-index: 1;
 }
 
-.reviewItem span {
-  background: transparent;
-  border: 1px solid #ccc;
+.buttonEdit,
+.buttonDelete {
+  border: none;
   border-radius: 4px;
-  padding: 2px 6px;
+  padding: 4px 8px;
   font-size: 12px;
   cursor: pointer;
-  transition: background-color .2s, color .2s;
+  color: #fff;
 }
 
-.reviewItem button:first-child {
-  color: #007bff;
-  border-color: #007bff;
+.buttonEdit {
+  background-color: #007bff;
+}
+.buttonEdit:hover {
+  background-color: #0069d9;
 }
 
-.reviewItem button:last-child {
-  color: #dc3545;
-  border-color: #dc3545;
+.buttonDelete {
+  background-color: #dc3545;
 }
-
-.reviewItem button:hover {
-  background-color: rgba(0,0,0,0.05);
-}
-
-.reviewItem button:first-child:hover {
-  background-color: rgba(0,123,255,0.1);
-}
-
-.reviewItem button:last-child:hover {
-  background-color: rgba(220,53,69,0.1);
+.buttonDelete:hover {
+  background-color: #c82333;
 }
