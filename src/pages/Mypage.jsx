@@ -37,35 +37,37 @@ const MyPage = () => {
   };
 
   const loadReviews = async () => {
-    console.log("원본 rev:", rev);
-
   try {
     const res = await getMyReviews();
     console.log("리뷰 API 응답:", res);
 
-    const rawReviews =
-      Array.isArray(res)            ? res :
-      Array.isArray(res.reviews)    ? res.reviews :
-      Array.isArray(res.data)       ? res.data :
-      Array.isArray(res.data?.reviews) ? res.data.reviews :
-      [];
+    // 응답 형태에 맞춰 rawReviews 추출
+    const rawReviews = Array.isArray(res)
+      ? res
+      : Array.isArray(res.reviews)
+        ? res.reviews
+        : Array.isArray(res.data)
+          ? res.data
+          : Array.isArray(res.data?.reviews)
+            ? res.data.reviews
+            : [];
 
-    console.log("처리할 리뷰 목록:", rawReviews);
     if (!rawReviews.length) {
       console.log("리뷰가 없습니다");
       setMyReviews([]);
       return;
     }
 
+    // 주차장 이름까지 붙여 주는 부분
     const enriched = await Promise.all(
-      rawReviews.map(async rev => {
+      rawReviews.map(async (rev) => {
         let lotObj = null;
         try {
           const lotResp = await getParkingLotById(rev.parkingLotId);
           lotObj =
-            lotResp.parkingLot      ??
-            lotResp.data?.parkingLot??
-            lotResp.data            ??
+            lotResp.parkingLot ??
+            lotResp.data?.parkingLot ??
+            lotResp.data ??
             lotResp;
         } catch (e) {
           console.warn("주차장 조회 실패:", e);
@@ -76,7 +78,7 @@ const MyPage = () => {
           parkingLotName: lotObj?.name || "알 수 없는 주차장",
           rating: rev.rating || 0,
           content: rev.content || "",
-          parkingLot: lotObj
+          parkingLot: lotObj,
         };
       })
     );
@@ -87,8 +89,7 @@ const MyPage = () => {
     console.error("리뷰 목록 불러오기 실패:", err);
     setMyReviews([]);
   }
-}
-
+};
   const handleClick = async (item) => {
     // item.parkingLot이 있으면 바로, 없으면 API로 가져와서…
     const lot = item.parkingLot || (await getParkingLotById(item.parkingLotId));
