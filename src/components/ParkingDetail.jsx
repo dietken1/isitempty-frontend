@@ -25,45 +25,39 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
-    let mounted = true;
-    (async () => {
-      const token = TokenLocalStorageRepository.getToken();
-      if (!token) {
-        setIsLoggedIn(false);
-        setCurrentUser(null);
-        return;
-      }
-      setIsLoggedIn(true);
-      const res = await getUserMe();
+  if (!lot) return;
+
+  let mounted = true;
+  const init = async () => {
+    const token = TokenLocalStorageRepository.getToken();
+    if (!token) {
+      setIsLoggedIn(false);
+      setIsFavorite(false);
+      setCurrentUser(null);
+      return;
+    }
+    setIsLoggedIn(true);
+
+    try {
+      const { data: me } = await getUserMe();
       if (!mounted) return;
-      setCurrentUser(res.data.username);
-    })().catch(() => mounted && setCurrentUser(null));
-    return () => {
-      mounted = false;
-    };
-  }, []);
+      setCurrentUser(me.username);
+      const favs = await getUserFavorites();
+      if (!mounted) return;
+      const mine = favs.some(f => String(f.parkingLotId) === String(lot.id));
+      setIsFavorite(mine);
+    } catch (err) {
+      console.error("초기화 실패:", err);
+    }
+  };
 
-  useEffect(() => {
-    if (!lot) return;
+  init();
 
-    let mounted = true;
-    (async () => {
-      try {
-        const favs = await getUserFavorites();
-        if (!mounted) return;
-        const mine = favs.some(
-          (f) => String(f.parkingLotId) === String(lot.id)
-        );
-        setIsFavorite(mine);
-      } catch (err) {
-        console.error("초기 찜 상태 로드 실패:", err);
-      }
-    })();
+  return () => {
+    mounted = false;
+  };
+}, [lot]);
 
-    return () => {
-      mounted = false;
-    };
-  }, [lot]);
 
   useEffect(() => {
     if (!lot) return;
@@ -155,35 +149,27 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
   } = lot;
 
   const handleHeartClick = async () => {
-    if (!isLoggedIn) {
-      alert("로그인 후 이용해주세요.");
-      return;
+  if (!isLoggedIn) {
+    alert("로그인 후 이용해주세요.");
+    return;
+  }
+
+  setIsFavorite(prev => !prev);
+
+  try {
+    if (isFavorite) {
+      await removeFavoriteParking(lot.id);
+      alert("찜이 취소되었습니다.");
+    } else {
+      await addFavoriteParking(lot.id);
+      alert("찜이 추가되었습니다.");
     }
-
-    setIsFavorite((fav) => !fav);
-
-    try {
-      if (isFavorite) {
-        await removeFavoriteParking(lot.id);
-        alert("찜이 취소되었습니다.");
-      } else {
-        await addFavoriteParking(lot.id);
-        alert("찜이 추가되었습니다.");
-      }
-    } catch (err) {
-      const msg = err.message || "";
-
-      if (msg.includes("이미 찜")) {
-        setIsFavorite(true);
-        alert("이미 찜한 주차장입니다.");
-        return;
-      }
-
-      console.error("찜 토글 에러:", err);
-      setIsFavorite((fav) => !fav);
-      alert(isFavorite ? "찜 취소에 실패했습니다." : "찜 추가에 실패했습니다.");
-    }
-  };
+  } catch (err) {
+    setIsFavorite(prev => !prev);
+    console.error("찜 토글 에러:", err);
+    alert("찜 처리에 실패했습니다.");
+  }
+};
 
   const handleRatingClick = (rating) => {
     setSelectedRating(rating);
