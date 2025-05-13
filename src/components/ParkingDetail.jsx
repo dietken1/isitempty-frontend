@@ -25,35 +25,39 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
-  if (!lot) return;
-
-  const init = async () => {
+  let mounted = true;
+  (async () => {
     const token = TokenLocalStorageRepository.getToken();
     if (!token) {
       setIsLoggedIn(false);
       setCurrentUser(null);
-      setIsFavorite(false);
       return;
     }
     setIsLoggedIn(true);
+    const res = await getUserMe();
+    if (!mounted) return;
+    setCurrentUser(res.data.username);
+  })().catch(() => mounted && setCurrentUser(null));
+  return () => { mounted = false; };
+}, []);
 
+  useEffect(() => {
+  if (!lot) return;
+
+  let mounted = true;
+  (async () => {
     try {
-      // 1) 내 정보
-      const me = await getUserMe();
-      setCurrentUser(me.username);
-
-      // 2) 내 찜 목록
       const favs = await getUserFavorites();
+      if (!mounted) return;
       const mine = favs.some(f => String(f.parkingLotId) === String(lot.id));
       setIsFavorite(mine);
     } catch (err) {
-      console.error("초기화 실패:", err);
+      console.error("초기 찜 상태 로드 실패:", err);
     }
-  };
+  })();
 
-  init();
+  return () => { mounted = false; };
 }, [lot]);
-
 
   useEffect(() => {
   if (!lot) return;
@@ -143,25 +147,35 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
 
   const handleHeartClick = async () => {
   if (!isLoggedIn) {
-    return alert("로그인 후 이용해주세요.");
+    alert("로그인 후 이용해주세요.");
+    return;
   }
 
-  // **API 요청 전에** 로컬 상태를 뒤집으면 안 됩니다.
-  const currentlyFav = isFavorite;
+  setIsFavorite(fav => !fav);
 
   try {
-    if (currentlyFav) {
+    if (isFavorite) {
       await removeFavoriteParking(lot.id);
-      setIsFavorite(false);
       alert("찜이 취소되었습니다.");
     } else {
       await addFavoriteParking(lot.id);
-      setIsFavorite(true);
       alert("찜이 추가되었습니다.");
     }
   } catch (err) {
+    const msg = err.message || "";
+
+    if (msg.includes("이미 찜")) {
+      setIsFavorite(true);
+      alert("이미 찜한 주차장입니다.");
+      return;
+    }
+
     console.error("찜 토글 에러:", err);
-    alert(currentlyFav ? "찜 취소에 실패했습니다." : "찜 추가에 실패했습니다.");
+    setIsFavorite(fav => !fav);
+    alert(isFavorite
+      ? "찜 취소에 실패했습니다."
+      : "찜 추가에 실패했습니다."
+    );
   }
 };
 
