@@ -334,8 +334,6 @@ export const createReview = async (parkingLotId, content, rating) => {
 
     return response.data;
   } catch (error) {
-    if (error.response) {
-    }
     throw new Error(`Failed to create review: ${error.message}`);
   }
 };
@@ -359,8 +357,6 @@ export const updateReview = async (reviewId, content, rating) => {
     return response.data;
   } catch (error) {
     console.error("Error updating review:", error);
-    if (error.response) {
-    }
     throw new Error(`Failed to update review: ${error.message}`);
   }
 };
@@ -376,8 +372,6 @@ export const deleteReview = async (reviewId) => {
     return response.data;
   } catch (error) {
     console.error("Error deleting review:", error);
-    if (error.response) {
-    }
     throw new Error(`Failed to delete review: ${error.message}`);
   }
 };
