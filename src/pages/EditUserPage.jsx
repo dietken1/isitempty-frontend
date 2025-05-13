@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUserDetails, updateUserDetails } from "../api/apiService"; 
+import { getUserDetails, updateUserDetails } from "../api/apiService";
 import { TokenLocalStorageRepository } from "../repository/localstorages";
 
-import './EditUserPage.css';
+import "./EditUserPage.css";
 
 const EditUserPage = () => {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  const [updatedUser, setUpdatedUser] = useState({  username: "", email: "", password: "" });
+  const [updatedUser, setUpdatedUser] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
 
   useEffect(() => {
     const token = TokenLocalStorageRepository.getToken();
@@ -17,15 +21,14 @@ const EditUserPage = () => {
     } else {
       loadUserDetails();
     }
-  }, []); 
+  }, []);
 
   const loadUserDetails = () => {
     getUserDetails()
       .then((data) => {
-        console.log("Fetched user data:", data);
         setUser(data);
         setUpdatedUser({
-          username: data.username,  
+          username: data.username,
           email: data.email,
           password: data.password,
         });
@@ -41,17 +44,18 @@ const EditUserPage = () => {
     if (!token || !user) {
       return navigate("/login");
     }
-  
+
     const userUpdateData = {
       username: updatedUser.username,
       email: updatedUser.email,
       password: updatedUser.password,
     };
-  
+
     try {
       const response = await updateUserDetails(userUpdateData);
-      console.log("User information updated:", response);
-      const successMessage = response.message ? response.message : "사용자 정보가 성공적으로 업데이트되었습니다.";
+      const successMessage = response.message
+        ? response.message
+        : "사용자 정보가 성공적으로 업데이트되었습니다.";
       alert(successMessage);
       navigate("/mypage/");
     } catch (error) {
@@ -59,7 +63,6 @@ const EditUserPage = () => {
       alert("사용자 정보 업데이트 중 오류가 발생했습니다.");
     }
   };
-  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -103,7 +106,9 @@ const EditUserPage = () => {
           />
           <br />
           <div className="savebtn">
-            <button type="button" onClick={handleSave}>Save</button>
+            <button type="button" onClick={handleSave}>
+              Save
+            </button>
           </div>
         </form>
       </div>

@@ -97,7 +97,6 @@ const ParkingDetail = ({ lot, onClose, onBackToList }) => {
 
       try {
         const reviewsData = await getParkingReviews(lot.id);
-        console.log("🎯 reviewsData:", reviewsData);
         if (!Array.isArray(reviewsData)) {
           throw new Error("리뷰 형식 오류");
         }

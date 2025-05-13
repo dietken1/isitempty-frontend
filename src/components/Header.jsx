@@ -14,17 +14,15 @@ function Header() {
     const checkLoginStatus = async () => {
       const token = TokenLocalStorageRepository.getToken();
       setIsLoggedIn(!!token);
-      
+
       // 로그인 상태일 때만 관리자 권한 확인
       if (token) {
         try {
           const response = await getUserMe();
           // Axios 응답에서 data 객체 추출
           const userData = response.data;
-          console.log("사용자 정보:", response);
-          
           // roleType 확인
-          setIsAdmin(userData && userData.roleType === 'ADMIN');
+          setIsAdmin(userData && userData.roleType === "ADMIN");
         } catch (error) {
           console.error("사용자 정보 조회 실패:", error);
           setIsAdmin(false);
@@ -91,7 +89,10 @@ function Header() {
                 <a>Mypage</a>
               </li>
               {isAdmin && (
-                <li onClick={() => handleMenuClick("/admin")} className="admin-menu">
+                <li
+                  onClick={() => handleMenuClick("/admin")}
+                  className="admin-menu"
+                >
                   <a>Admin</a>
                 </li>
               )}
