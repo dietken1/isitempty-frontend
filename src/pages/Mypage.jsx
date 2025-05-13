@@ -36,58 +36,36 @@ const MyPage = () => {
       .catch((error) => console.error("Error loading user data:", error));
   };
 
-  const loadReviews = async () => {
-    console.log("원본 rev:", rev);
+  const enriched = await Promise.all(
+  rawReviews.map(async rev => {
+    // ① rev.parkingLot?.id or rev.parkingLotId 중 실제 있는 곳에서 가져오기
+    const lotId = rev.parkingLot?.id ?? rev.parkingLotId;
 
-  try {
-    const res = await getMyReviews();
-    console.log("리뷰 API 응답:", res);
-
-    const rawReviews =
-      Array.isArray(res)            ? res :
-      Array.isArray(res.reviews)    ? res.reviews :
-      Array.isArray(res.data)       ? res.data :
-      Array.isArray(res.data?.reviews) ? res.data.reviews :
-      [];
-
-    console.log("처리할 리뷰 목록:", rawReviews);
-    if (!rawReviews.length) {
-      console.log("리뷰가 없습니다");
-      setMyReviews([]);
-      return;
+    // ② ID가 있으면 호출, 없으면 null
+    let lotObj = null;
+    if (lotId) {
+      try {
+        const lotResp = await getParkingLotById(lotId);
+        lotObj =
+          lotResp.parkingLot      ??
+          lotResp.data?.parkingLot??
+          lotResp.data            ??
+          lotResp;
+      } catch (e) {
+        console.warn("주차장 조회 실패 (ID:", lotId, ")", e);
+      }
     }
 
-    const enriched = await Promise.all(
-      rawReviews.map(async rev => {
-        let lotObj = null;
-        try {
-          const lotResp = await getParkingLotById(rev.parkingLotId);
-          lotObj =
-            lotResp.parkingLot      ??
-            lotResp.data?.parkingLot??
-            lotResp.data            ??
-            lotResp;
-        } catch (e) {
-          console.warn("주차장 조회 실패:", e);
-        }
-        return {
-          id: rev.id,
-          parkingLotId: rev.parkingLotId,
-          parkingLotName: lotObj?.name || "알 수 없는 주차장",
-          rating: rev.rating || 0,
-          content: rev.content || "",
-          parkingLot: lotObj
-        };
-      })
-    );
-
-    console.log("가공된 리뷰 데이터:", enriched);
-    setMyReviews(enriched);
-  } catch (err) {
-    console.error("리뷰 목록 불러오기 실패:", err);
-    setMyReviews([]);
-  }
-}
+    return {
+      id: rev.id,
+      parkingLotId: lotId,
+      parkingLotName: lotObj?.name || "알 수 없는 주차장",
+      rating: rev.rating || 0,
+      content: rev.content || "",
+      parkingLot: lotObj,
+    };
+  })
+);
 
   const handleClick = async (item) => {
     // item.parkingLot이 있으면 바로, 없으면 API로 가져와서…
