@@ -37,50 +37,61 @@ const MyPage = () => {
   };
 
   const loadReviews = async () => {
+    console.log("원본 rev:", rev);
+
   try {
-    const { reviews = [] } = await getMyReviews();
+    const res = await getMyReviews();
+    console.log("리뷰 API 응답:", res);
+
+    const rawReviews =
+      Array.isArray(res)            ? res :
+      Array.isArray(res.reviews)    ? res.reviews :
+      Array.isArray(res.data)       ? res.data :
+      Array.isArray(res.data?.reviews) ? res.data.reviews :
+      [];
+
+    console.log("처리할 리뷰 목록:", rawReviews);
+    if (!rawReviews.length) {
+      console.log("리뷰가 없습니다");
+      setMyReviews([]);
+      return;
+    }
 
     const enriched = await Promise.all(
-      reviews.map(async (rev) => {
+      rawReviews.map(async rev => {
+        let lotObj = null;
         try {
           const lotResp = await getParkingLotById(rev.parkingLotId);
-
-          // lotResp 안에 name이 어디에 들어 있을지 순서대로 꺼내기
-          const parkingLotObj =
-            lotResp.name ? lotResp :
-            lotResp.parkingLot?.name ? lotResp.parkingLot :
-            lotResp.data?.name ? lotResp.data :
-            lotResp.data?.parkingLot ? lotResp.data.parkingLot :
-            null;
-
-          const parkingLotName = parkingLotObj?.name || "알 수 없는 주차장";
-
-          return {
-            ...rev,
-            parkingLotName,
-            parkingLot: parkingLotObj,  // 나중에 상세보기에도 쓰고 싶으면
-          };
+          lotObj =
+            lotResp.parkingLot      ??
+            lotResp.data?.parkingLot??
+            lotResp.data            ??
+            lotResp;
         } catch (e) {
-          console.error(`주차장(${rev.parkingLotId}) 조회 실패:`, e);
-          return {
-            ...rev,
-            parkingLotName: "알 수 없는 주차장",
-            parkingLot: null,
-          };
+          console.warn("주차장 조회 실패:", e);
         }
+        return {
+          id: rev.id,
+          parkingLotId: rev.parkingLotId,
+          parkingLotName: lotObj?.name || "알 수 없는 주차장",
+          rating: rev.rating || 0,
+          content: rev.content || "",
+          parkingLot: lotObj
+        };
       })
     );
 
+    console.log("가공된 리뷰 데이터:", enriched);
     setMyReviews(enriched);
-  } catch (error) {
-    console.error("Error loading reviews:", error);
+  } catch (err) {
+    console.error("리뷰 목록 불러오기 실패:", err);
+    setMyReviews([]);
   }
-};
+}
 
-
-  const handleClick = async (fav) => {
-    // fav.parkingLot이 있으면 바로, 없으면 API로 가져와서…
-    const lot = fav.parkingLot || (await getParkingLotById(fav.parkingLotId));
+  const handleClick = async (item) => {
+    // item.parkingLot이 있으면 바로, 없으면 API로 가져와서…
+    const lot = item.parkingLot || (await getParkingLotById(item.parkingLotId));
     navigate("/map", { state: { selectedParkingLot: lot } });
   };
 
