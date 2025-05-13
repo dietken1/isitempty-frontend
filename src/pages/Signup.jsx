@@ -56,6 +56,11 @@ const Signup = () => {
       });
   };
 
+  const handleGoogleLogin = () => {
+    const redirectUri = encodeURIComponent("https://isitempty.kr/redirect");
+    window.location.href = `https://isitempty.kr/oauth2/authorization/google?redirect_uri=${redirectUri}`;
+  };
+
   return (
     <div className="signup-container">
       <div className="signup_container">
@@ -133,9 +138,9 @@ const Signup = () => {
             <button
               type="button"
               className="google"
-              onClick={() => (window.location.href = "/auth/google")}
+              onClick={handleGoogleLogin}
             >
-              <img src="/images/google.png" alt="Google Login" />
+              <img src="/images/google.png" alt="구글 로그인" />
             </button>
           </div>
           {responseMessage && <span>{responseMessage}</span>}
