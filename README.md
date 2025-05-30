@@ -237,6 +237,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 프로젝트 관련 문의사항은 아래 채널을 통해 연락주세요:
 
-- 이메일: contact@isitempty.kr
+- 이메일: dietken1@ajou.ac.kr
 - 웹사이트: https://isitempty.kr
 - GitHub: https://github.com/isitempty
