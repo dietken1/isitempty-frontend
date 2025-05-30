@@ -1,241 +1,242 @@
-# 🚗 IsItempty 프론트엔드 개발 가이드
+# 🚗 IsItEmpty 프론트엔드
 
-이 문서는 프론트엔드 개발자가 IsItempty 백엔드 API와 연동하여 개발하는 방법을 안내합니다.
-<br>
+<div align="center">
+  <img src="./public/images/logo.png" alt="IsItEmpty Logo" width="400"/>
+  
+  > 🅿️ 실시간 주차장 빈자리 확인으로 주차 스트레스 해소!
+</div>
 
-### **📌(현재 README 추가 수정 필요!)**
+서울시 공공데이터를 활용한 실시간 주차장 빈자리 확인 서비스의 프론트엔드 시스템입니다.
 
-## 📋 목차
+## 💡 서비스 소개
 
-- [백엔드 API 연결 정보](#백엔드-api-연결-정보)
-- [API 엔드포인트](#api-엔드포인트)
-- [주차장 데이터 모델](#주차장-데이터-모델)
-- [API 테스트 방법](#api-테스트-방법)
-- [프론트엔드 개발 시 고려사항](#프론트엔드-개발-시-고려사항)
-- [백엔드 개발 환경 설정](#백엔드-개발-환경-설정-선택사항)
-- [프론트엔드 개발 환경 설정](#프론트엔드-개발-환경-설정)
-- [문제 해결](#문제-해결)
+IsItEmpty는 다음과 같은 문제를 해결하기 위해 만들어졌습니다:
 
-## 🔌 백엔드 API 연결 정보
+- 🚫 불법 주정차로 인한 사회적 문제
+- 😫 주차 공간을 찾기 위한 불필요한 시간 낭비
+- 🌍 교통 체증과 환경 오염
 
-### 로컬 개발 환경
+### 주요 기능
 
-백엔드 서버는 기본적으로 다음 URL에서 실행됩니다:
+1. 🗺️ **실시간 지도 기반 서비스**
+   - 카카오맵 기반 주차장 위치 표시
+   - 실시간 빈자리 정보 업데이트
+   - 현재 위치 기반 주변 주차장 검색
 
-```
-http://localhost:8080
-```
+2. 🔍 **스마트 검색 시스템**
+   - 주소 기반 주차장 검색
+   - 다양한 필터링 옵션
+   - 즐겨찾기 기능
 
-## 🔍 API 엔드포인트
+3. 👥 **사용자 커뮤니티**
+   - 주차장 리뷰 및 평점
+   - 실시간 이용 후기
+   - 주차장 정보 공유
 
-현재 사용 가능한 API 엔드포인트:
+4. 📱 **모바일 최적화**
+   - 반응형 디자인
+   - 터치 친화적 UI
+   - 모바일 우선 설계
 
-| 엔드포인트 | 메서드 | 설명 | 응답 예시 |
-|------------|--------|------|-----------|
-| `/api/hello` | GET | 테스트용 API | `"Hello, World!"` |
-| `/api/parking-lots` | GET | 모든 주차장 목록 조회 | 주차장 객체 배열 |
-| `/api/parking-lots/{id}` | GET | 특정 주차장 조회 | 주차장 객체 |
-| `/api/parking-lots` | POST | 새 주차장 추가 | 생성된 주차장 객체 |
-| `/api/parking-lots/{id}` | PUT | 주차장 정보 수정 | 수정된 주차장 객체 |
-| `/api/parking-lots/{id}` | DELETE | 주차장 삭제 | 상태 코드 |
+5. 👑 **관리자 대시보드**
+   - 사용자 관리
+     * 사용자 목록 조회
+     * 사용자 정보 수정
+     * 계정 삭제
+     * 권한 레벨 변경 (관리자/일반 사용자)
+   - 문의사항 관리
+     * 문의 목록 조회
+     * 문의 답변/삭제
+   - 시스템 모니터링
+     * 사용자 통계
+     * 서비스 이용 현황
 
-## 📊 주차장 정적 데이터 모델!!!! :
+## 🛠 기술 스택
 
-주차장 객체의 구조:
+- **프레임워크**: 
+  - ![React](https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=black)
+  - ![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white)
 
-```json
-{
-  "id": 1,
-  "name": "강남역 주차장",
-  "address": "서울시 강남구 강남대로 396",
-  "totalSpaces": 200,
-  "availableSpaces": 120,
-  "isOpen": true,
-  "hourlyRate": 3000,
-  "latitude": 37.498095,
-  "longitude": 127.027610,
-  "description": "강남역 근처 24시간 주차장",
-  "lastUpdated": "2025-04-06T18:30:00"
-}
-```
+- **언어**: 
+  - ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
+  - ![JSX](https://img.shields.io/badge/JSX-61DAFB?style=flat-square&logo=react&logoColor=black)
 
-## 🧪 API 테스트 방법
+- **스타일링**: 
+  - ![CSS Modules](https://img.shields.io/badge/CSS_Modules-000000?style=flat-square&logo=css3&logoColor=white)
 
-### Postman 사용
+- **상태 관리**: 
+  - ![React Context](https://img.shields.io/badge/React_Context-61DAFB?style=flat-square&logo=react&logoColor=black)
 
-1. Postman 다운로드 및 설치: [https://www.postman.com/downloads/](https://www.postman.com/downloads/)
-2. 새 요청 생성 및 URL 설정 (예: `http://localhost:8080/api/parking-lots`)
-3. 요청 메서드 선택 (GET, POST 등)
-4. POST/PUT 요청의 경우 Body 탭에서 JSON 데이터 입력
-5. Send 버튼 클릭하여 요청 전송
+- **라우팅**: 
+  - ![React Router](https://img.shields.io/badge/React_Router-CA4245?style=flat-square&logo=react-router&logoColor=white)
 
-### 예시 요청
+- **HTTP 클라이언트**: 
+  - ![Axios](https://img.shields.io/badge/Axios-5A29E4?style=flat-square&logo=axios&logoColor=white)
 
-#### 주차장 목록 조회 (GET)
+- **지도**: 
+  - ![Kakao Maps](https://img.shields.io/badge/Kakao_Maps-FFCD00?style=flat-square&logo=kakao&logoColor=black)
 
-```http
-GET http://localhost:8080/api/parking-lots
-```
+- **인증**: 
+  - ![OAuth2.0](https://img.shields.io/badge/OAuth2.0-2C5BB4?style=flat-square)
 
-#### 새 주차장 추가 (POST)
+- **배포**: 
+  - ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
+  - ![Nginx](https://img.shields.io/badge/Nginx-009639?style=flat-square&logo=nginx&logoColor=white)
 
-```http
-POST http://localhost:8080/api/parking-lots
-Content-Type: application/json
+- **CI/CD**: 
+  - ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat-square&logo=github-actions&logoColor=white)
 
-{
-  "name": "테스트 주차장",
-  "address": "서울시 강남구",
-  "totalSpaces": 100,
-  "isOpen": true,
-  "hourlyRate": 2000,
-  "latitude": 37.5665,
-  "longitude": 126.9780,
-  "description": "테스트 주차장입니다."
-}
-```
+## 📱 사용자 인터페이스
 
-## 💡 프론트엔드 개발 시 고려사항
+### 메인 화면
+- 🗺️ 실시간 주차장 지도
+- 🔍 주차장 검색 바
+- ⭐ 즐겨찾기 주차장 바로가기
 
-### CORS 설정
+### 주차장 상세 정보
+- 📍 위치 정보
+- 💰 요금 정보
+- 🕒 운영 시간
+- 📊 실시간 주차 현황
+- ⭐ 평점 및 리뷰
 
-백엔드는 CORS를 허용하도록 설정되어 있습니다. 기본적으로 `localhost`에서의 요청을 허용합니다.
+### 사용자 페이지
+- 👤 프로필 관리
+- 📝 내 리뷰 관리
+- ⭐ 즐겨찾기 관리
+- 📜 이용 내역
 
-### 인증 (향후 구현 예정)
+### 관리자 페이지
+- 👥 사용자 관리 대시보드
+  * 사용자 목록 테이블 뷰
+  * 권한 관리 인터페이스
+  * 계정 관리 도구
+- 📮 문의사항 관리
+  * 문의 목록 및 상태 관리
+  * 답변 작성 인터페이스
+- 📊 통계 및 모니터링
+  * 사용자 활동 통계
+  * 시스템 상태 모니터링
 
-현재는 인증이 구현되어 있지 않습니다. 향후 JWT 기반 인증이 추가될 예정입니다.
-
-### 실시간 데이터 업데이트
-
-주차장 가용 공간은 실시간으로 변경될 수 있습니다. 주기적으로 데이터를 갱신하는 로직을 구현하는 것이 좋습니다.
-
-```javascript
-// 예시: 30초마다 주차장 데이터 갱신
-setInterval(async () => {
-  const response = await fetch('http://localhost:8080/api/parking-lots');
-  const parkingLots = await response.json();
-  updateParkingLotDisplay(parkingLots);
-}, 30000);
-```
-
-## 🔧 백엔드 개발 환경 설정 (선택사항)
-### ***✅프론트 개발자도 IntelliJ IDEA 설치 추천 ❗❗❗***
-프론트엔드 개발자도 필요한 경우 백엔드를 로컬에서 실행할 수 있습니다:
-
-1. 백엔드 저장소 클론:
-    ```bash
-    git clone https://github.com/isitempty/backend.git
-    cd backend
-    ```
-
-2. SSH 터널 설정:
-    ```bash
-    ./scripts/setup-ssh-tunnel.sh
-    ```
-
-3. 백엔드 애플리케이션 실행:
-    ```bash
-    ./gradlew bootRun
-    ```
-
-자세한 내용은 백엔드 저장소의 README.md를 참조하세요.
-
-## 🚀 프론트엔드 개발 환경 설정
-
-### 필수 요구사항
-
-- Node.js 18 이상
-- npm 또는 yarn
-
-### 프로젝트 설정
-
-1. 프로젝트 클론:
-```bash
-git clone https://github.com/isitempty/frontend.git
-cd frontend
-```
-
-2. 의존성 설치:
-```bash
-npm install
-# 또는
-yarn install
-```
-
-3. 개발 서버 실행:
-```bash
-npm run dev
-# 또는
-yarn dev
-```
-
-4. 브라우저에서 `http://localhost:3000` 접속
-
-### 환경 변수 설정
-
-`.env.local` 파일을 프로젝트 루트에 생성하고 다음 내용을 추가합니다:
+## 📁 프로젝트 구조
 
 ```
-NEXT_PUBLIC_API_URL=http://localhost:8080/api
+isitempty-frontend/
+├── src/
+│   ├── api/                # API 통신 모듈
+│   │   ├── apiService.js   # API 요청 함수
+│   │   └── axiosInstance.js # Axios 설정
+│   ├── components/         # 재사용 컴포넌트
+│   │   ├── Header/        # 헤더 컴포넌트
+│   │   ├── Footer/        # 푸터 컴포넌트
+│   │   └── common/        # 공통 컴포넌트
+│   ├── pages/             # 페이지 컴포넌트
+│   │   ├── Home/          # 홈 페이지
+│   │   ├── Map/           # 지도 페이지
+│   │   ├── Login/         # 로그인 페이지
+│   │   ├── Signup/        # 회원가입 페이지
+│   │   ├── Mypage/        # 마이페이지
+│   │   └── Admin/         # 관리자 페이지
+│   ├── repository/        # 로컬 스토리지
+│   ├── App.jsx           # 앱 루트 컴포넌트
+│   └── main.jsx          # 진입점
+├── public/               # 정적 파일
+├── index.html           # HTML 템플릿
+└── package.json         # 프로젝트 설정
 ```
 
-## ⚠️ 문제 해결
+## ⚙️ 개발 환경 설정
 
-### API 연결 오류
+1. 필수 요구사항
+   - 📦 Node.js 20.x 이상
+   - 📦 npm 10.x 이상
 
-- 백엔드 서버가 실행 중인지 확인
-- 올바른 URL과 포트를 사용하고 있는지 확인
-- 네트워크 연결 상태 확인
-
-### CORS 오류
-
-오류 메시지: `Access to fetch at 'http://localhost:8080/api/parking-lots' from origin 'http://localhost:3000' has been blocked by CORS policy`
-
-**[해결 방법]**
-
-1. 백엔드 개발자에게 CORS 설정 확인 요청
-2. 개발 환경에서 CORS 프록시 사용:
-   ```bash
-   npm install -g local-cors-proxy
-   lcp --proxyUrl http://localhost:8080
+2. 환경변수 설정
+   ```env
+   VITE_KAKAO_MAP_API_KEY=your_kakao_map_api_key
+   VITE_GOOGLE_CLIENT_ID=your_google_client_id
+   VITE_KAKAO_CLIENT_ID=your_kakao_client_id
+   VITE_NAVER_CLIENT_ID=your_naver_client_id
    ```
-    그리고 `http://localhost:8010/proxy` 엔드포인트 사용
 
-### 상태 관리 관련 문제
+3. 설치 및 실행
+   ```bash
+   # 의존성 설치
+   npm install --legacy-peer-deps
 
-- Redux DevTools 또는 React DevTools를 사용하여 상태 변화 디버깅
-- 컴포넌트 리렌더링 이슈는 React.memo 또는 useMemo 고려
+   # 개발 서버 실행
+   npm run dev
 
-## 📱 반응형 디자인 가이드라인
+   # 프로덕션 빌드
+   npm run build
+   ```
 
-IsItempty 애플리케이션은 다음 화면 크기를 지원해야 합니다:
+4. Docker 실행
+   ```bash
+   # Docker 이미지 빌드
+   docker build -t isitempty-frontend .
 
-- 모바일: 320px ~ 480px
-- 태블릿: 481px ~ 768px
-- 데스크톱: 769px 이상
+   # Docker 컨테이너 실행
+   docker run -p 80:80 isitempty-frontend
+   ```
 
-```css
-/* 반응형 디자인 예시 */
-@media (max-width: 480px) {
-  .parking-lot-card {
-    width: 100%;
-  }
-}
+## 🎨 디자인 가이드
 
-@media (min-width: 481px) and (max-width: 768px) {
-  .parking-lot-card {
-    width: 48%;
-  }
-}
+### 색상 팔레트
+- 🔵 Primary: `#4269cc`
+- ⚫ Text: `#213547`
+- ⚪ Background: `#ffffff`
+- 🔘 Accent: `#646cff`
 
-@media (min-width: 769px) {
-  .parking-lot-card {
-    width: 30%;
-  }
-}
-```
+### 타이포그래피
+- 기본 폰트: Inter, system-ui, Avenir
+- 제목: 2.5em (h1), 2em (h2), 1.5em (h3)
+- 본문: 1em
 
-문제가 발생하거나 질문이 있는 경우 PM에게 문의하세요
----
+### 반응형 브레이크포인트
+- 📱 모바일: < 768px
+- 💻 태블릿: 768px ~ 1024px
+- 🖥️ 데스크톱: > 1024px
 
-© 2025 IsItempty Team
+## 🚀 배포
+
+GitHub Actions를 통한 자동 배포:
+1. main 브랜치 push 시 자동 빌드
+2. 환경변수 주입
+3. Docker 이미지 빌드
+4. Nginx 설정 적용
+5. 운영 서버 배포
+
+## 🔍 성능 최적화
+
+- 📦 Code Splitting
+- 🔄 Lazy Loading
+- 🖼️ 이미지 최적화
+- 💾 캐싱 전략
+
+## 🌐 브라우저 지원
+
+- ![Chrome](https://img.shields.io/badge/Chrome-4285F4?style=flat-square&logo=google-chrome&logoColor=white)
+- ![Firefox](https://img.shields.io/badge/Firefox-FF7139?style=flat-square&logo=firefox-browser&logoColor=white)
+- ![Safari](https://img.shields.io/badge/Safari-000000?style=flat-square&logo=safari&logoColor=white)
+- ![Edge](https://img.shields.io/badge/Edge-0078D7?style=flat-square&logo=microsoft-edge&logoColor=white)
+
+## 📜 라이선스
+
+This project is licensed under the MIT License - see the LICENSE file for details
+
+## 🤝 기여하기
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📞 연락처
+
+프로젝트 관련 문의사항은 아래 채널을 통해 연락주세요:
+
+- 이메일: contact@isitempty.kr
+- 웹사이트: https://isitempty.kr
+- GitHub: https://github.com/isitempty
